@@ -1,0 +1,79 @@
+plugins {
+    id "com.github.johnrengelman.shadow" version "8.1.1" apply false
+    id "architectury-plugin" version "3.4-SNAPSHOT"
+    id "dev.architectury.loom" version "1.9-SNAPSHOT" apply false
+}
+
+architectury {
+    minecraft = rootProject.minecraft_version
+}
+
+subprojects {
+    apply plugin: "dev.architectury.loom"
+
+    loom {
+        silentMojangMappingsLicense()
+    }
+
+    repositories {
+        maven {
+            name = "Modrinth"
+            url = "https://api.modrinth.com/maven"
+            content {
+                includeGroup "maven.modrinth"
+            }
+        }
+        maven {
+            name "zigythebirdMods"
+            url "https://maven.zigythebird.com/mods"
+        }
+        maven {
+            name = 'GeckoLib'
+            url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+            content {
+                includeGroup("software.bernie.geckolib")
+            }
+        }
+    }
+
+    dependencies {
+        minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+        mappings loom.officialMojangMappings()
+    }
+}
+
+allprojects {
+    apply plugin: "java"
+    apply plugin: "architectury-plugin"
+    apply plugin: "maven-publish"
+
+    archivesBaseName = rootProject.archives_base_name
+    version = rootProject.mod_version
+    group = rootProject.maven_group
+
+    repositories {
+        maven { url "https://maven.neoforged.net/releases" }
+        mavenLocal()
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+        options.release.set 21
+    }
+
+    java {
+        withSourcesJar()
+    }
+}
+
+project.ext.keys = new Properties()
+ext.ENV = System.getenv()
+ext.keysExists = ENV.MAVEN_PASS != null
+if (keysExists) {
+    project.ext.keys.kosmx_maven = ENV.MAVEN_PASS
+    project.ext.keys.maven_user = ENV.MAVEN_USER
+} else {
+    project.ext.keys.kosmx_maven = "V2h5IGRpZCB5b3UgZGVjb2RlIGl0PyAg"
+    project.ext.keys.maven_user = "username"
+}
+

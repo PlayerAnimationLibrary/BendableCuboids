@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "id": "bendable_cuboids",
+  "version": "${version}",
+  "name": "Bendable Cuboids Library",
+  "description": "Adds model cubes that can be bent, for example like arms in MC Story Mode!",
+  "authors": [
+    "KosmX",
+    "Zigy"
+  ],
+  "contributors": [],
+  "contact": {
+    "sources": "https://github.com/ZigyTheBird/BendableCuboids",
+    "issues": "https://github.com/ZigyTheBird/BendableCuboids/issues"
+  },
+  "license": "MIT License",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.zigythebird.bendable_cuboids.fabric.Init"
+    ]
+  },
+  "mixins": [
+    "bendable_cuboids.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.9",
+    "minecraft": ">=1.21.4"
+  },
+  "custom": {
+    "modmenu": {
+      "badges": ["library"]
+    },
+    "sodium:options": {
+      "mixin.features.render.entity": false,
+      "mixin.features.render.entity.cull": true,
+      "mixin.features.render.entity.shadow": true
+    }
+  }
+}

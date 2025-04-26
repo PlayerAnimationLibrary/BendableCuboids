@@ -1,0 +1,38 @@
+architectury {
+    common("neoforge", "fabric")
+}
+
+loom {
+    accessWidenerPath = file("src/main/resources/bendable_cuboids.accesswidener")
+}
+
+dependencies {
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
+
+    modCompileOnly "software.bernie.geckolib:geckolib-fabric-${minecraft_version}:${geckolib_version}"
+    modCompileOnly "com.zigythebird.playeranim:player_animation_library-neoforge-${minecraft_version}:${player_anim_version}"
+    modCompileOnly "maven.modrinth:3dskinlayers:D4TLEY5I"
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = "com.zigythebird.bendable_cuboids"
+            artifactId = "bendable_cuboids-common-$minecraft_version"
+            version = rootProject.mod_version
+            from components.java
+        }
+    }
+
+    repositories {
+        if (System.getenv("GITHUB_ACTOR") != null) {
+            maven {
+                url = "https://maven.zigythebird.com/mods"
+                credentials(PasswordCredentials)
+                authentication {
+                    basic(BasicAuthentication)
+                }
+            }
+        }
+    }
+}

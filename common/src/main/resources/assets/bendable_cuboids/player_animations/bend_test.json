@@ -1,0 +1,40 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"bend_test": {
+			"loop": true,
+			"bones": {
+				"torso": {
+					"bend": {
+						"vector": [0, 25, 0]
+					}
+				},
+				"right_arm": {
+					"bend": {
+						"vector": [0, -62.5, 0]
+					}
+				},
+				"left_arm": {
+					"bend": {
+						"vector": [0, -47.5, 0]
+					}
+				},
+				"head": {
+					"bend": {
+						"vector": [0, 30, 0]
+					}
+				},
+				"left_leg": {
+					"bend": {
+						"vector": [0, -35, 0]
+					}
+				},
+				"left_leg": {
+					"bend": {
+						"vector": [0, 37.5, 0]
+					}
+				}
+			}
+		}
+	}
+}
