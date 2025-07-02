@@ -1,7 +1,6 @@
 package com.zigythebird.bendable_cuboids.mixin.playeranim;
 
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
-import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.zigythebird.bendable_cuboids.impl.compatibility.PlayerBendHelper;
@@ -9,6 +8,7 @@ import com.zigythebird.playeranim.accessors.IPlayerAnimationState;
 import com.zigythebird.playeranim.animation.PlayerAnimManager;
 import com.zigythebird.playeranim.bones.PlayerAnimBone;
 import com.zigythebird.playeranim.mixin.CapeLayerAccessor;
+import com.zigythebird.playeranim.util.RenderUtil;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.EntityModelSet;
@@ -46,9 +46,9 @@ public abstract class CapeLayerMixin_playerAnim<T extends HumanoidRenderState> e
         PlayerAnimManager emote = ((IPlayerAnimationState) playerRenderState).playerAnimLib$getAnimManager();
         if (model instanceof CapeLayerAccessor capeLayer) {
             if (emote.isActive()) {
-                ModelPart torso = this.getParentModel().body;
                 PlayerAnimBone bone = ((IPlayerAnimationState) playerRenderState).playerAnimLib$getAnimProcessor().getBone("torso");
                 emote.get3DTransform(bone);
+                ModelPart torso = this.getParentModel().body;
 
                 poseStack.translate(torso.x / 16, torso.y / 16, torso.z / 16);
                 poseStack.mulPose((new Quaternionf()).rotateXYZ(torso.xRot, torso.yRot, torso.zRot));
@@ -56,24 +56,16 @@ public abstract class CapeLayerMixin_playerAnim<T extends HumanoidRenderState> e
                 poseStack.translate(0.0F, 0.0F, 0.125F);
                 poseStack.mulPose(Axis.YP.rotationDegrees(180));
 
-                ModelPart cape = capeLayer.getCape();
+                ModelPart part = capeLayer.getCape();
                 PlayerAnimBone bone1 = ((IPlayerAnimationState)playerRenderState).playerAnimLib$getAnimProcessor().getBone("cape");
                 bone1.setToInitialPose();
                 bone1.setBendAxis(bone.getBendAxis());
                 bone1.setBend(bone.getBend());
                 emote.get3DTransform(bone1);
 
-                cape.x = bone1.getPosX();
-                cape.y = bone1.getPosY();
-                cape.z = bone1.getPosZ();
-                cape.xRot = bone1.getRotX();
-                cape.yRot = bone1.getRotY();
-                cape.zRot = bone1.getRotZ();
-                cape.xScale = bone1.getScaleX();
-                cape.yScale = bone1.getScaleY();
-                cape.zScale = bone1.getScaleZ();
+                RenderUtil.translatePartToBone(part, bone1, part.getInitialPose());
 
-                PlayerBendHelper.bend(cape, bone1.getBendAxis(), bone1.getBend());
+                PlayerBendHelper.bend(part, bone1.getBendAxis(), bone1.getBend());
             } else {
                 PlayerBendHelper.bend(capeLayer.getCape(), 0, 0);
             }
@@ -83,6 +75,7 @@ public abstract class CapeLayerMixin_playerAnim<T extends HumanoidRenderState> e
 
     @WrapWithCondition(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/renderer/entity/state/PlayerRenderState;FF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/HumanoidModel;setupAnim(Lnet/minecraft/client/renderer/entity/state/HumanoidRenderState;)V"))
     private boolean setupAnim(HumanoidModel instance, T playerRenderState) {
-        return !((IPlayerAnimationState) playerRenderState).playerAnimLib$getAnimManager().isActive();
+        PlayerAnimManager emote = ((IPlayerAnimationState)playerRenderState).playerAnimLib$getAnimManager();
+        return emote == null || !emote.isActive();
     }
 }

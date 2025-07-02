@@ -15,7 +15,7 @@ public class ModMixinPlugin implements IMixinConfigPlugin {
         if (mixinClassName.endsWith("_geckoOnly") && !hasClass("software.bernie.geckolib.GeckoLib")) {
             return false;
         }
-        if (mixinClassName.endsWith("_playerAnim") && !hasClass("com.zigythebird.playeranim.ModInit")) {
+        if (mixinClassName.endsWith("_playerAnim") && !hasClass("com.zigythebird.playeranim.PlayerAnimLibMod")) {
             return false;
         }
         return true;

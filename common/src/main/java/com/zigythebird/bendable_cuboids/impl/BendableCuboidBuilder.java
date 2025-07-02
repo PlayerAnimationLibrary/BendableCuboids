@@ -88,8 +88,8 @@ public class BendableCuboidBuilder {
     protected void createAndAddQuads(Collection<BendableCuboid.Quad> quads, HashMap<Vector3f, RememberingPos> positions, Vector3f[] edges, int u1, int v1, int u2, int v2, float textureWidth, float textureHeight, boolean mirror) {
         int du = u2 < u1 ? 1 : -1;
         int dv = v1 < v2 ? 1 : -1;
-        for(int localU = u2; localU != u1; localU += du) {
-            for(int localV = v1; localV != v2; localV += dv) {
+        for (int localU = u2; localU != u1; localU += du) {
+            for (int localV = v1; localV != v2; localV += dv) {
                 int localU2 = localU + du;
                 int localV2 = localV + dv;
                 RememberingPos rp0 = getOrCreate(positions, transformVector(new Vector3f(edges[0]), new Vector3f(edges[1]), new Vector3f(edges[2]), u2, v1, u1, v2, localU2, localV));

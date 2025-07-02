@@ -37,7 +37,7 @@ public abstract class ElytraLayerMixin_playerAnim<S extends HumanoidRenderState,
                 bone2.copyOtherBone(bone1);
                 emote.get3DTransform(bone2);
                 poseStack.translate(bone2.getPosX() / 16, bone2.getPosX() / 16, bone2.getPosX() / 16);
-                poseStack.mulPose((new Quaternionf()).rotateXYZ(bone2.getRotX(), bone2.getRotY(), bone2.getRotZ()));
+                poseStack.mulPose((new Quaternionf()).rotateXYZ(-bone2.getRotX(), bone2.getRotY(), -bone2.getRotZ()));
                 poseStack.scale(bone2.getScaleX(), bone2.getScaleY(), bone2.getScaleZ());
                 PlayerBendHelper.applyTorsoBendToMatrix(poseStack, bone.getBendAxis(), bone.getBend());
             }

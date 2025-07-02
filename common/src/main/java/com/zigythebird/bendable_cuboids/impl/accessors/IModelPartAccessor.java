@@ -9,7 +9,7 @@ import java.util.Map;
  * Basic operation to access cuboid in ModelPart
  */
 public interface IModelPartAccessor {
-    List<ModelPart.Cube> getCuboids();
+    List<ModelPart.Cube> bendableCuboids$getCuboids();
 
-    Map<String, ModelPart> getChildren(); //easy to search in it :D
+    Map<String, ModelPart> bendableCuboids$getChildren(); //easy to search in it :D
 }

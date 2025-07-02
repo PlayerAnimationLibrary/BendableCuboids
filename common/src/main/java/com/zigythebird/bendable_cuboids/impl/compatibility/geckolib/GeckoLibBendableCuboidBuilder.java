@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.HashMap;
 
 public class GeckoLibBendableCuboidBuilder extends BendableCuboidBuilder {
-    public BendableCuboid build(GeoCube cube, BakedGeoModel model, String root) {
+    public GeckoLibBendableCuboid build(GeoCube cube, BakedGeoModel model, String root) {
         ArrayList<BendableCuboid.Quad> planes = new ArrayList<>();
         HashMap<Vector3f, RememberingPos> positions = new HashMap<>();
 
@@ -56,22 +56,34 @@ public class GeckoLibBendableCuboidBuilder extends BendableCuboidBuilder {
         center.add(vertex8);
         center.mul(2);
 
-        Plane aPlane = new Plane(direction.step(), -10);
-        Plane bPlane = new Plane(direction.step(), 2);
-        float fullSize = 12;
-        float bendX = -0.5F;
-        float bendY = 4;
+        Plane aPlane;
+        Plane bPlane;
+        float fullSize;
+        float bendX;
+        float bendY;
         float bendZ = 0;
-        float offsetX = -5.5F;
-        float offsetY = -14;
-        return new GeckoLibBendableCuboid(planes.toArray(new BendableCuboid.Quad[0]), positions.values().toArray(new RememberingPos[0]), bendX, bendY, bendZ, direction, aPlane, bPlane, fullSize, offsetX, offsetY, 0);
+        if (root.contains("arm")) {
+            aPlane = new Plane(direction.step(), -10);
+            bPlane = new Plane(direction.step(), 2);
+            fullSize = 12;
+            bendX = root.contains("left") ? 0.5F : -0.5F;
+            bendY = 4;
+        }
+        else {
+            aPlane = new Plane(direction.step(), root.equals("torso") ? 12 : -12);
+            bPlane = new Plane(direction.step(), 0);
+            fullSize = root.equals("torso") ? -12 : 12;
+            bendX = 0;
+            bendY = 6;
+        }
+        return new GeckoLibBendableCuboid(planes.toArray(new BendableCuboid.Quad[0]), positions.values().toArray(new RememberingPos[0]), bendX, bendY, bendZ, direction, aPlane, bPlane, fullSize);
     }
     
     protected void createAndAddQuads(Collection<BendableCuboid.Quad> quads, HashMap<Vector3f, RememberingPos> positions, Vector3f[] edges, GeoQuad quad, float textureWidth, float textureHeight, boolean mirror) {
-        float u1 = textureWidth * quad.vertices()[0].texU();
-        float u2 = textureWidth * quad.vertices()[2].texU();
-        float v1 = textureHeight * quad.vertices()[1].texV();
-        float v2 = textureHeight * quad.vertices()[3].texV();
+        float u1 = textureWidth * quad.vertices()[3].texU();
+        float u2 = textureWidth * quad.vertices()[1].texU();
+        float v1 = textureHeight * quad.vertices()[2].texV();
+        float v2 = textureHeight * quad.vertices()[0].texV();
         float du = u2 < u1 ? 1 : -1;
         float dv = v1 < v2 ? 1 : -1;
         for (float localU = u2; localU != u1; localU += du) {

@@ -14,7 +14,7 @@ import java.util.Optional;
 public final class ModelPartAccessor {
 
     public static Map<String, ModelPart> getChildren(ModelPart modelPart){
-        return ((IModelPartAccessor)modelPart).getChildren();
+        return ((IModelPartAccessor)modelPart).bendableCuboids$getChildren();
     }
 
     /**
@@ -26,6 +26,6 @@ public final class ModelPartAccessor {
     }
 
     public static List<ModelPart.Cube> getCuboids(ModelPart modelPart){
-        return ((IModelPartAccessor)modelPart).getCuboids();
+        return ((IModelPartAccessor)modelPart).bendableCuboids$getCuboids();
     }
 }

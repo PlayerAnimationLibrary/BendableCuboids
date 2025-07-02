@@ -10,6 +10,7 @@
     "playeranim.CapeLayerAccessor_playerAnim",
     "playeranim.CapeLayerMixin_playerAnim",
     "playeranim.ElytraLayerMixin_playerAnim",
+    "playeranim.HumanoidArmorLayerMixin",
     "playeranim.ItemInHandLayerMixin_playerAnim",
     "playeranim.LivingEntityMixin_playerAnim",
     "playeranim.LivingEntityRendererAccessor_playerAnim",
@@ -18,6 +19,7 @@
     "playeranim.PlayerCapeModelMixin_playerAnim",
     "playeranim.PlayerModelAccessor_playerAnim",
     "playeranim.PlayerModelMixin_playerAnim",
+    "playeranim.PlayerRendererMixin_playerAnim"
   ],
   "injectors": {
     "defaultRequire": 1

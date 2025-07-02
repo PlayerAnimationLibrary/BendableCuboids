@@ -1,6 +1,9 @@
 package com.zigythebird.bendable_cuboids.impl;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.zigythebird.bendable_cuboids.impl.compatibility.PlayerBendHelper;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.PlayerModel;
 import net.minecraft.core.Direction;
 import org.joml.*;
 
@@ -9,7 +12,7 @@ import java.lang.Math;
 public class BendUtil {
     public static BendApplier getBend(BendableCuboid cuboid, float bendAxis, float bendValue) {
         return getBend(cuboid.getBendDirection(), cuboid.getBendX(), cuboid.getBendY(), cuboid.getBendZ(),
-                cuboid.basePlane, cuboid.otherPlane, cuboid.isBendInverted(), false, cuboid.bendHeight(), bendAxis, bendValue);
+                cuboid.basePlane, cuboid.otherPlane, false, cuboid.bendHeight(), bendAxis, bendValue);
     }
 
     /**
@@ -18,6 +21,51 @@ public class BendUtil {
      * @param bendValue bend value
      */
     public static BendApplier getBend(Direction bendDirection, float bendX, float bendY, float bendZ, Plane basePlane, Plane otherPlane,
+                                      boolean mirrorBend, float bendHeight, float bendAxis, float bendValue) {
+        Vector3f axis = new Vector3f((float) Math.cos(bendAxis), 0, (float) Math.sin(bendAxis));
+        Matrix3f matrix3f = new Matrix3f().set(bendDirection.getRotation());
+        axis.mul(matrix3f);
+        if (mirrorBend) bendValue *= -1;
+        final float finalBend = bendValue;
+        Matrix4f transformMatrix = applyBendToMatrix(new Matrix4f(), bendX, bendY, bendZ, bendAxis, bendValue);
+
+        float halfSize = bendHeight/2;
+
+        return new BendApplier(transformMatrix, pos -> {
+            float distFromBase = Math.abs(basePlane.distanceTo(pos));
+            float distFromOther = Math.abs(otherPlane.distanceTo(pos));
+            float s = (float) Math.clamp(Math.tan(finalBend/2)*pos.z, -2f, 2f);
+            if (mirrorBend) {
+                float temp = distFromBase;
+                distFromBase = distFromOther;
+                distFromOther = temp;
+            }
+            float v = halfSize - (s < 0 ? Math.abs(s)/2 : Math.abs(s));
+            if (distFromBase < distFromOther) {
+                if (distFromBase + distFromOther <= bendHeight && distFromBase > v)
+                    pos.y = bendY + s;
+                Vector4f reposVector = new Vector4f(pos, 1f);
+                reposVector.mul(transformMatrix);
+                pos = new Vector3f(reposVector.x, reposVector.y, reposVector.z);
+            }
+            else if (distFromBase + distFromOther <= bendHeight && distFromOther > v) {
+                    pos.y = bendY - s;
+            }
+            return pos;
+        });
+    }
+
+    public static BendApplier getBendLegacy(BendableCuboid cuboid, float bendAxis, float bendValue) {
+        return getBendLegacy(cuboid.getBendDirection(), cuboid.getBendX(), cuboid.getBendY(), cuboid.getBendZ(),
+                cuboid.basePlane, cuboid.otherPlane, cuboid.isBendInverted(), false, cuboid.bendHeight(), bendAxis, bendValue);
+    }
+
+    /**
+     * Bends in the old pre-1.21.6 way which is more stretchy, but works in more situations, like for GeckoLib armor.
+     * @param bendAxis axis for the bend
+     * @param bendValue bend value
+     */
+    public static BendApplier getBendLegacy(Direction bendDirection, float bendX, float bendY, float bendZ, Plane basePlane, Plane otherPlane,
                                       boolean isBendInverted, boolean mirrorBend, float bendHeight, float bendAxis, float bendValue) {
         Vector3f axis = new Vector3f((float) Math.cos(bendAxis), 0, (float) Math.sin(bendAxis));
         Matrix3f matrix3f = new Matrix3f().set(bendDirection.getRotation());
@@ -46,14 +94,17 @@ public class BendUtil {
                 distFromBend *= -1;
             }
             double s = Math.tan(finalBend/2)*distFromBend;
+            boolean isInBendArea = Math.abs(distFromBase) + Math.abs(distFromOther) <= Math.abs(bendHeight);
             if (Math.abs(distFromBase) < Math.abs(distFromOther)) {
-                x.mul((float) (-distFromBase/halfSize*s));
-                pos.add(x);
+                if (isInBendArea) {
+                    x.mul((float) (-distFromBase / halfSize * s));
+                    pos.add(x);
+                }
                 Vector4f reposVector = new Vector4f(pos, 1f);
                 reposVector.mul(transformMatrix);
                 pos = new Vector3f(reposVector.x, reposVector.y, reposVector.z);
             }
-            else {
+            else if (isInBendArea) {
                 x.mul((float) (-distFromOther/halfSize*s));
                 pos.add(x);
             }
@@ -79,5 +130,23 @@ public class BendUtil {
         transformMatrix.translate(-bendX, -bendY, -bendZ);
 
         return transformMatrix;
+    }
+    
+    public static void initModel(HumanoidModel model) {
+        if (model != null) {
+            PlayerBendHelper.initBend(model.body, Direction.DOWN);
+            PlayerBendHelper.initBend(model.rightArm, Direction.UP);
+            PlayerBendHelper.initBend(model.leftArm, Direction.UP);
+            PlayerBendHelper.initBend(model.rightLeg, Direction.UP);
+            PlayerBendHelper.initBend(model.leftLeg, Direction.UP);
+
+            if (model instanceof PlayerModel playerModel) {
+                PlayerBendHelper.initBend(playerModel.jacket, Direction.DOWN);
+                PlayerBendHelper.initBend(playerModel.rightSleeve, Direction.UP);
+                PlayerBendHelper.initBend(playerModel.leftSleeve, Direction.UP);
+                PlayerBendHelper.initBend(playerModel.rightPants, Direction.UP);
+                PlayerBendHelper.initBend(playerModel.leftPants, Direction.UP);
+            }
+        }
     }
 }

@@ -26,23 +26,23 @@ public abstract class IModelPartMixin implements IModelPartAccessor {
     @Shadow @Final private List<ModelPart.Cube> cubes;
 
     @Unique
-    private boolean hasMutatedCuboid = false;
+    private boolean bendableCuboids$hasMutatedCuboid = false;
 
     @Override
-    public List<ModelPart.Cube> getCuboids() {
-        hasMutatedCuboid = true;
+    public List<ModelPart.Cube> bendableCuboids$getCuboids() {
+        bendableCuboids$hasMutatedCuboid = true;
         return cubes;
     }
 
     @Override
-    public Map<String, ModelPart> getChildren() {
+    public Map<String, ModelPart> bendableCuboids$getChildren() {
         return children;
     }
 
     @Inject(method = "copyFrom", at = @At("RETURN"))
     private void copyTransformExtended(ModelPart part, CallbackInfo ci){
-        if(((IModelPartAccessor)part).getCuboids() == null || cubes == null) return; // Not copying state
-        Iterator<ModelPart.Cube> iterator0 = ((IModelPartAccessor)part).getCuboids().iterator();
+        if (((IModelPartAccessor)part).bendableCuboids$getCuboids() == null || cubes == null) return; // Not copying state
+        Iterator<ModelPart.Cube> iterator0 = ((IModelPartAccessor)part).bendableCuboids$getCuboids().iterator();
         Iterator<ModelPart.Cube> iterator1 = cubes.iterator();
 
         while (iterator0.hasNext() && iterator1.hasNext()){
@@ -50,17 +50,16 @@ public abstract class IModelPartMixin implements IModelPartAccessor {
             MutableCuboid cuboid0 = (MutableCuboid) iterator0.next();
             cuboid1.bendableCuboids$copyStateFrom(cuboid0);
         }
-
     }
 
     @WrapOperation(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;III)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/geom/ModelPart;compile(Lcom/mojang/blaze3d/vertex/PoseStack$Pose;Lcom/mojang/blaze3d/vertex/VertexConsumer;III)V"), require = 0) //It might not find anything if OF already broke the game
     private void redirectRenderCuboids(ModelPart modelPart, PoseStack.Pose entry, VertexConsumer vertexConsumer, int light, int overlay, int color, Operation<Void> original){
-        redirectedFunction(modelPart, entry, vertexConsumer, light, overlay, color, original);
+        bendableCuboids$redirectedFunction(modelPart, entry, vertexConsumer, light, overlay, color, original);
     }
 
     @Unique
-    private void redirectedFunction(ModelPart modelPart, PoseStack.Pose entry, VertexConsumer vertexConsumer, int light, int overlay, int color, Operation<Void> original) {
-        if(!hasMutatedCuboid || cubes.size() == 1 && ((MutableCuboid)cubes.get(0)).bendableCuboids$getActiveMutator() == null){
+    private void bendableCuboids$redirectedFunction(ModelPart modelPart, PoseStack.Pose entry, VertexConsumer vertexConsumer, int light, int overlay, int color, Operation<Void> original) {
+        if(!bendableCuboids$hasMutatedCuboid || cubes.size() == 1 && ((MutableCuboid)cubes.get(0)).bendableCuboids$getActiveMutator() == null){
             original.call(modelPart, entry, vertexConsumer, light, overlay, color);
         }
         else {
