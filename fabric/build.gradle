@@ -37,6 +37,11 @@ processResources {
     }
 }
 
+shadowJar {
+    configurations = [project.configurations.shadowCommon]
+    archiveClassifier.set "dev-shadow"
+}
+
 remapJar {
     injectAccessWidener = true
 
