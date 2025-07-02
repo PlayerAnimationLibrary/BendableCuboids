@@ -1,5 +1,9 @@
 plugins {
-    id "com.github.johnrengelman.shadow"
+    id "com.gradleup.shadow"
+}
+
+loom {
+    accessWidenerPath = project(":common").loom.accessWidenerPath
 }
 
 architectury {
@@ -7,31 +11,21 @@ architectury {
     fabric()
 }
 
-loom {
-    accessWidenerPath = project(":common").loom.accessWidenerPath
-}
-
 configurations {
     common
-    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+    shadowCommon
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
     developmentFabric.extendsFrom common
 }
 
-repositories {
-    maven { url "https://maven.terraformersmc.com/releases/" }
-    maven { url "https://maven.kosmx.dev/" }
-}
-
-
 dependencies {
-    modImplementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
-
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 
+    modImplementation "com.zigythebird.playeranim:PlayerAnimationLibFabric:${rootProject.player_anim_version}"
     modLocalRuntime "software.bernie.geckolib:geckolib-fabric-${minecraft_version}:${geckolib_version}"
 }
 
@@ -43,22 +37,16 @@ processResources {
     }
 }
 
-shadowJar {
-    exclude "architectury.common.json"
-
-    configurations = [project.configurations.shadowCommon]
-    archiveClassifier.set("dev-shadow")
-}
-
 remapJar {
     injectAccessWidener = true
+
     inputFile.set shadowJar.archiveFile
     dependsOn shadowJar
-    archiveClassifier.set(null)
+    archiveClassifier.set null
 }
 
 jar {
-    archiveClassifier.set("dev")
+    archiveClassifier.set "dev"
 }
 
 sourcesJar {
@@ -75,31 +63,9 @@ components.java {
 
 publishing {
     publications {
-        maven(MavenPublication) {
-            groupId = "com.zigythebird.bendable_cuboids"
-            artifactId = "bendable_cuboids-fabric-$minecraft_version"
-            version = rootProject.mod_version
+        mavenFabric(MavenPublication) {
+            artifactId = "BendableCuboidsFabric"
             from components.java
-        }
-    }
-
-    repositories {
-        if(System.getenv("GITHUB_ACTOR") != null) {
-            maven {
-                name = "GitHubPackages"
-                url = "https://maven.pkg.github.com/zigythebird/bendable_cuboids"
-                credentials {
-                    username = System.getenv("GITHUB_ACTOR")
-                    password = System.getenv("GITHUB_TOKEN")
-                }
-            }
-        }
-        maven {
-            url = "https://maven.zigythebird.com/mods"
-            credentials(PasswordCredentials)
-            authentication {
-                basic(BasicAuthentication)
-            }
         }
     }
 }

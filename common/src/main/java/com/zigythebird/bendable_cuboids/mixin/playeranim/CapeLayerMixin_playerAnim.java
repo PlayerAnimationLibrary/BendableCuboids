@@ -6,9 +6,9 @@ import com.mojang.math.Axis;
 import com.zigythebird.bendable_cuboids.impl.compatibility.PlayerBendHelper;
 import com.zigythebird.playeranim.accessors.IPlayerAnimationState;
 import com.zigythebird.playeranim.animation.PlayerAnimManager;
-import com.zigythebird.playeranim.bones.PlayerAnimBone;
 import com.zigythebird.playeranim.mixin.CapeLayerAccessor;
 import com.zigythebird.playeranim.util.RenderUtil;
+import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.EntityModelSet;
@@ -29,6 +29,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(CapeLayer.class)
+@SuppressWarnings({"UnstableApiUsage","rawtypes"})
 public abstract class CapeLayerMixin_playerAnim<T extends HumanoidRenderState> extends RenderLayer<PlayerRenderState, PlayerModel> {
     @Shadow @Final private HumanoidModel<PlayerRenderState> model;
 
@@ -52,20 +53,20 @@ public abstract class CapeLayerMixin_playerAnim<T extends HumanoidRenderState> e
 
                 poseStack.translate(torso.x / 16, torso.y / 16, torso.z / 16);
                 poseStack.mulPose((new Quaternionf()).rotateXYZ(torso.xRot, torso.yRot, torso.zRot));
-                PlayerBendHelper.applyTorsoBendToMatrix(poseStack, bone.getBendAxis(), bone.getBend());
+                PlayerBendHelper.applyTorsoBendToMatrix(poseStack, 0, bone.getBend());
                 poseStack.translate(0.0F, 0.0F, 0.125F);
                 poseStack.mulPose(Axis.YP.rotationDegrees(180));
 
                 ModelPart part = capeLayer.getCape();
                 PlayerAnimBone bone1 = ((IPlayerAnimationState)playerRenderState).playerAnimLib$getAnimProcessor().getBone("cape");
                 bone1.setToInitialPose();
-                bone1.setBendAxis(bone.getBendAxis());
+                // bone1.setBendAxis(bone.getBendAxis());
                 bone1.setBend(bone.getBend());
                 emote.get3DTransform(bone1);
 
                 RenderUtil.translatePartToBone(part, bone1, part.getInitialPose());
 
-                PlayerBendHelper.bend(part, bone1.getBendAxis(), bone1.getBend());
+                PlayerBendHelper.bend(part, 0, bone1.getBend());
             } else {
                 PlayerBendHelper.bend(capeLayer.getCape(), 0, 0);
             }

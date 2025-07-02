@@ -2,7 +2,7 @@ package com.zigythebird.bendable_cuboids.mixin.geckolib;
 
 import com.zigythebird.bendable_cuboids.impl.compatibility.geckolib.GeckoLibBendableCuboid;
 import com.zigythebird.bendable_cuboids.impl.compatibility.geckolib.GeoCubeAccessor;
-import com.zigythebird.playeranim.math.Pair;
+import it.unimi.dsi.fastutil.Pair;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import software.bernie.geckolib.cache.object.GeoCube;

@@ -7,32 +7,21 @@ loom {
 }
 
 dependencies {
-    modImplementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
 
-    modCompileOnly "software.bernie.geckolib:geckolib-fabric-${minecraft_version}:${geckolib_version}"
-    modCompileOnly "com.zigythebird.playeranim:player_animation_library-neoforge-${minecraft_version}:${player_anim_version}"
+    modCompileOnly "software.bernie.geckolib:geckolib-fabric-${rootProject.minecraft_version}:${rootProject.geckolib_version}"
+    modCompileOnly "com.zigythebird.playeranim:PlayerAnimationLibCommon:${rootProject.player_anim_version}"
+    compileOnly "com.zigythebird.playeranim:PlayerAnimationLibCore:${rootProject.player_anim_version}"
+
+    // third-party
     modCompileOnly "maven.modrinth:3dskinlayers:D4TLEY5I"
 }
 
 publishing {
     publications {
-        maven(MavenPublication) {
-            groupId = "com.zigythebird.bendable_cuboids"
-            artifactId = "bendable_cuboids-common-$minecraft_version"
-            version = rootProject.mod_version
+        mavenCommon(MavenPublication) {
+            artifactId = "BendableCuboidsCommon"
             from components.java
-        }
-    }
-
-    repositories {
-        if (System.getenv("GITHUB_ACTOR") != null) {
-            maven {
-                url = "https://maven.zigythebird.com/mods"
-                credentials(PasswordCredentials)
-                authentication {
-                    basic(BasicAuthentication)
-                }
-            }
         }
     }
 }

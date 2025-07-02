@@ -18,6 +18,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = PlayerRenderer.class, priority = 2000)
+@SuppressWarnings("UnstableApiUsage")
 public abstract class PlayerRendererMixin_playerAnim extends LivingEntityRenderer<AbstractClientPlayer, PlayerRenderState, PlayerModel> {
     public PlayerRendererMixin_playerAnim(EntityRendererProvider.Context context, PlayerModel entityModel, float f) {
         super(context, entityModel, f);

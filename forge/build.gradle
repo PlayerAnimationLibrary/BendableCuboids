@@ -1,5 +1,9 @@
 plugins {
-    id "com.github.johnrengelman.shadow"
+    id "com.gradleup.shadow"
+}
+
+loom {
+    accessWidenerPath = project(":common").loom.accessWidenerPath
 }
 
 architectury {
@@ -7,26 +11,22 @@ architectury {
     neoForge()
 }
 
-loom {
-    accessWidenerPath = project(":common").loom.accessWidenerPath
-}
-
 configurations {
     common
-    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+    shadowCommon
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
     developmentNeoForge.extendsFrom common
 }
 
 dependencies {
-    neoForge "net.neoforged:neoforge:${rootProject.forge_version}"
+    neoForge "net.neoforged:neoforge:${rootProject.neoforge_version}"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionNeoForge")) { transitive = false }
 
+    modImplementation "com.zigythebird.playeranim:PlayerAnimationLibNeo:${rootProject.player_anim_version}"
     modLocalRuntime "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
-    modLocalRuntime "com.zigythebird.playeranim:player_animation_library-neoforge-${minecraft_version}:${player_anim_version}"
 }
 
 processResources {
@@ -42,7 +42,7 @@ shadowJar {
     exclude "architectury.common.json"
 
     configurations = [project.configurations.shadowCommon]
-    archiveClassifier.set("dev-shadow")
+    archiveClassifier.set "dev-shadow"
 }
 
 remapJar {
@@ -50,11 +50,11 @@ remapJar {
 
     inputFile.set shadowJar.archiveFile
     dependsOn shadowJar
-    archiveClassifier.set(null)
+    archiveClassifier.set null
 }
 
 jar {
-    archiveClassifier.set("dev")
+    archiveClassifier.set "dev"
 }
 
 sourcesJar {
@@ -71,31 +71,9 @@ components.java {
 
 publishing {
     publications {
-        maven(MavenPublication) {
-            groupId = "com.zigythebird.bendable_cuboids"
-            artifactId = "bendable_cuboids-neoforge-$minecraft_version"
-            version = rootProject.mod_version
+        mavenNeoForge(MavenPublication) {
+            artifactId = "BendableCuboidsNeo"
             from components.java
-        }
-    }
-
-    repositories {
-        if(System.getenv("GITHUB_ACTOR") != null) {
-            maven {
-                name = "GitHubPackages"
-                url = "https://maven.pkg.github.com/zigythebird/bendable_cuboids"
-                credentials {
-                    username = System.getenv("GITHUB_ACTOR")
-                    password = System.getenv("GITHUB_TOKEN")
-                }
-            }
-        }
-        maven {
-            url = "https://maven.zigythebird.com/mods"
-            credentials(PasswordCredentials)
-            authentication {
-                basic(BasicAuthentication)
-            }
         }
     }
 }

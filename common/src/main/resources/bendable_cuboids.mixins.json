@@ -13,7 +13,6 @@
     "playeranim.HumanoidArmorLayerMixin",
     "playeranim.ItemInHandLayerMixin_playerAnim",
     "playeranim.LivingEntityMixin_playerAnim",
-    "playeranim.LivingEntityRendererAccessor_playerAnim",
     "playeranim.ModelMixin_playerAnim",
     "playeranim.PlayerCapeModelAccessor_playerAnim",
     "playeranim.PlayerCapeModelMixin_playerAnim",

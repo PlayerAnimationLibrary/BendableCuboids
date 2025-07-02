@@ -10,8 +10,6 @@ import com.zigythebird.bendable_cuboids.impl.compatibility.geckolib.GeckoLibBend
 import com.zigythebird.bendable_cuboids.impl.compatibility.geckolib.GeckoRenderUtil;
 import com.zigythebird.bendable_cuboids.impl.compatibility.geckolib.GeoCubeAccessor;
 import com.zigythebird.playeranim.accessors.IAnimatedPlayer;
-import com.zigythebird.playeranim.bones.PlayerAnimBone;
-import com.zigythebird.playeranim.math.Pair;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -27,15 +25,15 @@ import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.cache.object.GeoCube;
 import software.bernie.geckolib.renderer.GeoArmorRenderer;
-import software.bernie.geckolib.renderer.GeoRenderer;
+import software.bernie.geckolib.renderer.base.GeoRenderer;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Mixin(GeoRenderer.class)
 public interface GeoRendererMixin_geckoOnly<T extends GeoAnimatable> {
-    @Inject(method = "defaultRender", at = @At(value = "INVOKE", target = "Lsoftware/bernie/geckolib/renderer/GeoRenderer;preRender(Lcom/mojang/blaze3d/vertex/PoseStack;Lsoftware/bernie/geckolib/animatable/GeoAnimatable;Lsoftware/bernie/geckolib/cache/object/BakedGeoModel;Lnet/minecraft/client/renderer/MultiBufferSource;Lcom/mojang/blaze3d/vertex/VertexConsumer;ZFIII)V"), remap = false)
-    private void initBend(PoseStack poseStack, T animatable, MultiBufferSource bufferSource, @Nullable RenderType renderType, @Nullable VertexConsumer buffer, float partialTick, int packedLight, CallbackInfo ci, @Local BakedGeoModel model) {
+    /*@Inject(method = "defaultRender", at = @At(value = "INVOKE", target = "Lsoftware/bernie/geckolib/renderer/base/GeoRenderer;preRender(Lsoftware/bernie/geckolib/renderer/base/GeoRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lsoftware/bernie/geckolib/cache/object/BakedGeoModel;Lnet/minecraft/client/renderer/MultiBufferSource;Lcom/mojang/blaze3d/vertex/VertexConsumer;ZIII)V"), remap = false)
+    private void initBend(R renderState, PoseStack poseStack, MultiBufferSource bufferSource, @Nullable RenderType renderType, @Nullable VertexConsumer buffer, CallbackInfo ci, @Local BakedGeoModel model) {
         if ((GeoRenderer)(Object)this instanceof GeoArmorRenderer<?> armorRenderer) {
             bendableCuboids$initBend(List.of(armorRenderer.getGeoModel().getBone("armorLeftArm").orElse(null)), Direction.UP, "left_arm", model);
             bendableCuboids$initBend(List.of(armorRenderer.getGeoModel().getBone("armorRightArm").orElse(null)), Direction.UP, "right_arm", model);
@@ -101,5 +99,5 @@ public interface GeoRendererMixin_geckoOnly<T extends GeoAnimatable> {
             }
             bendableCuboids$initBend(bone.getChildBones(), direction, parent, model);
         }
-    }
+    }*/
 }
