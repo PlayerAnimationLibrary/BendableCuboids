@@ -71,6 +71,11 @@ allprojects {
         options.release.set 21
     }
 
+    jar {
+        if (!rootProject.version.toString().contains("dev") && !project.gradle.startParameter.taskNames.contains("runClient"))
+            processResources.exclude('assets/bendable_cuboids/player_animations/*')
+    }
+
     java {
         withSourcesJar()
     }
