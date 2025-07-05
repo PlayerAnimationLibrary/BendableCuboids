@@ -1,6 +1,7 @@
 package com.zigythebird.bendable_cuboids.impl;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import com.zigythebird.bendable_cuboids.impl.compatibility.PlayerBendHelper;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
@@ -10,24 +11,22 @@ import org.joml.*;
 import java.lang.Math;
 
 public class BendUtil {
-    public static BendApplier getBend(BendableCuboid cuboid, float bendAxis, float bendValue) {
-        return getBend(cuboid.getBendDirection(), cuboid.getBendX(), cuboid.getBendY(), cuboid.getBendZ(),
-                cuboid.basePlane, cuboid.otherPlane, false, cuboid.bendHeight(), bendAxis, bendValue);
+    private static final Vector3f Z_AXIS = new Vector3f(0, 0, 1);
+
+    public static BendApplier getBend(BendableCuboid cuboid, float bendValue) {
+        return getBend(cuboid.getBendX(), cuboid.getBendY(), cuboid.getBendZ(),
+                cuboid.basePlane, cuboid.otherPlane, false, cuboid.bendHeight(), bendValue);
     }
 
     /**
      * Applies the transformation to every position in posSupplier
-     * @param bendAxis axis for the bend
      * @param bendValue bend value
      */
-    public static BendApplier getBend(Direction bendDirection, float bendX, float bendY, float bendZ, Plane basePlane, Plane otherPlane,
-                                      boolean mirrorBend, float bendHeight, float bendAxis, float bendValue) {
-        Vector3f axis = new Vector3f((float) Math.cos(bendAxis), 0, (float) Math.sin(bendAxis));
-        Matrix3f matrix3f = new Matrix3f().set(bendDirection.getRotation());
-        axis.mul(matrix3f);
+    public static BendApplier getBend(float bendX, float bendY, float bendZ, Plane basePlane, Plane otherPlane,
+                                      boolean mirrorBend, float bendHeight, float bendValue) {
         if (mirrorBend) bendValue *= -1;
         final float finalBend = bendValue;
-        Matrix4f transformMatrix = applyBendToMatrix(new Matrix4f(), bendX, bendY, bendZ, bendAxis, bendValue);
+        Matrix4f transformMatrix = applyBendToMatrix(new Matrix4f(), bendX, bendY, bendZ, bendValue);
 
         float halfSize = bendHeight/2;
 
@@ -55,29 +54,25 @@ public class BendUtil {
         });
     }
 
-    public static BendApplier getBendLegacy(BendableCuboid cuboid, float bendAxis, float bendValue) {
+    public static BendApplier getBendLegacy(BendableCuboid cuboid, float bendValue) {
         return getBendLegacy(cuboid.getBendDirection(), cuboid.getBendX(), cuboid.getBendY(), cuboid.getBendZ(),
-                cuboid.basePlane, cuboid.otherPlane, cuboid.isBendInverted(), false, cuboid.bendHeight(), bendAxis, bendValue);
+                cuboid.basePlane, cuboid.otherPlane, cuboid.isBendInverted(), false, cuboid.bendHeight(), bendValue);
     }
 
     /**
      * Bends in the old pre-1.21.6 way which is more stretchy, but works in more situations, like for GeckoLib armor.
-     * @param bendAxis axis for the bend
      * @param bendValue bend value
      */
     public static BendApplier getBendLegacy(Direction bendDirection, float bendX, float bendY, float bendZ, Plane basePlane, Plane otherPlane,
-                                      boolean isBendInverted, boolean mirrorBend, float bendHeight, float bendAxis, float bendValue) {
-        Vector3f axis = new Vector3f((float) Math.cos(bendAxis), 0, (float) Math.sin(bendAxis));
-        Matrix3f matrix3f = new Matrix3f().set(bendDirection.getRotation());
-        axis.mul(matrix3f);
+                                      boolean isBendInverted, boolean mirrorBend, float bendHeight, float bendValue) {
         if (mirrorBend) bendValue *= -1;
         final float finalBend = bendValue;
-        Matrix4f transformMatrix = applyBendToMatrix(new Matrix4f(), bendX, bendY, bendZ, bendAxis, bendValue);
+        Matrix4f transformMatrix = applyBendToMatrix(new Matrix4f(), bendX, bendY, bendZ, bendValue);
 
         Vector3f directionUnit;
 
         directionUnit = bendDirection.step();
-        directionUnit.cross(axis);
+        directionUnit.cross(Z_AXIS);
         //parallel to the bend's axis and to the cube's bend direction
         Plane bendPlane = new Plane(directionUnit, new Vector3f(bendX, bendY, bendZ));
         float halfSize = bendHeight/2;
@@ -112,21 +107,17 @@ public class BendUtil {
         });
     }
 
-    public static Matrix4f applyBendToMatrix(Matrix4f transformMatrix, float bendX, float bendY, float bendZ, float bendAxis, float bendValue) {
-        Vector3f axis = new Vector3f((float) Math.cos(bendAxis), 0, (float) Math.sin(bendAxis));
-
+    public static Matrix4f applyBendToMatrix(Matrix4f transformMatrix, float bendX, float bendY, float bendZ, float bendValue) {
         transformMatrix.translate(bendX, bendY, bendZ);
-        transformMatrix.rotate(bendValue, axis);
+        transformMatrix.rotateX(bendValue);
         transformMatrix.translate(-bendX, -bendY, -bendZ);
 
         return transformMatrix;
     }
 
-    public static PoseStack applyBendToMatrix(PoseStack transformMatrix, float bendX, float bendY, float bendZ, float bendAxis, float bendValue) {
-        Vector3f axis = new Vector3f((float) Math.cos(bendAxis), 0, (float) Math.sin(bendAxis));
-
+    public static PoseStack applyBendToMatrix(PoseStack transformMatrix, float bendX, float bendY, float bendZ, float bendValue) {
         transformMatrix.translate(bendX, bendY, bendZ);
-        transformMatrix.mulPose(new Quaternionf().rotateAxis(bendValue, axis));
+        transformMatrix.mulPose(Axis.XP.rotation(bendValue));
         transformMatrix.translate(-bendX, -bendY, -bendZ);
 
         return transformMatrix;

@@ -12,10 +12,10 @@ public class GeckoLibBendableCuboid extends BendableCuboid {
         super(sides, positions, fixX, fixY, fixZ, direction, basePlane, otherPlane, fullSize);
     }
 
-    public Matrix4f applyBend(float bendAxis, float bendValue, PoseStack poseStack) {
-        this.bend = bendValue; this.bendAxis = bendAxis;
+    public Matrix4f applyBend(float bendValue, PoseStack poseStack) {
+        this.bend = bendValue;
         BendApplier bendApplier = BendUtil.getBendLegacy(this.getBendDirection(), this.getBendX(), this.getBendY(), this.getBendZ(),
-                this.basePlane, this.otherPlane, this.isBendInverted(), direction == Direction.UP, this.bendHeight(), bendAxis, direction == Direction.UP ? bendValue : -bendValue);
+                this.basePlane, this.otherPlane, this.isBendInverted(), direction == Direction.UP, this.bendHeight(), direction == Direction.UP ? bendValue : -bendValue);
         this.iteratePositions(vector3f -> {
             Vector4f vector = new Vector4f(vector3f.x, vector3f.y, vector3f.z, 1).mul(poseStack.last().pose());
             Vector3f vector3f1 = bendApplier.consumer().apply(new Vector3f(vector.x, vector.y, vector.z));

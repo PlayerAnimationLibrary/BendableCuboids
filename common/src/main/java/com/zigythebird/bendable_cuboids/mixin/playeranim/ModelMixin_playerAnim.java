@@ -29,7 +29,7 @@ public abstract class ModelMixin_playerAnim {
             PlayerAnimManager emoteSupplier = ((IMutableModel)playerModel).playerAnimLib$getAnimation();
             PlayerAnimBone bone = new PlayerAnimBone("torso");
             emoteSupplier.get3DTransform(bone);
-            PlayerBendHelper.applyTorsoBendToMatrix(matrices, 0, bone.getBend());
+            PlayerBendHelper.applyTorsoBendToMatrix(matrices, bone.getBend());
             ((PlayerModelAccessor_playerAnim)playerModel).getBodyParts().forEach((part)->{
                 if(((IUpperPartHelper) part).playerAnimLib$isUpperPart()){
                     part.render(matrices, vertices, light, overlay, color);

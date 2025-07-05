@@ -24,7 +24,7 @@ public class LivingEntityMixin_playerAnim<S extends LivingEntityRenderState, M e
         if (livingEntityRenderState instanceof IPlayerAnimationState state && state.playerAnimLib$getAnimManager().isActive() && ((IUpperPartHelper) layer).playerAnimLib$isUpperPart()) {
             PlayerAnimBone bone = state.playerAnimLib$getAnimProcessor().getBone("torso");
             state.playerAnimLib$getAnimManager().get3DTransform(bone);
-            PlayerBendHelper.applyTorsoBendToMatrix(poseStack, 0, bone.getBend());
+            PlayerBendHelper.applyTorsoBendToMatrix(poseStack, bone.getBend());
         }
     }
 }

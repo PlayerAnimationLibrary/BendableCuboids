@@ -40,17 +40,17 @@ public abstract class PlayerModelMixin_playerAnim implements IMutableModel {
             PlayerAnimBone rightLeg = processor.getBone("right_leg");
             PlayerAnimBone leftLeg = processor.getBone("left_leg");
 
-            PlayerBendHelper.bend(model.body, 0, torso.getBend());
-            PlayerBendHelper.bend(model.rightArm, 0, rightArm.getBend());
-            PlayerBendHelper.bend(model.leftArm, 0, leftArm.getBend());
-            PlayerBendHelper.bend(model.rightLeg, 0, rightLeg.getBend());
-            PlayerBendHelper.bend(model.leftLeg, 0, leftLeg.getBend());
+            PlayerBendHelper.bend(model.body, torso.getBend());
+            PlayerBendHelper.bend(model.rightArm, rightArm.getBend());
+            PlayerBendHelper.bend(model.leftArm, leftArm.getBend());
+            PlayerBendHelper.bend(model.rightLeg, rightLeg.getBend());
+            PlayerBendHelper.bend(model.leftLeg, leftLeg.getBend());
 
-            PlayerBendHelper.bend(model.jacket, 0, torso.getBend());
-            PlayerBendHelper.bend(model.rightSleeve, 0, rightArm.getBend());
-            PlayerBendHelper.bend(model.leftSleeve, 0, leftArm.getBend());
-            PlayerBendHelper.bend(model.rightPants, 0, rightLeg.getBend());
-            PlayerBendHelper.bend(model.leftPants, 0, leftLeg.getBend());
+            PlayerBendHelper.bend(model.jacket, torso.getBend());
+            PlayerBendHelper.bend(model.rightSleeve, rightArm.getBend());
+            PlayerBendHelper.bend(model.leftSleeve, leftArm.getBend());
+            PlayerBendHelper.bend(model.rightPants, rightLeg.getBend());
+            PlayerBendHelper.bend(model.leftPants, leftLeg.getBend());
         }
         else {
             resetBend(model.body);
@@ -69,6 +69,6 @@ public abstract class PlayerModelMixin_playerAnim implements IMutableModel {
 
     @Unique
     private static void resetBend(ModelPart part) {
-        PlayerBendHelper.bend(part, 0, 0);
+        PlayerBendHelper.bend(part, 0);
     }
 }

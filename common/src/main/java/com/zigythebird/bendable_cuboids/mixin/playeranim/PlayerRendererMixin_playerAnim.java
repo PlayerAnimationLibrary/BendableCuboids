@@ -27,7 +27,10 @@ public abstract class PlayerRendererMixin_playerAnim extends LivingEntityRendere
     @Inject(method = "renderHand", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/geom/ModelPart;render(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;II)V"))
     private void renderHand(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, ResourceLocation resourceLocation, ModelPart modelPart, boolean bl, CallbackInfo ci) {
         if (((IMutableModel)this.getModel()).playerAnimLib$getAnimation() == null || !((IMutableModel)this.getModel()).playerAnimLib$getAnimation().getFirstPersonMode().isEnabled()) {
-            PlayerBendHelper.bend(modelPart, 0, 0);
+            PlayerModel playermodel = (PlayerModel)this.getModel();
+            PlayerBendHelper.bend(modelPart, 0);
+            PlayerBendHelper.bend(playermodel.rightSleeve, 0);
+            PlayerBendHelper.bend(playermodel.leftSleeve, 0);
         }
     }
 }

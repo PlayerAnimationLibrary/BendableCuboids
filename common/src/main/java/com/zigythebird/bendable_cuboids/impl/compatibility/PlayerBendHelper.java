@@ -11,14 +11,14 @@ import net.minecraft.core.Direction;
 import java.util.Optional;
 
 public class PlayerBendHelper {
-    public static void bend(ModelPart modelPart, float axis, float rotation) {
+    public static void bend(ModelPart modelPart, float rotation) {
         Optional<MutableCuboid> optionalMutableCuboid = ModelPartAccessor.optionalGetCuboid(modelPart, 0);
         if (optionalMutableCuboid.isPresent()) {
             MutableCuboid cuboid = optionalMutableCuboid.get();
             // Don't enable bend until rotation is bigger than epsilon.
             // This should avoid unnecessary heavy calculations.
             if (Math.abs(rotation) >= 0.0001f && cuboid.bendableCuboids$hasMutator("bend")) {
-                cuboid.bendableCuboids$getAndActivateMutator("bend").applyBend(axis, rotation);
+                cuboid.bendableCuboids$getAndActivateMutator("bend").applyBend(rotation);
             }
             else cuboid.bendableCuboids$getAndActivateMutator(null);
         }
@@ -36,7 +36,7 @@ public class PlayerBendHelper {
         }));
     }
 
-    public static void applyTorsoBendToMatrix(PoseStack poseStack, float axis, float bend) {
-        BendUtil.applyBendToMatrix(poseStack, 0, 0.375F, 0, axis, bend);
+    public static void applyTorsoBendToMatrix(PoseStack poseStack, float bend) {
+        BendUtil.applyBendToMatrix(poseStack, 0, 0.375F, 0, bend);
     }
 }

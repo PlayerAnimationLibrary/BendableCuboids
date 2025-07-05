@@ -31,7 +31,7 @@ public class BendableCuboid {
     protected final Plane otherPlane;
     protected final float fullSize;
 
-    protected float bend, bendAxis;
+    protected float bend;
 
     /**
      * To see how you can make existing model parts bendable look at {@link PlayerBendHelper}
@@ -48,25 +48,24 @@ public class BendableCuboid {
         this.otherPlane = otherPlane;
         this.fullSize = fullSize;
 
-        this.applyBend(0, 0);//Init values to render
+        this.applyBend(0);//Init values to render
     }
 
     /**
      * Apply bend on this cuboid
      * Values are in radians
-     * @param bendAxis bend axis (rotY can be used instead)
      * @param bendValue bend value (Same as rotX)
      * @return Transformation matrix for transforming children
      */
-    public Matrix4f applyBend(float bendAxis, float bendValue) {
-        this.bend = bendValue; this.bendAxis = bendAxis;
-        BendApplier bendApplier = BendUtil.getBend(this, bendAxis, bendValue);
+    public Matrix4f applyBend(float bendValue) {
+        this.bend = bendValue;
+        BendApplier bendApplier = BendUtil.getBend(this, bendValue);
         this.iteratePositions(bendApplier.consumer());
         return bendApplier.matrix4f();
     }
 
-    public Matrix4f applyBendDegrees(float bendAxis, float bendValue) {
-        return applyBend(bendAxis * Mth.DEG_TO_RAD, bendValue * Mth.DEG_TO_RAD);
+    public Matrix4f applyBendDegrees(float bendValue) {
+        return applyBend(bendValue * Mth.DEG_TO_RAD);
     }
 
     public Direction getBendDirection() {
@@ -117,10 +116,6 @@ public class BendableCuboid {
         return bend;
     }
 
-    public float getBendAxis() {
-        return bendAxis;
-    }
-
     public void render(PoseStack.Pose matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
         for(Quad quad:sides) {
             quad.render(matrices, vertexConsumer, light, overlay, color);
@@ -129,7 +124,7 @@ public class BendableCuboid {
 
     public void copyState(BendableCuboid other) {
         if(other instanceof BendableCuboid b){
-            this.applyBend(b.bendAxis, b.bend); //This works only in J16 or higher
+            this.applyBend(b.bend); //This works only in J16 or higher
         }
     }
 
