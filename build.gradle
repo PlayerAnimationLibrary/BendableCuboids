@@ -19,7 +19,7 @@ subprojects {
         minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
         mappings loom.layered() {
             officialMojangMappings()
-            parchment("org.parchmentmc.data:parchment-${rootProject.minecraft_version}:${rootProject.parchment_version}@zip")
+            parchment("org.parchmentmc.data:parchment-1.21.6:${rootProject.parchment_version}@zip")
         }
     }
 }
@@ -36,7 +36,7 @@ allprojects {
     repositories {
         // Fix issue with lwjgl-freetype not being found on macOS
         maven {
-            url "https://libraries.minecraft.net"
+            url = "https://libraries.minecraft.net"
             content {
                 includeModule("org.lwjgl", "lwjgl-freetype")
             }
