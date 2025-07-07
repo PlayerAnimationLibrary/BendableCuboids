@@ -26,7 +26,6 @@ dependencies {
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 
     modImplementation "com.zigythebird.playeranim:PlayerAnimationLibFabric:${rootProject.player_anim_version}"
-    modLocalRuntime "software.bernie.geckolib:geckolib-fabric-${minecraft_version}:${geckolib_version}"
 }
 
 processResources {

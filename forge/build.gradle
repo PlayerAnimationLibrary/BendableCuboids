@@ -26,7 +26,6 @@ dependencies {
     shadowCommon(project(path: ":common", configuration: "transformProductionNeoForge")) { transitive = false }
 
     modImplementation "com.zigythebird.playeranim:PlayerAnimationLibNeo:${rootProject.player_anim_version}"
-    modLocalRuntime "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
 }
 
 processResources {
