@@ -22,9 +22,5 @@
   ],
   "injectors": {
     "defaultRequire": 1
-  },
-  "mixins": [
-    "geckolib.GeoCubeMixin_geckoOnly",
-    "geckolib.GeoRendererMixin_geckoOnly"
-  ]
+  }
 }
