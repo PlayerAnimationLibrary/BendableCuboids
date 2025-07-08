@@ -29,7 +29,8 @@
   },
   "custom": {
     "modmenu": {
-      "badges": ["library"]
+      "badges": ["library"],
+      "parent": "player_animation_library"
     },
     "sodium:options": {
       "mixin.features.render.entity": false,
