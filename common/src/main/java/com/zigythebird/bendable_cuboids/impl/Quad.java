@@ -66,22 +66,29 @@ public class Quad {
 
     // edge[2] can be calculated from edge 0, 1, 3...
     public static void createAndAddQuads(List<Quad> quads, Map<Vector3f, RememberingPos> positions, Vector3f[] edges, int u1, int v1, int u2, int v2, float textureWidth, float textureHeight, boolean mirror) {
-        int dv = v2 > v1 ? 1 : -1;
+        boolean positiveDirection = v2 > v1;
+        int dv = positiveDirection ? 2 : -2;
 
         Vector3f origin = edges[0];
         Vector3f vecV = new Vector3f(edges[2]).sub(origin);
-
         float vFracScale = 1.0f / (v2 - v1);
-        Vector3f vStep = new Vector3f(vecV).mul(dv * vFracScale);
 
-        Vector3f uPos = new Vector3f(origin);
-        Vector3f nextUPos = new Vector3f(edges[1]);
+        Vector3f vPos = new Vector3f(origin);
+        Vector3f nextVPos = new Vector3f(edges[1]);
 
-        Vector3f vPos = new Vector3f(uPos);
-        Vector3f nextVPos = new Vector3f(nextUPos);
-
-        for (int localV = v1; localV != v2; localV += dv) {
+        for (int localV = v1; positiveDirection ? localV < v2 : localV > v2; localV += dv) {
             int localV2 = localV + dv;
+            if (positiveDirection) {
+                if (localV2 > v2) {
+                    localV2 = v2;
+                }
+            } else { // negative direction
+                if (localV2 < v2) {
+                    localV2 = v2;
+                }
+            }
+            int actual_dv = localV2 - localV;
+            Vector3f vStep = new Vector3f(vecV).mul(actual_dv * vFracScale);
 
             RememberingPos rp3 = getOrCreate(positions, vPos);
             RememberingPos rp0 = getOrCreate(positions, nextVPos);
