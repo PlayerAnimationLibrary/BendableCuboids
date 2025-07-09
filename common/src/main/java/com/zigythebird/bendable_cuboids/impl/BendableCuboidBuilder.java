@@ -77,33 +77,43 @@ public class BendableCuboidBuilder {
     protected void createAndAddQuads(Collection<BendableCuboid.Quad> quads, HashMap<Vector3f, RememberingPos> positions, Vector3f[] edges, int u1, int v1, int u2, int v2, float textureWidth, float textureHeight, boolean mirror) {
         int du = u2 < u1 ? 1 : -1;
         int dv = v1 < v2 ? 1 : -1;
+
+        Vector3f origin = edges[0];
+        Vector3f vecU = new Vector3f(edges[1]).sub(origin);
+        Vector3f vecV = new Vector3f(edges[2]).sub(origin);
+
+        float uFracScale = 1.0f / (u1 - u2);
+        Vector3f uStep = vecU.mul(du * uFracScale);
+
+        float vFracScale = 1.0f / (v2 - v1);
+        Vector3f vStep = vecV.mul(dv * vFracScale);
+
+        Vector3f uPos = new Vector3f(origin);
+
         for (int localU = u2; localU != u1; localU += du) {
+            Vector3f nextUPos = new Vector3f(uPos).add(uStep);
+
+            Vector3f vPos = new Vector3f(uPos);
+            Vector3f nextVPos = new Vector3f(nextUPos);
+
             for (int localV = v1; localV != v2; localV += dv) {
                 int localU2 = localU + du;
                 int localV2 = localV + dv;
-                RememberingPos rp0 = getOrCreate(positions, transformVector(new Vector3f(edges[0]), new Vector3f(edges[1]), new Vector3f(edges[2]), u2, v1, u1, v2, localU2, localV));
-                RememberingPos rp1 = getOrCreate(positions, transformVector(new Vector3f(edges[0]), new Vector3f(edges[1]), new Vector3f(edges[2]), u2, v1, u1, v2, localU2, localV2));
-                RememberingPos rp2 = getOrCreate(positions, transformVector(new Vector3f(edges[0]), new Vector3f(edges[1]), new Vector3f(edges[2]), u2, v1, u1, v2, localU, localV2));
-                RememberingPos rp3 = getOrCreate(positions, transformVector(new Vector3f(edges[0]), new Vector3f(edges[1]), new Vector3f(edges[2]), u2, v1, u1, v2, localU, localV));
-                quads.add(new BendableCuboid.Quad(new RememberingPos[]{rp3, rp0, rp1, rp2}, localU2/textureWidth, localV/textureHeight, localU/textureWidth, localV2/textureHeight, mirror));
-            }
-        }
-    }
 
-    protected Vector3f transformVector(Vector3f pos, Vector3f vectorU, Vector3f vectorV, int u1, int v1, int u2, int v2, int u, int v) {
-        vectorU.sub(pos);
-        vectorU.mul(((float)u - u1)/(u2-u1));
-        vectorV.sub(pos);
-        vectorV.mul(((float)v - v1)/(v2-v1));
-        pos.add(vectorU);
-        pos.add(vectorV);
-        return pos;
+                RememberingPos rp3 = getOrCreate(positions, vPos);
+                RememberingPos rp0 = getOrCreate(positions, nextVPos);
+                vPos.add(vStep);
+                nextVPos.add(vStep);
+                RememberingPos rp2 = getOrCreate(positions, vPos);
+                RememberingPos rp1 = getOrCreate(positions, nextVPos);
+
+                quads.add(new BendableCuboid.Quad(new RememberingPos[]{rp3, rp0, rp1, rp2}, localU2 / textureWidth, localV / textureHeight, localU / textureWidth, localV2 / textureHeight, mirror));
+            }
+            uPos = nextUPos;
+        }
     }
 
     protected RememberingPos getOrCreate(HashMap<Vector3f, RememberingPos> positions, Vector3f pos) {
-        if(!positions.containsKey(pos)){
-            positions.put(pos, new RememberingPos(pos));
-        }
-        return positions.get(pos);
+        return positions.computeIfAbsent(pos, p -> new RememberingPos(new Vector3f(p)));
     }
 }
