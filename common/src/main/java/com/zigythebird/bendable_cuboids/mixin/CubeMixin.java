@@ -121,15 +121,15 @@ public class CubeMixin implements BendableCube {
         this.bc$vertices[6] = new Vector3f(pmaxX, pmaxY, pmaxZ); //east north up
         this.bc$vertices[7] = new Vector3f(pminX, pmaxY, pmaxZ); //west north up
 
-        int j = bc$data.u();
-        int k = (int) (bc$data.u() + bc$data.sizeZ());
-        int l = (int) (bc$data.u() + bc$data.sizeZ() + bc$data.sizeX());
-        int m = (int) (bc$data.u() + bc$data.sizeZ() + bc$data.sizeX() + bc$data.sizeX());
-        int n = (int) (bc$data.u() + bc$data.sizeZ() + bc$data.sizeX() + bc$data.sizeZ());
-        int o = (int) (bc$data.u() + bc$data.sizeZ() + bc$data.sizeX() + bc$data.sizeZ() + bc$data.sizeX());
-        int p = bc$data.v();
-        int q = (int) (bc$data.v() + bc$data.sizeZ());
-        int r = (int) (bc$data.v() + bc$data.sizeZ() + bc$data.sizeY());
+        float j = bc$data.u();
+        float k = bc$data.u() + bc$data.sizeZ();
+        float l = bc$data.u() + bc$data.sizeZ() + bc$data.sizeX();
+        float m = bc$data.u() + bc$data.sizeZ() + bc$data.sizeX() + bc$data.sizeX();
+        float n = bc$data.u() + bc$data.sizeZ() + bc$data.sizeX() + bc$data.sizeZ();
+        float o = bc$data.u() + bc$data.sizeZ() + bc$data.sizeX() + bc$data.sizeZ() + bc$data.sizeX();
+        float p = bc$data.v();
+        float q = bc$data.v() + bc$data.sizeZ();
+        float r = bc$data.v() + bc$data.sizeZ() + bc$data.sizeY();
         float textureWidth = bc$data.textureWidth();
         float textureHeight = bc$data.textureHeight();
         boolean mirror = bc$data.mirror();

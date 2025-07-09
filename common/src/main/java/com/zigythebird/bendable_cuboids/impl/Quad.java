@@ -3,6 +3,7 @@ package com.zigythebird.bendable_cuboids.impl;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
@@ -14,6 +15,8 @@ import java.util.Map;
  * with IVertex and render()
  */
 public class Quad {
+    private static final float[] ARM_QUADS = new float[] {4, 2, 2, 4};
+
     public final RepositionableVertex[] vertices;
 
     public Quad(RememberingPos[] vertices, float u1, float v1, float u2, float v2, boolean flip) {
@@ -65,9 +68,9 @@ public class Quad {
     }
 
     // edge[2] can be calculated from edge 0, 1, 3...
-    public static void createAndAddQuads(List<Quad> quads, Map<Vector3f, RememberingPos> positions, Vector3f[] edges, int u1, int v1, int u2, int v2, float textureWidth, float textureHeight, boolean mirror) {
+    public static void createAndAddQuads(List<Quad> quads, Map<Vector3f, RememberingPos> positions, Vector3f[] edges, float u1, float v1, float u2, float v2, float textureWidth, float textureHeight, boolean mirror) {
         boolean positiveDirection = v2 > v1;
-        int dv = positiveDirection ? 2 : -2;
+        float totalTexHeight = Mth.abs(v2 - v1);
 
         Vector3f origin = edges[0];
         Vector3f vecV = new Vector3f(edges[2]).sub(origin);
@@ -75,20 +78,39 @@ public class Quad {
 
         Vector3f vPos = new Vector3f(origin);
         Vector3f nextVPos = new Vector3f(edges[1]);
+        Vector3f vStep = new Vector3f();
 
-        for (int localV = v1; positiveDirection ? localV < v2 : localV > v2; localV += dv) {
-            int localV2 = localV + dv;
-            if (positiveDirection) {
-                if (localV2 > v2) {
-                    localV2 = v2;
+        float[] quadHeights = (totalTexHeight == 12) ? ARM_QUADS : null; // For arms
+        int layerIndex = 0;
+
+        for (float localV = v1; positiveDirection ? localV < v2 : localV > v2; ) {
+            float dv;
+            if (quadHeights != null) {
+                if (layerIndex >= quadHeights.length) {
+                    break;
                 }
-            } else { // negative direction
-                if (localV2 < v2) {
-                    localV2 = v2;
+                dv = positiveDirection ? quadHeights[layerIndex] : -quadHeights[layerIndex];
+                layerIndex++;
+            } else {
+                dv = positiveDirection ? 2 : -2;
+            }
+
+            float localV2 = localV + dv;
+            if (quadHeights == null) {
+                if (positiveDirection) {
+                    if (localV2 > v2) {
+                        localV2 = v2;
+                    }
+                } else {
+                    if (localV2 < v2) {
+                        localV2 = v2;
+                    }
                 }
             }
-            int actual_dv = localV2 - localV;
-            Vector3f vStep = new Vector3f(vecV).mul(actual_dv * vFracScale);
+
+            float actual_dv = localV2 - localV;
+            if (actual_dv == 0) break;
+            vStep.set(vecV).mul(actual_dv * vFracScale);
 
             RememberingPos rp3 = getOrCreate(positions, vPos);
             RememberingPos rp0 = getOrCreate(positions, nextVPos);
@@ -98,6 +120,8 @@ public class Quad {
             RememberingPos rp1 = getOrCreate(positions, nextVPos);
 
             quads.add(new Quad(new RememberingPos[]{rp3, rp0, rp1, rp2}, u1 / textureWidth, localV / textureHeight, u2 / textureWidth, localV2 / textureHeight, mirror));
+
+            localV = localV2;
         }
     }
 
