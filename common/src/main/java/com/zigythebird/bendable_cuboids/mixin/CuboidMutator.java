@@ -1,12 +1,12 @@
 package com.zigythebird.bendable_cuboids.mixin;
 
-
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.zigythebird.bendable_cuboids.api.MutableCuboid;
 import com.zigythebird.bendable_cuboids.impl.BendableCuboid;
 import com.zigythebird.bendable_cuboids.impl.BendableCuboidData;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.core.Direction;
 import net.minecraft.util.Tuple;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.*;
@@ -18,26 +18,24 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.function.Function;
 
-@SuppressWarnings({"rawtypes", "unused"})
 @Mixin(ModelPart.Cube.class)
 public class CuboidMutator implements MutableCuboid {
-
-    @Shadow @Final public float minX;
-    @Shadow @Final public float minY;
-    @Shadow @Final public float minZ;
+    @Shadow
+    @Final
+    public float minX;
+    @Shadow
+    @Final
+    public float minY;
+    @Shadow
+    @Final
+    public float minZ;
     //Store the mutators and the mutator builders.
 
-    @Mutable
-    @Shadow @Final
-    public ModelPart.Polygon[] polygons;
     @Unique
     private final HashMap<String, BendableCuboid> mutators = new HashMap<>();
 
     @Unique
     private final HashMap<String, Function<BendableCuboidData, BendableCuboid>> mutatorBuilders = new HashMap<>();
-
-    @Unique
-    private ModelPart.Polygon[] originalQuads;
 
     @Unique
     private BendableCuboidData partData;
@@ -51,11 +49,9 @@ public class CuboidMutator implements MutableCuboid {
     private String activeMutatorID;
 
     @Inject(method = "<init>", at = @At(value = "RETURN"))
-    private void constructor(int u, int v, float x, float y, float z, float sizeX, float sizeY, float sizeZ, float extraX, float extraY, float extraZ, boolean mirror, float textureWidth, float textureHeight, Set set, CallbackInfo ci){
-        partData = new BendableCuboidData(u, v, minX, minY, minZ, sizeX, sizeY, sizeZ, extraX, extraY, extraZ, mirror, textureWidth, textureHeight);
-        originalQuads = this.polygons;
+    private void constructor(int u, int v, float x, float y, float z, float sizeX, float sizeY, float sizeZ, float extraX, float extraY, float extraZ, boolean mirror, float textureWidth, float textureHeight, Set<Direction> visibleFaces, CallbackInfo ci){
+        partData = new BendableCuboidData(u, v, minX, minY, minZ, sizeX, sizeY, sizeZ, extraX, extraY, extraZ, mirror, textureWidth, textureHeight, visibleFaces);
     }
-
 
     @Override
     public boolean bendableCuboids$registerMutator(String name, Function<BendableCuboidData, BendableCuboid> builder) {

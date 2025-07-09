@@ -36,17 +36,6 @@ public class BendableCuboidBuilder {
         Vector3f vertex7 = new Vector3f(pmaxX, pmaxY, pmaxZ); //east north up
         Vector3f vertex8 = new Vector3f(pminX, pmaxY, pmaxZ); //west north up
 
-        Vector3f center = new Vector3f();
-        center.add(vertex1);
-        center.add(vertex2);
-        center.add(vertex3);
-        center.add(vertex4);
-        center.add(vertex5);
-        center.add(vertex6);
-        center.add(vertex7);
-        center.add(vertex8);
-        center.div(8);
-
         int j = data.u;
         int k = (int) (data.u + data.sizeZ);
         int l = (int) (data.u + data.sizeZ + data.sizeX);
@@ -59,12 +48,12 @@ public class BendableCuboidBuilder {
         float textureWidth = data.textureWidth;
         float textureHeight = data.textureHeight;
         boolean mirror = data.mirror;
-        createAndAddQuads(planes, positions, new Vector3f[]{vertex6, vertex5, vertex2}, k, p, l, q, textureWidth, textureHeight, mirror); //down
-        createAndAddQuads(planes, positions, new Vector3f[]{vertex3, vertex4, vertex7}, l, q, m, p, textureWidth, textureHeight, mirror); //up
-        createAndAddQuads(planes, positions, new Vector3f[]{vertex1, vertex5, vertex4}, j, q, k, r, textureWidth, textureHeight, mirror); //west
-        createAndAddQuads(planes, positions, new Vector3f[]{vertex2, vertex1, vertex3}, k, q, l, r, textureWidth, textureHeight, mirror); //south
-        createAndAddQuads(planes, positions, new Vector3f[]{vertex6, vertex2, vertex7}, l, q, n, r, textureWidth, textureHeight, mirror); //east
-        createAndAddQuads(planes, positions, new Vector3f[]{vertex5, vertex6, vertex8}, n, q, o, r, textureWidth, textureHeight, mirror); //north
+        if (data.visibleFaces.contains(Direction.DOWN)) createAndAddQuads(planes, positions, new Vector3f[]{vertex6, vertex5, vertex2}, k, p, l, q, textureWidth, textureHeight, mirror); //down
+        if (data.visibleFaces.contains(Direction.UP)) createAndAddQuads(planes, positions, new Vector3f[]{vertex3, vertex4, vertex7}, l, q, m, p, textureWidth, textureHeight, mirror); //up
+        if (data.visibleFaces.contains(Direction.WEST)) createAndAddQuads(planes, positions, new Vector3f[]{vertex1, vertex5, vertex4}, j, q, k, r, textureWidth, textureHeight, mirror); //west
+        if (data.visibleFaces.contains(Direction.NORTH)) createAndAddQuads(planes, positions, new Vector3f[]{vertex2, vertex1, vertex3}, k, q, l, r, textureWidth, textureHeight, mirror); //north
+        if (data.visibleFaces.contains(Direction.EAST)) createAndAddQuads(planes, positions, new Vector3f[]{vertex6, vertex2, vertex7}, l, q, n, r, textureWidth, textureHeight, mirror); //east
+        if (data.visibleFaces.contains(Direction.SOUTH)) createAndAddQuads(planes, positions, new Vector3f[]{vertex5, vertex6, vertex8}, n, q, o, r, textureWidth, textureHeight, mirror); //south
 
         Vector3f pivot = new Vector3f(0, 0, 0);
         if (data.pivot >= 0) {
