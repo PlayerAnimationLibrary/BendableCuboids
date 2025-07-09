@@ -5,8 +5,8 @@
   "plugin": "com.zigythebird.bendable_cuboids.ModMixinPlugin",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "CuboidMutator",
-    "IModelPartMixin",
+    "CubeMixin",
+    "ModelPartMixin",
     "playeranim.CapeLayerAccessor_playerAnim",
     "playeranim.CapeLayerMixin_playerAnim",
     "playeranim.ElytraLayerMixin_playerAnim",
