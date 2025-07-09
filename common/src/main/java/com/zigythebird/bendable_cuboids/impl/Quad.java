@@ -66,41 +66,31 @@ public class Quad {
 
     // edge[2] can be calculated from edge 0, 1, 3...
     public static void createAndAddQuads(List<Quad> quads, Map<Vector3f, RememberingPos> positions, Vector3f[] edges, int u1, int v1, int u2, int v2, float textureWidth, float textureHeight, boolean mirror) {
-        int du = u2 < u1 ? 1 : -1;
-        int dv = 0;
+        int dv = v2 > v1 ? 1 : -1;
 
         Vector3f origin = edges[0];
-        Vector3f vecU = new Vector3f(edges[1]).sub(origin);
         Vector3f vecV = new Vector3f(edges[2]).sub(origin);
 
-        float uFracScale = 1.0f / (u1 - u2);
-        Vector3f uStep = vecU.mul(du * uFracScale);
-
         float vFracScale = 1.0f / (v2 - v1);
-        Vector3f vStep = vecV.mul(dv * vFracScale);
+        Vector3f vStep = new Vector3f(vecV).mul(dv * vFracScale);
 
         Vector3f uPos = new Vector3f(origin);
+        Vector3f nextUPos = new Vector3f(edges[1]);
 
-        for (int localU = u2; localU != u1; localU += du) {
-            Vector3f nextUPos = new Vector3f(uPos).add(uStep);
+        Vector3f vPos = new Vector3f(uPos);
+        Vector3f nextVPos = new Vector3f(nextUPos);
 
-            Vector3f vPos = new Vector3f(uPos);
-            Vector3f nextVPos = new Vector3f(nextUPos);
+        for (int localV = v1; localV != v2; localV += dv) {
+            int localV2 = localV + dv;
 
-            for (int localV = v1; localV != v2; localV += dv) {
-                int localU2 = localU + du;
-                int localV2 = localV + dv;
+            RememberingPos rp3 = getOrCreate(positions, vPos);
+            RememberingPos rp0 = getOrCreate(positions, nextVPos);
+            vPos.add(vStep);
+            nextVPos.add(vStep);
+            RememberingPos rp2 = getOrCreate(positions, vPos);
+            RememberingPos rp1 = getOrCreate(positions, nextVPos);
 
-                RememberingPos rp3 = getOrCreate(positions, vPos);
-                RememberingPos rp0 = getOrCreate(positions, nextVPos);
-                vPos.add(vStep);
-                nextVPos.add(vStep);
-                RememberingPos rp2 = getOrCreate(positions, vPos);
-                RememberingPos rp1 = getOrCreate(positions, nextVPos);
-
-                quads.add(new Quad(new RememberingPos[]{rp3, rp0, rp1, rp2}, localU2 / textureWidth, localV / textureHeight, localU / textureWidth, localV2 / textureHeight, mirror));
-            }
-            uPos = nextUPos;
+            quads.add(new Quad(new RememberingPos[]{rp3, rp0, rp1, rp2}, u1 / textureWidth, localV / textureHeight, u2 / textureWidth, localV2 / textureHeight, mirror));
         }
     }
 
