@@ -17,7 +17,7 @@
   "environment": "client",
   "entrypoints": {
     "client": [
-      "com.zigythebird.bendable_cuboids.fabric.Init"
+      "com.zigythebird.bendable_cuboids.fabric.BendableCuboidsModFabric"
     ]
   },
   "mixins": [
