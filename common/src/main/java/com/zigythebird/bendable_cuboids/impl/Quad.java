@@ -15,7 +15,7 @@ import java.util.Map;
  * with IVertex and render()
  */
 public class Quad {
-    private static final float[] ARM_QUADS = new float[] {4, 2, 2, 4};
+    private static final float[] ARM_QUADS = new float[] {3, 1, 2, 2, 1, 3};
 
     public final RepositionableVertex[] vertices;
 
