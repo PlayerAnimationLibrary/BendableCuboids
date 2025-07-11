@@ -108,7 +108,7 @@ public class Quad {
                 }
                 layerIndex++;
             } else {
-                dv = positiveDirection ? 2 : -2;
+                dv = positiveDirection ? 1 : -1;
             }
 
             float localV2 = localV + dv;
@@ -135,8 +135,8 @@ public class Quad {
                 Vector3f uScanPosBottom = new Vector3f(vPos);
                 Vector3f uScanPosTop = new Vector3f(vPos).add(vStep);
 
-                for (float localU = u1; uPositive ? localU < u2 : localU > u2; ) {
-                    float localU2 = localU + du;
+                for (float localU = u2; localU != u1; localU -= du) {
+                    float localU2 = localU - du;
                     if (uPositive) {
                         if (localU2 > u2) localU2 = u2;
                     } else {
@@ -150,15 +150,13 @@ public class Quad {
                     RememberingPos bottomLeft = getOrCreate(positions, uScanPosBottom);
                     RememberingPos topLeft = getOrCreate(positions, uScanPosTop);
 
-                    uScanPosBottom.add(uStep);
-                    uScanPosTop.add(uStep);
+                    uScanPosBottom.sub(uStep);
+                    uScanPosTop.sub(uStep);
 
                     RememberingPos bottomRight = getOrCreate(positions, uScanPosBottom);
                     RememberingPos topRight = getOrCreate(positions, uScanPosTop);
 
-                    quads.add(new Quad(new RememberingPos[]{bottomLeft, bottomRight, topRight, topLeft}, localU / textureWidth, localV / textureHeight, localU2 / textureWidth, localV2 / textureHeight, mirror));
-
-                    localU = localU2;
+                    quads.add(new Quad(new RememberingPos[]{bottomLeft, bottomRight, topRight, topLeft}, localU2 / textureWidth, localV / textureHeight, localU / textureWidth, localV2 / textureHeight, mirror));
                 }
 
                 vPos.add(vStep);
