@@ -7,6 +7,7 @@ import net.minecraft.util.Mth;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -15,8 +16,6 @@ import java.util.Map;
  * with IVertex and render()
  */
 public class Quad {
-    private static final float[] ARM_QUADS = new float[] {3, 1, 2, 2, 1, 3};
-
     public final RepositionableVertex[] vertices;
 
     public Quad(RememberingPos[] vertices, float u1, float v1, float u2, float v2, boolean flip) {
@@ -80,7 +79,17 @@ public class Quad {
         Vector3f nextVPos = new Vector3f(edges[1]);
         Vector3f vStep = new Vector3f();
 
-        float[] quadHeights = (totalTexHeight == 12) ? ARM_QUADS : null; // For arms
+        float[] quadHeights = null;
+        if (totalTexHeight > 0 && totalTexHeight % 3.0f == 0) {
+            int segmentHeight = (int) (totalTexHeight / 3.0f);
+            if (segmentHeight > 0) {
+                quadHeights = new float[2 + segmentHeight];
+                quadHeights[0] = segmentHeight;
+                Arrays.fill(quadHeights, 1, 1 + segmentHeight, 1.0f);
+                quadHeights[1 + segmentHeight] = segmentHeight;
+            }
+        }
+
         int layerIndex = 0;
 
         for (float localV = v1; positiveDirection ? localV < v2 : localV > v2; ) {
