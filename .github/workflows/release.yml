@@ -46,7 +46,7 @@ jobs:
           path: |
             ./dist/**/*
             ./fabric/build/libs
-            ./neoforge/build/libs
+            ./forge/build/libs
             ./gradle.properties
 
   deploy:
@@ -144,8 +144,8 @@ jobs:
           version: ${{ steps.gradle_properties.outputs.mod_version }}
 
           files: |
-            ./neoforge/build/libs/!(*-@(dev|sources|javadoc|all|dev-shadow)).jar
-            ./neoforge/build/libs/*-@(dev|sources|javadoc|all|dev-shadow).jar
+            ./forge/build/libs/!(*-@(dev|sources|javadoc|all|dev-shadow)).jar
+            ./forge/build/libs/*-@(dev|sources|javadoc|all|dev-shadow).jar
           version-type: release
 
           loaders: neoforge
