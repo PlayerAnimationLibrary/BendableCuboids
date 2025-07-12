@@ -5,15 +5,14 @@
   "plugin": "com.zigythebird.bendable_cuboids.ModMixinPlugin",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "CuboidMutator",
-    "IModelPartMixin",
+    "CubeMixin",
+    "ModelPartMixin",
     "playeranim.CapeLayerAccessor_playerAnim",
     "playeranim.CapeLayerMixin_playerAnim",
     "playeranim.ElytraLayerMixin_playerAnim",
     "playeranim.HumanoidArmorLayerMixin",
     "playeranim.ItemInHandLayerMixin_playerAnim",
     "playeranim.LivingEntityMixin_playerAnim",
-    "playeranim.LivingEntityRendererAccessor_playerAnim",
     "playeranim.ModelMixin_playerAnim",
     "playeranim.PlayerCapeModelAccessor_playerAnim",
     "playeranim.PlayerCapeModelMixin_playerAnim",
@@ -23,9 +22,5 @@
   ],
   "injectors": {
     "defaultRequire": 1
-  },
-  "mixins": [
-    "geckolib.GeoCubeMixin_geckoOnly",
-    "geckolib.GeoRendererMixin_geckoOnly"
-  ]
+  }
 }

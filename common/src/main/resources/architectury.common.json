@@ -1,3 +1,11 @@
 {
+  "injected_interfaces": {
+    "net/minecraft/class_630$class_628": [
+      "com/zigythebird/bendable_cuboids/api/BendableCube"
+    ],
+    "net/minecraft/class_630": [
+      "com/zigythebird/bendable_cuboids/api/BendableModelPart"
+    ]
+  },
   "accessWidener": "bendable_cuboids.accesswidener"
 }

@@ -24,17 +24,17 @@
     "bendable_cuboids.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.16.9",
-    "minecraft": ">=1.21.4"
+    "fabricloader": ">=0.16.14",
+    "minecraft": ">=1.21.7"
+  },
+  "breaks": {
+    "ears": "*",
+    "skinlayers3d": "*"
   },
   "custom": {
     "modmenu": {
-      "badges": ["library"]
-    },
-    "sodium:options": {
-      "mixin.features.render.entity": false,
-      "mixin.features.render.entity.cull": true,
-      "mixin.features.render.entity.shadow": true
+      "badges": ["library"],
+      "parent": "player_animation_library"
     }
   }
 }

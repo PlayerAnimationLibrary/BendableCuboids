@@ -12,13 +12,7 @@ import java.util.Set;
 public class ModMixinPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        if (mixinClassName.endsWith("_geckoOnly") && !hasClass("software.bernie.geckolib.GeckoLib")) {
-            return false;
-        }
-        if (mixinClassName.endsWith("_playerAnim") && !hasClass("com.zigythebird.playeranim.PlayerAnimLibMod")) {
-            return false;
-        }
-        return true;
+        return !mixinClassName.endsWith("_playerAnim") || hasClass("com.zigythebird.playeranim.PlayerAnimLibMod");
     }
 
     private static boolean hasClass(String name) {

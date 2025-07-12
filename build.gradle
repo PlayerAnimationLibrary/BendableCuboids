@@ -1,7 +1,7 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "8.1.1" apply false
+    id "com.gradleup.shadow" version "8.3.8" apply false
     id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "1.9-SNAPSHOT" apply false
+    id "dev.architectury.loom" version "1.10-SNAPSHOT" apply false
 }
 
 architectury {
@@ -15,30 +15,12 @@ subprojects {
         silentMojangMappingsLicense()
     }
 
-    repositories {
-        maven {
-            name = "Modrinth"
-            url = "https://api.modrinth.com/maven"
-            content {
-                includeGroup "maven.modrinth"
-            }
-        }
-        maven {
-            name "zigythebirdMods"
-            url "https://maven.zigythebird.com/mods"
-        }
-        maven {
-            name = 'GeckoLib'
-            url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
-            content {
-                includeGroup("software.bernie.geckolib")
-            }
-        }
-    }
-
     dependencies {
         minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
-        mappings loom.officialMojangMappings()
+        mappings loom.layered() {
+            officialMojangMappings()
+            parchment("org.parchmentmc.data:parchment-1.21.6:${rootProject.parchment_version}@zip")
+        }
     }
 }
 
@@ -47,12 +29,26 @@ allprojects {
     apply plugin: "architectury-plugin"
     apply plugin: "maven-publish"
 
-    archivesBaseName = rootProject.archives_base_name
-    version = rootProject.mod_version
+    base.archivesName = rootProject.archives_base_name
+    version = "${rootProject.mod_version}+mc${rootProject.minecraft_version}"
     group = rootProject.maven_group
 
     repositories {
-        maven { url "https://maven.neoforged.net/releases" }
+        // Fix issue with lwjgl-freetype not being found on macOS
+        maven {
+            url = "https://libraries.minecraft.net"
+            content {
+                includeModule("org.lwjgl", "lwjgl-freetype")
+            }
+        }
+        maven {
+            name = "NeoForged"
+            url = "https://maven.neoforged.net/releases"
+        }
+        maven {
+            name = "RedlanceMinecraft"
+            url = "https://repo.redlance.org/public"
+        }
         mavenLocal()
     }
 
@@ -61,19 +57,25 @@ allprojects {
         options.release.set 21
     }
 
+    jar {
+        if (!rootProject.version.toString().contains("dev") && !project.gradle.startParameter.taskNames.contains("runClient"))
+            processResources.exclude('assets/bendable_cuboids/player_animations/*')
+    }
+
     java {
         withSourcesJar()
     }
-}
 
-project.ext.keys = new Properties()
-ext.ENV = System.getenv()
-ext.keysExists = ENV.MAVEN_PASS != null
-if (keysExists) {
-    project.ext.keys.kosmx_maven = ENV.MAVEN_PASS
-    project.ext.keys.maven_user = ENV.MAVEN_USER
-} else {
-    project.ext.keys.kosmx_maven = "V2h5IGRpZCB5b3UgZGVjb2RlIGl0PyAg"
-    project.ext.keys.maven_user = "username"
+    publishing {
+        repositories {
+            maven {
+                name = "RedlanceMinecraft"
+                url = "https://repo.redlance.org/public"
+                credentials {
+                    username = "dima_dencep"
+                    password = System.getenv("MAVEN_PASSWORD")
+                }
+            }
+        }
+    }
 }
-

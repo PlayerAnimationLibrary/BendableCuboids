@@ -17,15 +17,23 @@ Adds model cubes that can be bent, for example like arms in MC Story Mode!
 [[mixins]]
 config = "bendable_cuboids.mixins.json"
 
-[mods."sodium:options"]
-"mixin.features.render.entity" = false
-"mixin.features.render.entity.cull" = true
-"mixin.features.render.entity.shadow" = true
-
 [[dependencies.bendable_cuboids]]
 modId = "minecraft"
 type = "required"
-mandatory = true
-versionRange = "[1.21,)"
+versionRange = "[1.21.7,)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.bendable_cuboids]]
+modId = "ears"
+type = "incompatible"
+versionRange = "[1.0,)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.bendable_cuboids]]
+modId = "skinlayers3d"
+type = "incompatible"
+versionRange = "[1.0,)"
 ordering = "NONE"
 side = "CLIENT"
