@@ -2,6 +2,7 @@ package com.zigythebird.bendable_cuboids.impl;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import com.zigythebird.bendable_cuboids.api.BendableCube;
 import com.zigythebird.bendable_cuboids.impl.compatibility.PlayerBendHelper;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
@@ -13,9 +14,9 @@ import java.lang.Math;
 public class BendUtil {
     private static final Vector3f Z_AXIS = new Vector3f(0, 0, 1);
 
-    public static BendApplier getBend(BendableCuboid cuboid, float bendValue) {
+    public static BendApplier getBend(BendableCube cuboid, float bendValue) {
         return getBend(cuboid.getBendX(), cuboid.getBendY(), cuboid.getBendZ(),
-                cuboid.basePlane, cuboid.otherPlane, false, cuboid.bendHeight(), bendValue);
+                cuboid.getBasePlane(), cuboid.getOtherPlane(), false, cuboid.bendHeight(), bendValue);
     }
 
     /**
@@ -33,13 +34,13 @@ public class BendUtil {
         return new BendApplier(transformMatrix, pos -> {
             float distFromBase = Math.abs(basePlane.distanceTo(pos));
             float distFromOther = Math.abs(otherPlane.distanceTo(pos));
-            float s = (float) Math.clamp(Math.tan(finalBend/2)*pos.z, -2f, 2f);
+            float s = (float) Math.tan(finalBend/2)*pos.z;
             if (mirrorBend) {
                 float temp = distFromBase;
                 distFromBase = distFromOther;
                 distFromOther = temp;
             }
-            float v = halfSize - (s < 0 ? Math.abs(s)/2 : Math.abs(s));
+            float v = halfSize - (s < 0 ? Math.min(Math.abs(s)/2, 1) : Math.abs(s));
             if (distFromBase < distFromOther) {
                 if (distFromBase + distFromOther <= bendHeight && distFromBase > v)
                     pos.y = bendY + s;
@@ -54,9 +55,9 @@ public class BendUtil {
         });
     }
 
-    public static BendApplier getBendLegacy(BendableCuboid cuboid, float bendValue) {
+    public static BendApplier getBendLegacy(BendableCube cuboid, float bendValue) {
         return getBendLegacy(cuboid.getBendDirection(), cuboid.getBendX(), cuboid.getBendY(), cuboid.getBendZ(),
-                cuboid.basePlane, cuboid.otherPlane, cuboid.isBendInverted(), false, cuboid.bendHeight(), bendValue);
+                cuboid.getBasePlane(), cuboid.getOtherPlane(), cuboid.isBendInverted(), false, cuboid.bendHeight(), bendValue);
     }
 
     /**
