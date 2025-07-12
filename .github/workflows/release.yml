@@ -96,7 +96,7 @@ jobs:
           result-encoding: string
           script: |
             const fs = require("fs")
-            return fs.readdirSync("./neoforge/build/libs")[0] || false;
+            return fs.readdirSync("./forge/build/libs")[0] || false;
 
       - name: Run Publish Fabric
         if: ${{ steps.fabric_release.outputs.result != 'false' }}
