@@ -26,6 +26,7 @@ dependencies {
     shadowCommon(project(path: ":common", configuration: "transformProductionNeoForge")) { transitive = false }
 
     modImplementation "com.zigythebird.playeranim:PlayerAnimationLibNeo:${rootProject.player_anim_version}"
+    forgeRuntimeLibrary "org.javassist:javassist:3.30.2-GA"
 }
 
 processResources {

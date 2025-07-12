@@ -38,13 +38,13 @@ public class BendUtil {
         return new BendApplier(transformMatrix, pos -> {
             float distFromBase = Math.abs(basePlane.distanceTo(pos));
             float distFromOther = Math.abs(otherPlane.distanceTo(pos));
-            float s = (float) Math.clamp(Math.tan(finalBend/2)*pos.z, -2f, 2f);
+            float s = (float) Math.tan(finalBend/2)*pos.z;
             if (mirrorBend) {
                 float temp = distFromBase;
                 distFromBase = distFromOther;
                 distFromOther = temp;
             }
-            float v = halfSize - (s < 0 ? Math.abs(s)/2 : Math.abs(s));
+            float v = halfSize - (s < 0 ? Math.min(Math.abs(s)/2, 1) : Math.abs(s));
             if (distFromBase < distFromOther) {
                 if (distFromBase + distFromOther <= bendHeight && distFromBase > v)
                     pos.y = bendY + s;

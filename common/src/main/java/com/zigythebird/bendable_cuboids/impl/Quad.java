@@ -7,6 +7,7 @@ import net.minecraft.util.Mth;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -15,8 +16,6 @@ import java.util.Map;
  * with IVertex and render()
  */
 public class Quad {
-    private static final float[] ARM_QUADS = new float[] {4, 2, 2, 4};
-
     public final RepositionableVertex[] vertices;
 
     public Quad(RememberingPos[] vertices, float u1, float v1, float u2, float v2, boolean flip) {
@@ -74,25 +73,42 @@ public class Quad {
 
         Vector3f origin = edges[0];
         Vector3f vecV = new Vector3f(edges[2]).sub(origin);
-        float vFracScale = 1.0f / (v2 - v1);
+        float vFracScale = (v1 == v2) ? 0 : 1.0f / (v2 - v1);
+        Vector3f vecU = new Vector3f(edges[1]).sub(origin);
+        float uFracScale = (u1 == u2) ? 0 : 1.0f / (u2 - u1);
 
         Vector3f vPos = new Vector3f(origin);
         Vector3f nextVPos = new Vector3f(edges[1]);
         Vector3f vStep = new Vector3f();
 
-        float[] quadHeights = (totalTexHeight == 12) ? ARM_QUADS : null; // For arms
+        float[] quadHeights = null;
+        int segmentHeight = 0;
+        if (totalTexHeight > 0 && totalTexHeight % 3.0f == 0) {
+            segmentHeight = (int) (totalTexHeight / 3.0f);
+            if (segmentHeight > 0) {
+                quadHeights = new float[2 + segmentHeight];
+                quadHeights[0] = segmentHeight;
+                Arrays.fill(quadHeights, 1, 1 + segmentHeight, 1.0f);
+                quadHeights[1 + segmentHeight] = segmentHeight;
+            }
+        }
+
         int layerIndex = 0;
 
         for (float localV = v1; positiveDirection ? localV < v2 : localV > v2; ) {
             float dv;
+            boolean isMiddleSegment = false;
             if (quadHeights != null) {
                 if (layerIndex >= quadHeights.length) {
                     break;
                 }
                 dv = positiveDirection ? quadHeights[layerIndex] : -quadHeights[layerIndex];
+                if (layerIndex > 0 && layerIndex <= segmentHeight) {
+                    isMiddleSegment = true;
+                }
                 layerIndex++;
             } else {
-                dv = positiveDirection ? 2 : -2;
+                dv = positiveDirection ? 1 : -1;
             }
 
             float localV2 = localV + dv;
@@ -112,14 +128,48 @@ public class Quad {
             if (actual_dv == 0) break;
             vStep.set(vecV).mul(actual_dv * vFracScale);
 
-            RememberingPos rp3 = getOrCreate(positions, vPos);
-            RememberingPos rp0 = getOrCreate(positions, nextVPos);
-            vPos.add(vStep);
-            nextVPos.add(vStep);
-            RememberingPos rp2 = getOrCreate(positions, vPos);
-            RememberingPos rp1 = getOrCreate(positions, nextVPos);
+            if (isMiddleSegment && Mth.abs(u2 - u1) > 1.0f) {
+                boolean uPositive = u2 > u1;
+                float du = uPositive ? 1.0f : -1.0f;
 
-            quads.add(new Quad(new RememberingPos[]{rp3, rp0, rp1, rp2}, u1 / textureWidth, localV / textureHeight, u2 / textureWidth, localV2 / textureHeight, mirror));
+                Vector3f uScanPosBottom = new Vector3f(vPos);
+                Vector3f uScanPosTop = new Vector3f(vPos).add(vStep);
+
+                for (float localU = u2; localU != u1; localU -= du) {
+                    float localU2 = localU - du;
+                    if (uPositive) {
+                        if (localU2 > u2) localU2 = u2;
+                    } else {
+                        if (localU2 < u2) localU2 = u2;
+                    }
+                    if (localU == localU2) break;
+
+                    float actual_du = localU2 - localU;
+                    Vector3f uStep = new Vector3f(vecU).mul(actual_du * uFracScale);
+
+                    RememberingPos bottomLeft = getOrCreate(positions, uScanPosBottom);
+                    RememberingPos topLeft = getOrCreate(positions, uScanPosTop);
+
+                    uScanPosBottom.sub(uStep);
+                    uScanPosTop.sub(uStep);
+
+                    RememberingPos bottomRight = getOrCreate(positions, uScanPosBottom);
+                    RememberingPos topRight = getOrCreate(positions, uScanPosTop);
+
+                    quads.add(new Quad(new RememberingPos[]{bottomLeft, bottomRight, topRight, topLeft}, localU2 / textureWidth, localV / textureHeight, localU / textureWidth, localV2 / textureHeight, mirror));
+                }
+
+                vPos.add(vStep);
+                nextVPos.add(vStep);
+            } else {
+                RememberingPos rp3 = getOrCreate(positions, vPos);
+                RememberingPos rp0 = getOrCreate(positions, nextVPos);
+                vPos.add(vStep);
+                nextVPos.add(vStep);
+                RememberingPos rp2 = getOrCreate(positions, vPos);
+                RememberingPos rp1 = getOrCreate(positions, nextVPos);
+                quads.add(new Quad(new RememberingPos[]{rp3, rp0, rp1, rp2}, u1 / textureWidth, localV / textureHeight, u2 / textureWidth, localV2 / textureHeight, mirror));
+            }
 
             localV = localV2;
         }
