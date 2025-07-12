@@ -20,7 +20,20 @@ config = "bendable_cuboids.mixins.json"
 [[dependencies.bendable_cuboids]]
 modId = "minecraft"
 type = "required"
-mandatory = true
 versionRange = "[1.21.7,)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.bendable_cuboids]]
+modId = "ears"
+type = "incompatible"
+versionRange = "[1.0,)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.bendable_cuboids]]
+modId = "skinlayers3d"
+type = "incompatible"
+versionRange = "[1.0,)"
 ordering = "NONE"
 side = "CLIENT"
