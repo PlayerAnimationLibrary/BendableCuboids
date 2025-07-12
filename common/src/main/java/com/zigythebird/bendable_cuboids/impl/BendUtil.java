@@ -14,6 +14,10 @@ import java.lang.Math;
 public class BendUtil {
     private static final Vector3f Z_AXIS = new Vector3f(0, 0, 1);
 
+    public static BendApplier getBend(BendableCube cuboid) {
+        return getBend(cuboid, cuboid.getBend());
+    }
+
     public static BendApplier getBend(BendableCube cuboid, float bendValue) {
         return getBend(cuboid.getBendX(), cuboid.getBendY(), cuboid.getBendZ(),
                 cuboid.getBasePlane(), cuboid.getOtherPlane(), false, cuboid.bendHeight(), bendValue);

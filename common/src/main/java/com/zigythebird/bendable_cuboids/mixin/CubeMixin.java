@@ -8,6 +8,7 @@ import com.zigythebird.bendable_cuboids.api.BendableCube;
 import com.zigythebird.bendable_cuboids.impl.*;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.core.Direction;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.*;
@@ -47,8 +48,10 @@ public class CubeMixin implements BendableCube {
     @Unique
     private final Vector3f[] bc$vertices = new Vector3f[8];
     @Unique
+    @Nullable
     private Quad[] sides;
     @Unique
+    @Nullable
     private RememberingPos[] positions;
 
     @Unique
@@ -146,7 +149,7 @@ public class CubeMixin implements BendableCube {
 
     @WrapMethod(method = "compile")
     private void bc$render(PoseStack.Pose pose, VertexConsumer buffer, int packedLight, int packedOverlay, int color, Operation<Void> original) {
-        if (bc$bend == 0) {
+        if (bc$bend == 0 || sides == null) {
             original.call(pose, buffer, packedLight, packedOverlay, color);
             return;
         }
@@ -208,7 +211,8 @@ public class CubeMixin implements BendableCube {
 
     @Unique
     public void bc$iteratePositions(Function<Vector3f, Vector3f> function) {
-        for (RememberingPos pos: this.positions) {
+        if (this.positions == null) return;
+        for (RememberingPos pos : this.positions) {
             pos.setPos(function.apply(pos.getOriginalPos()));
         }
     }
