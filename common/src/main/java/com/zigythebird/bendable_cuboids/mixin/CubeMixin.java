@@ -8,6 +8,7 @@ import com.zigythebird.bendable_cuboids.api.BendableCube;
 import com.zigythebird.bendable_cuboids.impl.*;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.core.Direction;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.*;
@@ -58,14 +59,16 @@ public class CubeMixin implements BendableCube {
     @Unique
     protected float bc$fixZ;
     @Unique
-    protected Direction bc$direction;
-    @Unique
     protected Plane bc$basePlane;
     @Unique
     protected Plane bc$otherPlane;
     @Unique
     protected float bc$fullSize;
 
+    @Unique
+    protected Direction bc$direction;
+    @Unique
+    protected int bc$pivot;
     @Unique
     protected float bc$bend;
 
@@ -75,10 +78,12 @@ public class CubeMixin implements BendableCube {
     }
 
     @Override
-    public void rebuild(Direction direction, int point) {
+    public void rebuild(@NotNull Direction direction, int point) {
         if (this.sides == null || this.positions == null) bc$build();
 
-        this.bc$direction = direction;
+        if (this.bc$direction == direction && this.bc$pivot == point) return;
+        this.bc$direction = Objects.requireNonNull(direction);
+        this.bc$pivot = point;
 
         Vector3f pivot = new Vector3f(0, 0, 0);
         if (point >= 0) {
@@ -164,6 +169,10 @@ public class CubeMixin implements BendableCube {
      */
     @Override
     public Matrix4f applyBend(float bendValue) {
+        // Don't enable bend until rotation is bigger than epsilon.
+        // This should avoid unnecessary heavy calculations.
+        if (Math.abs(bendValue) < 0.0001f) bendValue = 0;
+
         this.bc$bend = bendValue;
         BendApplier bendApplier = BendUtil.getBend(this, bendValue);
         bc$iteratePositions(bendApplier.consumer());
@@ -174,6 +183,11 @@ public class CubeMixin implements BendableCube {
     @Override
     public Direction getBendDirection() {
         return this.bc$direction;
+    }
+
+    @Override
+    public int getBendPivot() {
+        return this.bc$pivot;
     }
 
     @Override
@@ -208,6 +222,7 @@ public class CubeMixin implements BendableCube {
 
     @Unique
     public void bc$iteratePositions(Function<Vector3f, Vector3f> function) {
+        if (this.positions == null) return;
         for (RememberingPos pos: this.positions) {
             pos.setPos(function.apply(pos.getOriginalPos()));
         }

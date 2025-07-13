@@ -18,7 +18,6 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.CapeLayer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.state.PlayerRenderState;
-import org.joml.Quaternionf;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -28,7 +27,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(CapeLayer.class)
 public abstract class CapeLayerMixin_playerAnim extends RenderLayer<PlayerRenderState, PlayerModel> {
-    @Shadow @Final private HumanoidModel<PlayerRenderState> model;
+    @Shadow
+    @Final
+    private HumanoidModel<PlayerRenderState> model;
 
     private CapeLayerMixin_playerAnim(RenderLayerParent<PlayerRenderState, PlayerModel> renderLayerParent, Void v) {
         super(renderLayerParent);
@@ -43,7 +44,7 @@ public abstract class CapeLayerMixin_playerAnim extends RenderLayer<PlayerRender
                 PlayerAnimBone bone = ((IPlayerAnimationState)playerRenderState).playerAnimLib$getAnimProcessor().getBone("cape");
 
                 poseStack.translate(torso.x / 16, torso.y / 16, torso.z / 16);
-                poseStack.mulPose((new Quaternionf()).rotateZYX(torso.zRot, torso.yRot, torso.xRot));
+                RenderUtil.rotateZYX(poseStack.last(), torso.zRot, torso.yRot, torso.xRot);
                 PlayerBendHelper.applyTorsoBendToMatrix(poseStack, bone.getBend());
                 poseStack.translate(0.0F, 0.0F, 0.125F);
                 poseStack.mulPose(Axis.YP.rotation(3.14159f));

@@ -12,7 +12,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PlayerCapeModel.class)
 public class PlayerCapeModelMixin_playerAnim {
-    @Shadow @Final private ModelPart cape;
+    @Shadow
+    @Final
+    private ModelPart cape;
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void init(ModelPart modelPart, CallbackInfo ci) {

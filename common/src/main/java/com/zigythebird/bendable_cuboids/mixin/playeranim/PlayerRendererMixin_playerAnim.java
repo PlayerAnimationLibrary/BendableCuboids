@@ -3,6 +3,7 @@ package com.zigythebird.bendable_cuboids.mixin.playeranim;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.zigythebird.bendable_cuboids.impl.compatibility.PlayerBendHelper;
 import com.zigythebird.playeranim.accessors.IMutableModel;
+import com.zigythebird.playeranim.animation.PlayerAnimManager;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -26,11 +27,13 @@ public abstract class PlayerRendererMixin_playerAnim extends LivingEntityRendere
 
     @Inject(method = "renderHand", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/geom/ModelPart;render(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;II)V"))
     private void renderHand(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, ResourceLocation resourceLocation, ModelPart modelPart, boolean bl, CallbackInfo ci) {
-        if (((IMutableModel)this.getModel()).playerAnimLib$getAnimation() == null || !((IMutableModel)this.getModel()).playerAnimLib$getAnimation().getFirstPersonMode().isEnabled()) {
-            PlayerModel playermodel = (PlayerModel)this.getModel();
-            PlayerBendHelper.bend(modelPart, 0);
-            PlayerBendHelper.bend(playermodel.rightSleeve, 0);
-            PlayerBendHelper.bend(playermodel.leftSleeve, 0);
+        PlayerModel model = this.getModel();
+        PlayerAnimManager manager = ((IMutableModel) model).playerAnimLib$getAnimation();
+
+        if (manager == null || !manager.getFirstPersonMode().isEnabled()) {
+            PlayerBendHelper.resetBend(modelPart);
+            PlayerBendHelper.resetBend(model.rightSleeve);
+            PlayerBendHelper.resetBend(model.leftSleeve);
         }
     }
 }
