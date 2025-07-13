@@ -51,11 +51,11 @@ public class SkinLayersCompat implements MeshTransformerProvider, MeshTransforme
             return;
         }
 
-        for (Vector4f vector4f : vector4fs) {
+        /*for (Vector4f vector4f : vector4fs) {
             RememberingPos pos = new RememberingPos(new Vector3f(vector4f.x, vector4f.y, vector4f.z));
             BendUtil.getBend(this.original).applyTo(pos);
             vector4f.set(pos.getPos(), vector4f.w);
-        }
+        }*/
         vector3f.set(calculateNormal(vector4fs));
     }
 
@@ -68,7 +68,7 @@ public class SkinLayersCompat implements MeshTransformerProvider, MeshTransforme
             }
             return;
         }
-        ((BendableCube) cube).copyState(this.original);
+        ((BendableCube) cube).bc$copyState(this.original);
     }
 
     public static Vector3f calculateNormal(Vector4f[] vertices) {

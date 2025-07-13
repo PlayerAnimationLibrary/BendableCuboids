@@ -7,11 +7,11 @@ import com.zigythebird.bendable_cuboids.api.BendableCube;
 import com.zigythebird.bendable_cuboids.api.BendableModelPart;
 import com.zigythebird.bendable_cuboids.api.IUpperPartHelper;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.core.Direction;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -51,10 +51,7 @@ public class ModelPartMixin implements BendableModelPart {
         while (otherIterator.hasNext() && myIterator.hasNext()){
             BendableCube myCube = (BendableCube) myIterator.next();
             BendableCube otherCube = (BendableCube) otherIterator.next();
-
-            Direction direction = otherCube.getBendDirection();
-            if (direction != null) myCube.rebuild(direction, otherCube.getBendPivot());
-            myCube.applyBend(otherCube.getBend());
+            myCube.bc$copyState(otherCube);
         }
         this.bc$isUpper = ((IUpperPartHelper) part).bc$isUpperPart();
     }
