@@ -18,7 +18,7 @@ public class ModelPartMixin implements BendableModelPart {
 
     @Override
     public @Nullable BendableCube bc$getCuboid(int index) {
-        if (index > this.cubes.size() || index < 0) return null;
+        if (index >= this.cubes.size() || index < 0) return null;
         return this.cubes.get(index);
     }
 }
