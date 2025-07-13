@@ -127,22 +127,4 @@ public class BendUtil {
 
         return transformMatrix;
     }
-    
-    public static void initModel(HumanoidModel model) {
-        if (model != null) {
-            PlayerBendHelper.initBend(model.body, Direction.DOWN);
-            PlayerBendHelper.initBend(model.rightArm, Direction.UP);
-            PlayerBendHelper.initBend(model.leftArm, Direction.UP);
-            PlayerBendHelper.initBend(model.rightLeg, Direction.UP);
-            PlayerBendHelper.initBend(model.leftLeg, Direction.UP);
-
-            if (model instanceof PlayerModel playerModel) {
-                PlayerBendHelper.initBend(playerModel.jacket, Direction.DOWN);
-                PlayerBendHelper.initBend(playerModel.rightSleeve, Direction.UP);
-                PlayerBendHelper.initBend(playerModel.leftSleeve, Direction.UP);
-                PlayerBendHelper.initBend(playerModel.rightPants, Direction.UP);
-                PlayerBendHelper.initBend(playerModel.leftPants, Direction.UP);
-            }
-        }
-    }
 }

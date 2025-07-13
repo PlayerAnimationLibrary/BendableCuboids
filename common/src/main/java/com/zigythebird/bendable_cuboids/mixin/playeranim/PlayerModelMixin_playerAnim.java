@@ -1,17 +1,17 @@
 package com.zigythebird.bendable_cuboids.mixin.playeranim;
 
-import com.zigythebird.bendable_cuboids.impl.BendUtil;
 import com.zigythebird.bendable_cuboids.impl.compatibility.PlayerBendHelper;
 import com.zigythebird.playeranim.accessors.IMutableModel;
 import com.zigythebird.playeranim.accessors.IPlayerAnimationState;
-import com.zigythebird.playeranim.accessors.IUpperPartHelper;
 import com.zigythebird.playeranimcore.animation.AnimationProcessor;
 import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.entity.state.PlayerRenderState;
+import net.minecraft.core.Direction;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -19,14 +19,29 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(value = PlayerModel.class, priority = 2002)
 @SuppressWarnings("UnstableApiUsage")
 public abstract class PlayerModelMixin_playerAnim implements IMutableModel {
-    @Inject(method = "<init>", at = @At("RETURN"))
-    private void initBendableStuff(ModelPart modelPart, boolean bl, CallbackInfo ci) {
-        PlayerModel model = ((PlayerModel)(Object)this);
-        BendUtil.initModel(model);
+    @Shadow
+    @Final
+    public ModelPart jacket;
+    @Shadow
+    @Final
+    public ModelPart rightSleeve;
+    @Shadow
+    @Final
+    public ModelPart leftSleeve;
+    @Shadow
+    @Final
+    public ModelPart rightPants;
+    @Shadow
+    @Final
+    public ModelPart leftPants;
 
-        ((IUpperPartHelper)model.head).playerAnimLib$setUpperPart(true);
-        ((IUpperPartHelper)model.rightArm).playerAnimLib$setUpperPart(true);
-        ((IUpperPartHelper)model.leftArm).playerAnimLib$setUpperPart(true);
+    @Inject(method = "<init>", at = @At("TAIL"))
+    private void bc$initBends(ModelPart modelPart, boolean bl, CallbackInfo ci) {
+        PlayerBendHelper.initBend(this.jacket, Direction.DOWN);
+        PlayerBendHelper.initBend(this.rightSleeve, Direction.UP);
+        PlayerBendHelper.initBend(this.leftSleeve, Direction.UP);
+        PlayerBendHelper.initBend(this.rightPants, Direction.UP);
+        PlayerBendHelper.initBend(this.leftPants, Direction.UP);
     }
 
     @Inject(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/PlayerRenderState;)V", at = @At(value = "RETURN"))
@@ -51,24 +66,18 @@ public abstract class PlayerModelMixin_playerAnim implements IMutableModel {
             PlayerBendHelper.bend(model.leftSleeve, leftArm.getBend());
             PlayerBendHelper.bend(model.rightPants, rightLeg.getBend());
             PlayerBendHelper.bend(model.leftPants, leftLeg.getBend());
-        }
-        else {
-            resetBend(model.body);
-            resetBend(model.leftArm);
-            resetBend(model.rightArm);
-            resetBend(model.leftLeg);
-            resetBend(model.rightLeg);
+        } else {
+            PlayerBendHelper.resetBend(model.body);
+            PlayerBendHelper.resetBend(model.leftArm);
+            PlayerBendHelper.resetBend(model.rightArm);
+            PlayerBendHelper.resetBend(model.leftLeg);
+            PlayerBendHelper.resetBend(model.rightLeg);
 
-            resetBend(model.jacket);
-            resetBend(model.leftSleeve);
-            resetBend(model.rightSleeve);
-            resetBend(model.leftPants);
-            resetBend(model.rightPants);
+            PlayerBendHelper.resetBend(model.jacket);
+            PlayerBendHelper.resetBend(model.leftSleeve);
+            PlayerBendHelper.resetBend(model.rightSleeve);
+            PlayerBendHelper.resetBend(model.leftPants);
+            PlayerBendHelper.resetBend(model.rightPants);
         }
-    }
-
-    @Unique
-    private static void resetBend(ModelPart part) {
-        PlayerBendHelper.bend(part, 0);
     }
 }

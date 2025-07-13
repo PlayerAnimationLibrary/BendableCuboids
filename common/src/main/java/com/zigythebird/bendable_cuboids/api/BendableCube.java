@@ -3,6 +3,8 @@ package com.zigythebird.bendable_cuboids.api;
 import com.zigythebird.bendable_cuboids.impl.Plane;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
 /**
@@ -25,7 +27,9 @@ public interface BendableCube extends Bendable {
         return applyBend(bendValue * Mth.DEG_TO_RAD);
     }
 
+    @Nullable
     Direction getBendDirection();
+    int getBendPivot();
 
     float getBendX();
     float getBendY();
@@ -46,7 +50,7 @@ public interface BendableCube extends Bendable {
         return getBendDirection() == Direction.UP || getBendDirection() == Direction.SOUTH || getBendDirection() == Direction.EAST;
     }
 
-    default void rebuild(Direction direction) {
+    default void rebuild(@NotNull Direction direction) {
         rebuild(direction, -1);
     }
 

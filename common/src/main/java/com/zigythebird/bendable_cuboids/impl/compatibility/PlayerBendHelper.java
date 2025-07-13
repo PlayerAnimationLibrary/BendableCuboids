@@ -8,17 +8,14 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.core.Direction;
 
 public class PlayerBendHelper {
+    public static void resetBend(ModelPart modelPart) {
+        PlayerBendHelper.bend(modelPart, 0);
+    }
+
     public static void bend(ModelPart modelPart, float rotation) {
         BendableCube cube = ((BendableModelPart) modelPart).bc$getCuboid(0);
         if (cube == null) return;
-
-        // Don't enable bend until rotation is bigger than epsilon.
-        // This should avoid unnecessary heavy calculations.
-        if (Math.abs(rotation) >= 0.0001f) {
-            cube.applyBend(rotation);
-        } else {
-            cube.applyBend(0);
-        }
+        cube.applyBend(rotation);
     }
 
     public static void initBend(ModelPart modelPart, Direction direction) {
