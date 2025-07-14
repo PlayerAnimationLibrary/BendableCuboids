@@ -1,6 +1,6 @@
 package com.zigythebird.bendable_cuboids;
 
-import com.zigythebird.bendable_cuboids.impl.compatibility.skinlayers.SkinLayersCompat;
+import com.zigythebird.bendable_cuboids.impl.compatibility.SkinLayersCompat;
 import net.minecraft.client.model.geom.ModelPart;
 
 public abstract class BendableCuboidsMod {

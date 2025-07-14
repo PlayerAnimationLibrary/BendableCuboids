@@ -1,4 +1,4 @@
-package com.zigythebird.bendable_cuboids.impl.compatibility.skinlayers;
+package com.zigythebird.bendable_cuboids.impl.compatibility;
 
 import com.zigythebird.bendable_cuboids.BendableCuboidsMod;
 import com.zigythebird.bendable_cuboids.api.BendableCube;
@@ -32,7 +32,7 @@ public class SkinLayersCompat implements MeshTransformerProvider, MeshTransforme
     }
 
     /**
-     * @param modelPart is always null because 3dskinlayers is shit
+     * m̶o̶d̶e̶l̶P̶a̶r̶t̶ ̶i̶s̶ ̶a̶l̶w̶a̶y̶s̶ ̶n̶u̶l̶l̶ ̶b̶e̶c̶a̶u̶s̶e̶ ̶3̶d̶s̶k̶i̶n̶l̶a̶y̶e̶r̶s̶ ̶i̶s̶ ̶s̶h̶i̶t̶ TR7 fixed it!
      */
     @Override
     public MeshTransformer prepareTransformer(@Nullable ModelPart modelPart) {
@@ -46,16 +46,13 @@ public class SkinLayersCompat implements MeshTransformerProvider, MeshTransforme
 
     @Override
     public void transform(Vector3f vector3f, Vector4f[] vector4fs) {
-        if (this.original == null || this.original.getBend() == 0) {
-            if (this.transformer != null) this.transformer.transform(vector3f, vector4fs);
-            return;
-        }
-
-        /*for (Vector4f vector4f : vector4fs) {
+        for (Vector4f vector4f : vector4fs) {
+            vector4f.mul(16);
             RememberingPos pos = new RememberingPos(new Vector3f(vector4f.x, vector4f.y, vector4f.z));
             BendUtil.getBend(this.original).applyTo(pos);
             vector4f.set(pos.getPos(), vector4f.w);
-        }*/
+            vector4f.div(16);
+        }
         vector3f.set(calculateNormal(vector4fs));
     }
 
