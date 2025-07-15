@@ -44,10 +44,9 @@ public abstract class ElytraLayerMixin_playerAnim<S extends HumanoidRenderState,
                 elytra.mulPos(-1);
                 elytra.mulRot(-1, 1, -1);
                 torso.positionY *= -1;
-                float bend = elytra.getBend();
-                elytra.applyOtherBone(torso);
+                RenderUtil.translateMatrixToBone(poseStack, torso);
+                PlayerBendHelper.applyTorsoBendToMatrix(poseStack, torso.getBend());
                 RenderUtil.translateMatrixToBone(poseStack, elytra);
-                PlayerBendHelper.applyTorsoBendToMatrix(poseStack, bend);
             }
         }
     }

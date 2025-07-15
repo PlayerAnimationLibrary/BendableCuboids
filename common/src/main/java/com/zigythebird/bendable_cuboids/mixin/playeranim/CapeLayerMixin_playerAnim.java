@@ -39,21 +39,26 @@ public abstract class CapeLayerMixin_playerAnim extends RenderLayer<PlayerRender
     private void render(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, PlayerRenderState playerRenderState, float f, float g, CallbackInfo ci) {
         if (model instanceof CapeLayerAccessor capeLayer) {
             PlayerAnimManager emote = ((IPlayerAnimationState)playerRenderState).playerAnimLib$getAnimManager();
+            ModelPart part = capeLayer.getCape();
             if (emote != null && emote.isActive()) {
                 ModelPart torso = this.getParentModel().body;
                 PlayerAnimBone bone = ((IPlayerAnimationState)playerRenderState).playerAnimLib$getAnimProcessor().getBone("cape");
+                PlayerAnimBone torsoBone = ((IPlayerAnimationState)playerRenderState).playerAnimLib$getAnimProcessor().getBone("torso");
 
+                torsoBone.setToInitialPose();
+                emote.get3DTransform(torsoBone);
                 poseStack.translate(torso.x / 16, torso.y / 16, torso.z / 16);
                 RenderUtil.rotateZYX(poseStack.last(), torso.zRot, torso.yRot, torso.xRot);
-                PlayerBendHelper.applyTorsoBendToMatrix(poseStack, bone.getBend());
-                poseStack.translate(0.0F, 0.0F, 0.125F);
-                poseStack.mulPose(Axis.YP.rotation(3.14159f));
-
-                ModelPart part = capeLayer.getCape();
+                PlayerBendHelper.applyTorsoBendToMatrix(poseStack, -torsoBone.getBend());
                 bone.setToInitialPose();
                 emote.get3DTransform(bone);
 
                 RenderUtil.translatePartToBone(part, bone);
+
+                PlayerBendHelper.bend(part, torsoBone.getBend() + bone.getBend());
+            }
+            else {
+                PlayerBendHelper.bend(part, 0);
             }
         }
     }
