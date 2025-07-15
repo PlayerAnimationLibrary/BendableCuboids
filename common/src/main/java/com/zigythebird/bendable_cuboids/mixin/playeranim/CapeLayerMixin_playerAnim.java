@@ -58,7 +58,7 @@ public abstract class CapeLayerMixin_playerAnim extends RenderLayer<PlayerRender
                 PlayerBendHelper.bend(part, torsoBone.getBend() + bone.getBend());
             }
             else {
-                PlayerBendHelper.bend(part, 0);
+                PlayerBendHelper.resetBend(part);
             }
         }
     }
