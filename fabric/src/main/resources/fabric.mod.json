@@ -17,7 +17,7 @@
   "environment": "client",
   "entrypoints": {
     "client": [
-      "com.zigythebird.bendable_cuboids.fabric.Init"
+      "com.zigythebird.bendable_cuboids.fabric.BendableCuboidsModFabric"
     ]
   },
   "mixins": [
@@ -28,8 +28,7 @@
     "minecraft": ">=1.21.7"
   },
   "breaks": {
-    "ears": "*",
-    "skinlayers3d": "*"
+    "ears": "*"
   },
   "custom": {
     "modmenu": {

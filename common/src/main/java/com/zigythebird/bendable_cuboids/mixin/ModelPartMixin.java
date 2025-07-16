@@ -1,10 +1,12 @@
 package com.zigythebird.bendable_cuboids.mixin;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.zigythebird.bendable_cuboids.BendableCuboidsMod;
 import com.zigythebird.bendable_cuboids.api.BendableCube;
 import com.zigythebird.bendable_cuboids.api.BendableModelPart;
 import com.zigythebird.bendable_cuboids.api.IUpperPartHelper;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.core.Direction;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -36,6 +38,11 @@ public class ModelPartMixin implements BendableModelPart {
         return this.cubes.get(index);
     }
 
+    @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;III)V", at = @At("HEAD"))
+    private void bc$captureModelPart(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color, CallbackInfo ci) {
+        BendableCuboidsMod.currentModelPart = (ModelPart) (Object) this;
+    }
+
     @Inject(method = "copyFrom", at = @At("RETURN"))
     private void copyTransformExtended(ModelPart part, CallbackInfo ci) {
         Iterator<ModelPart.Cube> otherIterator = part.cubes.iterator();
@@ -44,10 +51,7 @@ public class ModelPartMixin implements BendableModelPart {
         while (otherIterator.hasNext() && myIterator.hasNext()){
             BendableCube myCube = (BendableCube) myIterator.next();
             BendableCube otherCube = (BendableCube) otherIterator.next();
-
-            Direction direction = otherCube.getBendDirection();
-            if (direction != null) myCube.rebuild(direction, otherCube.getBendPivot());
-            myCube.applyBend(otherCube.getBend());
+            myCube.bc$copyState(otherCube);
         }
         this.bc$isUpper = ((IUpperPartHelper) part).bc$isUpperPart();
     }

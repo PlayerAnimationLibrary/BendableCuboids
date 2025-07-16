@@ -54,5 +54,11 @@ public interface BendableCube extends Bendable {
         rebuild(direction, -1);
     }
 
-    void rebuild(@NotNull Direction direction, int pivot);
+    void rebuild(Direction direction, int pivot);
+
+    default void bc$copyState(BendableCube other) {
+        Direction direction = other.getBendDirection();
+        if (direction != null) rebuild(direction, other.getBendPivot());
+        applyBend(other.getBend());
+    }
 }

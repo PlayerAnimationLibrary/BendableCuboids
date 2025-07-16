@@ -30,10 +30,3 @@ type = "incompatible"
 versionRange = "[1.0,)"
 ordering = "NONE"
 side = "CLIENT"
-
-[[dependencies.bendable_cuboids]]
-modId = "skinlayers3d"
-type = "incompatible"
-versionRange = "[1.0,)"
-ordering = "NONE"
-side = "CLIENT"

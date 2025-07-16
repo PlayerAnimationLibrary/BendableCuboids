@@ -11,6 +11,9 @@ dependencies {
 
     modCompileOnly "com.zigythebird.playeranim:PlayerAnimationLibCommon:${rootProject.player_anim_version}"
     compileOnly "com.zigythebird.playeranim:PlayerAnimationLibCore:${rootProject.player_anim_version}"
+
+    // Third-party
+    modCompileOnly "maven.modrinth:3dskinlayers:kltACksh"
 }
 
 publishing {
