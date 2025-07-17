@@ -1,1 +1,1 @@
-RELEASE!
+Armor cape and elytra bug fixes + various other fixes.

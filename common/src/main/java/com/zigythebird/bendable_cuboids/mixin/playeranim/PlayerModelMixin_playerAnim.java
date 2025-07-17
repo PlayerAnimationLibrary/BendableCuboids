@@ -47,7 +47,7 @@ public abstract class PlayerModelMixin_playerAnim implements IMutableModel {
     @Inject(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/PlayerRenderState;)V", at = @At(value = "RETURN"))
     private void setupPlayerAnimation(PlayerRenderState playerRenderState, CallbackInfo ci) {
         PlayerModel model = ((PlayerModel)(Object)this);
-        if(playerRenderState instanceof IPlayerAnimationState state && state.playerAnimLib$getAnimManager().isActive()) {
+        if(playerRenderState instanceof IPlayerAnimationState state && state.playerAnimLib$getAnimManager() != null && state.playerAnimLib$getAnimManager().isActive()) {
             AnimationProcessor processor = state.playerAnimLib$getAnimProcessor();
             PlayerAnimBone torso = processor.getBone("torso");
             PlayerAnimBone rightArm = processor.getBone("right_arm");

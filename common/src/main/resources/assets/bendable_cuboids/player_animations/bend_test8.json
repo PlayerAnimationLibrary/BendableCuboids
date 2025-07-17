@@ -1,5 +1,5 @@
 {
-    "name": "bend_test7",
+    "name": "bend_test8",
     "author": "Your name",
     "description": "description",
     "emote":{
@@ -24,7 +24,7 @@
                 "easing": "EASEINOUTQUAD",
                 "turn": 0,
                 "body":{
-                    "bend":1.5707963705062866
+                    "bend":-1.5707963705062866
                 }
             },
             {
