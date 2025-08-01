@@ -6,6 +6,7 @@ import com.zigythebird.bendable_cuboids.BendableCuboidsMod;
 import com.zigythebird.bendable_cuboids.api.BendableCube;
 import com.zigythebird.bendable_cuboids.api.BendableModelPart;
 import com.zigythebird.bendable_cuboids.api.IUpperPartHelper;
+import com.zigythebird.bendable_cuboids.api.SodiumHelper;
 import net.minecraft.client.model.geom.ModelPart;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -21,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 @Mixin(ModelPart.class)
-public class ModelPartMixin implements BendableModelPart {
+public class ModelPartMixin implements BendableModelPart, SodiumHelper {
     @Shadow
     @Final
     public List<ModelPart.Cube> cubes;
@@ -36,6 +37,18 @@ public class ModelPartMixin implements BendableModelPart {
     public @Nullable BendableCube bc$getCuboid(int index) {
         if (index >= this.cubes.size() || index < 0) return null;
         return this.cubes.get(index);
+    }
+
+    @Override
+    public void bc$useSodiumRendering(boolean use) {
+        for (ModelPart.Cube cube : this.cubes) {
+            if (cube instanceof SodiumHelper helper) {
+                helper.bc$useSodiumRendering(use);
+            }
+        }
+        for (ModelPart child : this.children.values()) {
+            ((SodiumHelper) child).bc$useSodiumRendering(use);
+        }
     }
 
     @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;III)V", at = @At("HEAD"))

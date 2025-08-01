@@ -3,9 +3,6 @@ package com.zigythebird.bendable_cuboids.impl;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.zigythebird.bendable_cuboids.api.BendableCube;
-import com.zigythebird.bendable_cuboids.impl.compatibility.PlayerBendHelper;
-import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.model.PlayerModel;
 import net.minecraft.core.Direction;
 import org.joml.*;
 

@@ -4,7 +4,8 @@
       "com/zigythebird/bendable_cuboids/api/BendableCube"
     ],
     "net/minecraft/class_630": [
-      "com/zigythebird/bendable_cuboids/api/BendableModelPart"
+      "com/zigythebird/bendable_cuboids/api/BendableModelPart",
+      "com/zigythebird/bendable_cuboids/api/SodiumHelper"
     ]
   },
   "accessWidener": "bendable_cuboids.accesswidener"

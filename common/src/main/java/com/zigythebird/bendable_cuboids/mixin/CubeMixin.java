@@ -5,6 +5,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.zigythebird.bendable_cuboids.api.BendableCube;
+import com.zigythebird.bendable_cuboids.api.SodiumHelper;
 import com.zigythebird.bendable_cuboids.impl.*;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.core.Direction;
@@ -23,7 +24,7 @@ import java.util.function.Function;
 import static com.zigythebird.bendable_cuboids.impl.Quad.createAndAddQuads;
 
 @Mixin(ModelPart.Cube.class)
-public class CubeMixin implements BendableCube {
+public class CubeMixin implements BendableCube, SodiumHelper {
     @Shadow
     @Final
     public float minX;
@@ -74,6 +75,9 @@ public class CubeMixin implements BendableCube {
     protected int bc$pivot;
     @Unique
     protected float bc$bend;
+
+    @Unique
+    private boolean bc$useSodiumRendering = true;
 
     @Inject(method = "<init>", at = @At(value = "RETURN"))
     private void constructor(int u, int v, float x, float y, float z, float sizeX, float sizeY, float sizeZ, float extraX, float extraY, float extraZ, boolean mirror, float textureWidth, float textureHeight, Set<Direction> visibleFaces, CallbackInfo ci){
@@ -150,16 +154,23 @@ public class CubeMixin implements BendableCube {
 
         this.sides = planes.toArray(new Quad[0]);
         this.positions = positions.values().toArray(new RememberingPos[0]);
+        bc$iteratePositions(Function.identity());
+    }
+
+    @Override
+    public void bc$useSodiumRendering(boolean use) {
+        if (!use && this.sides == null) bc$build();
+        this.bc$useSodiumRendering = use;
     }
 
     @WrapMethod(method = "compile")
     private void bc$render(PoseStack.Pose pose, VertexConsumer buffer, int packedLight, int packedOverlay, int color, Operation<Void> original) {
-        if (this.bc$bend == 0 || this.sides == null) {
+        if ((this.bc$useSodiumRendering && this.bc$bend == 0) || this.sides == null) {
             original.call(pose, buffer, packedLight, packedOverlay, color);
             return;
         }
 
-        for (Quad quad : sides) {
+        for (Quad quad : this.sides) {
             quad.render(pose, buffer, packedLight, packedOverlay, color);
         }
     }
