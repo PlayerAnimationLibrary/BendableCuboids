@@ -12,6 +12,7 @@ import net.minecraft.core.Direction;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -35,6 +36,12 @@ public abstract class PlayerModelMixin_playerAnim implements IMutableModel {
     @Final
     public ModelPart leftPants;
 
+    private final PlayerAnimBone pal$torso = new PlayerAnimBone("torso");
+    private final PlayerAnimBone pal$rightArm = new PlayerAnimBone("right_arm");
+    private final PlayerAnimBone pal$leftArm = new PlayerAnimBone("left_arm");
+    private final PlayerAnimBone pal$rightLeg = new PlayerAnimBone("right_leg");
+    private final PlayerAnimBone pal$leftLeg = new PlayerAnimBone("left_leg");
+
     @Inject(method = "<init>", at = @At("TAIL"))
     private void bc$initBends(ModelPart modelPart, boolean bl, CallbackInfo ci) {
         PlayerBendHelper.initBend(this.jacket, Direction.DOWN);
@@ -48,24 +55,17 @@ public abstract class PlayerModelMixin_playerAnim implements IMutableModel {
     private void setupPlayerAnimation(PlayerRenderState playerRenderState, CallbackInfo ci) {
         PlayerModel model = ((PlayerModel)(Object)this);
         if(playerRenderState instanceof IPlayerAnimationState state && state.playerAnimLib$getAnimManager() != null && state.playerAnimLib$getAnimManager().isActive()) {
-            AnimationProcessor processor = state.playerAnimLib$getAnimProcessor();
-            PlayerAnimBone torso = processor.getBone("torso");
-            PlayerAnimBone rightArm = processor.getBone("right_arm");
-            PlayerAnimBone leftArm = processor.getBone("left_arm");
-            PlayerAnimBone rightLeg = processor.getBone("right_leg");
-            PlayerAnimBone leftLeg = processor.getBone("left_leg");
+            PlayerBendHelper.bend(model.body, pal$torso.getBend());
+            PlayerBendHelper.bend(model.rightArm, pal$rightArm.getBend());
+            PlayerBendHelper.bend(model.leftArm, pal$leftArm.getBend());
+            PlayerBendHelper.bend(model.rightLeg, pal$rightLeg.getBend());
+            PlayerBendHelper.bend(model.leftLeg, pal$leftLeg.getBend());
 
-            PlayerBendHelper.bend(model.body, torso.getBend());
-            PlayerBendHelper.bend(model.rightArm, rightArm.getBend());
-            PlayerBendHelper.bend(model.leftArm, leftArm.getBend());
-            PlayerBendHelper.bend(model.rightLeg, rightLeg.getBend());
-            PlayerBendHelper.bend(model.leftLeg, leftLeg.getBend());
-
-            PlayerBendHelper.bend(model.jacket, torso.getBend());
-            PlayerBendHelper.bend(model.rightSleeve, rightArm.getBend());
-            PlayerBendHelper.bend(model.leftSleeve, leftArm.getBend());
-            PlayerBendHelper.bend(model.rightPants, rightLeg.getBend());
-            PlayerBendHelper.bend(model.leftPants, leftLeg.getBend());
+            PlayerBendHelper.bend(model.jacket, pal$torso.getBend());
+            PlayerBendHelper.bend(model.rightSleeve, pal$rightArm.getBend());
+            PlayerBendHelper.bend(model.leftSleeve, pal$leftArm.getBend());
+            PlayerBendHelper.bend(model.rightPants, pal$rightLeg.getBend());
+            PlayerBendHelper.bend(model.leftPants, pal$leftLeg.getBend());
         } else {
             PlayerBendHelper.resetBend(model.body);
             PlayerBendHelper.resetBend(model.leftArm);

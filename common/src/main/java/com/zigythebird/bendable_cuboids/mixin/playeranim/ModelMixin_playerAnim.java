@@ -4,12 +4,8 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.zigythebird.bendable_cuboids.api.IUpperPartHelper;
 import com.zigythebird.bendable_cuboids.api.SodiumHelper;
-import com.zigythebird.bendable_cuboids.impl.compatibility.PlayerBendHelper;
 import com.zigythebird.playeranim.accessors.IMutableModel;
-import com.zigythebird.playeranim.animation.PlayerAnimManager;
-import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
@@ -41,24 +37,8 @@ public abstract class ModelMixin_playerAnim {
 
             ((SodiumHelper) instance).bc$useSodiumRendering(false);
             for (ModelPart part : modelParts) {
-                if (!((IUpperPartHelper) part).bc$isUpperPart()) {
-                    part.render(poseStack, buffer, packedLight, packedOverlay, color);
-                }
+                part.render(poseStack, buffer, packedLight, packedOverlay, color);
             }
-
-            poseStack.pushPose();
-            PlayerAnimManager emoteSupplier = mutable.playerAnimLib$getAnimation();
-            PlayerAnimBone bone = new PlayerAnimBone("torso");
-            emoteSupplier.get3DTransform(bone);
-            PlayerBendHelper.applyTorsoBendToMatrix(poseStack, bone.getBend());
-
-            for (ModelPart part : modelParts) {
-                if (((IUpperPartHelper) part).bc$isUpperPart()) {
-                    part.render(poseStack, buffer, packedLight, packedOverlay, color);
-                }
-            }
-
-            poseStack.popPose();
             ((SodiumHelper) instance).bc$useSodiumRendering(true);
         } else {
             original.call(instance, poseStack, buffer, packedLight, packedOverlay, color);

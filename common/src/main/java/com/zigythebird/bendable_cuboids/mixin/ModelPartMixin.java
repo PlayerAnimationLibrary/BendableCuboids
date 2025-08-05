@@ -5,14 +5,12 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.zigythebird.bendable_cuboids.BendableCuboidsMod;
 import com.zigythebird.bendable_cuboids.api.BendableCube;
 import com.zigythebird.bendable_cuboids.api.BendableModelPart;
-import com.zigythebird.bendable_cuboids.api.IUpperPartHelper;
 import com.zigythebird.bendable_cuboids.api.SodiumHelper;
 import net.minecraft.client.model.geom.ModelPart;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -29,9 +27,6 @@ public class ModelPartMixin implements BendableModelPart, SodiumHelper {
     @Shadow
     @Final
     public Map<String, ModelPart> children;
-
-    @Unique
-    private boolean bc$isUpper = false;
 
     @Override
     public @Nullable BendableCube bc$getCuboid(int index) {
@@ -65,21 +60,6 @@ public class ModelPartMixin implements BendableModelPart, SodiumHelper {
             BendableCube myCube = (BendableCube) myIterator.next();
             BendableCube otherCube = (BendableCube) otherIterator.next();
             myCube.bc$copyState(otherCube);
-        }
-        this.bc$isUpper = ((IUpperPartHelper) part).bc$isUpperPart();
-    }
-
-    @Override
-    public boolean bc$isUpperPart() {
-        return this.bc$isUpper;
-    }
-
-    @Override
-    public void bc$setUpperPart(boolean bl) {
-        this.bc$isUpper = bl;
-
-        for (ModelPart child : this.children.values()) {
-            ((IUpperPartHelper) child).bc$setUpperPart(bl);
         }
     }
 }
