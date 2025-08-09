@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(CapeLayer.class)
 public abstract class CapeLayerMixin_playerAnim implements ICapeLayer {
+    @Override
     public void applyBend(ModelPart cape, ModelPart torso, float bend) {
         BendableCube cube = ((BendableModelPart)torso).bc$getCuboid(0);
         if (cube != null) {
@@ -18,6 +19,7 @@ public abstract class CapeLayerMixin_playerAnim implements ICapeLayer {
         PlayerBendHelper.bend(cape, bend);
     }
 
+    @Override
     public void resetBend(ModelPart cape) {
         PlayerBendHelper.resetBend(cape);
     }
