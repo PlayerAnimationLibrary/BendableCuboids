@@ -34,6 +34,7 @@ allprojects {
     group = rootProject.maven_group
 
     repositories {
+        mavenLocal()
         // Fix issue with lwjgl-freetype not being found on macOS
         maven {
             url = "https://libraries.minecraft.net"
@@ -49,7 +50,6 @@ allprojects {
             name = "RedlanceMinecraft"
             url = "https://repo.redlance.org/public"
         }
-        mavenLocal()
         maven {
             name = "Modrinth"
             url = "https://api.modrinth.com/maven"
