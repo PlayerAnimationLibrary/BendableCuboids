@@ -1,5 +1,7 @@
 package com.zigythebird.bendable_cuboids.mixin.playeranim;
 
+import com.llamalad7.mixinextras.sugar.Share;
+import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.zigythebird.bendable_cuboids.api.SodiumHelper;
@@ -23,15 +25,17 @@ public abstract class ModelMixin_playerAnim {
     @Shadow public abstract ModelPart root();
 
     @Inject(method = "renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;II)V", at = @At("HEAD"))
-    public void bc$render(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, CallbackInfo ci) {
-        if (this instanceof IMutableModel mutable && mutable.playerAnimLib$getAnimation() != null && mutable.playerAnimLib$getAnimation().isActive()) {
+    public void bc$render(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, CallbackInfo ci, @Share("palActive") LocalBooleanRef palActive) {
+        palActive.set(this instanceof IMutableModel mutable && mutable.playerAnimLib$getAnimation() != null && mutable.playerAnimLib$getAnimation().isActive());
+        if (palActive.get()) {
             ((SodiumHelper) this.root()).bc$useSodiumRendering(false);
         }
     }
 
     @Inject(method = "renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;II)V", at = @At("TAIL"))
-    public void bc$renderTail(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, CallbackInfo ci) {
-        ((SodiumHelper) this.root()).bc$useSodiumRendering(true);
+    public void bc$renderTail(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, CallbackInfo ci, @Share("palActive") LocalBooleanRef palActive) {
+        if (palActive.get())
+            ((SodiumHelper) this.root()).bc$useSodiumRendering(true);
     }
 
     @Unique
