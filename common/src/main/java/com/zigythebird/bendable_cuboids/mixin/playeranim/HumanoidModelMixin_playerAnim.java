@@ -1,6 +1,5 @@
 package com.zigythebird.bendable_cuboids.mixin.playeranim;
 
-import com.zigythebird.bendable_cuboids.api.IUpperPartHelper;
 import com.zigythebird.bendable_cuboids.impl.compatibility.PlayerBendHelper;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -18,9 +17,6 @@ import java.util.function.Function;
 
 @Mixin(HumanoidModel.class)
 public class HumanoidModelMixin_playerAnim {
-    @Shadow
-    @Final
-    public ModelPart head;
     @Shadow
     @Final
     public ModelPart rightArm;
@@ -44,9 +40,5 @@ public class HumanoidModelMixin_playerAnim {
         PlayerBendHelper.initBend(this.leftArm, Direction.UP);
         PlayerBendHelper.initBend(this.rightLeg, Direction.UP);
         PlayerBendHelper.initBend(this.leftLeg, Direction.UP);
-
-        ((IUpperPartHelper) this.head).bc$setUpperPart(true);
-        ((IUpperPartHelper) this.rightArm).bc$setUpperPart(true);
-        ((IUpperPartHelper) this.leftArm).bc$setUpperPart(true);
     }
 }

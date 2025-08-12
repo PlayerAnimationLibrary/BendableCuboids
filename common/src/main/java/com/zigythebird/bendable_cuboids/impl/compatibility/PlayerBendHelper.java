@@ -23,9 +23,9 @@ public class PlayerBendHelper {
         if (cube != null) cube.rebuild(direction);
     }
 
-    public static void initCapeBend(ModelPart modelPart) {
+    public static void initBend(ModelPart modelPart, Direction direction, int pivot) {
         BendableCube cube = ((BendableModelPart) modelPart).bc$getCuboid(0);
-        if (cube != null) cube.rebuild(Direction.UP, 6);
+        if (cube != null) cube.rebuild(direction, pivot);
     }
 
     public static void applyTorsoBendToMatrix(PoseStack poseStack, float bend) {
