@@ -16,7 +16,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ItemInHandLayer.class)
-@SuppressWarnings("UnstableApiUsage")
 public class ItemInHandLayerMixin_playerAnim<S extends ArmedEntityRenderState> {
     @Unique
     private final PlayerAnimBone bendableCuboids$rightArm = new PlayerAnimBone("right_arm");
