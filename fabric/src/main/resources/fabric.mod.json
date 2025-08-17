@@ -24,8 +24,11 @@
     "bendable_cuboids.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.16.14",
+    "fabricloader": ">=0.17.2",
     "minecraft": ">=1.21.7"
+  },
+  "breaks": {
+    "player_animation_library": "<1.0.7+mc1.21.7"
   },
   "custom": {
     "modmenu": {
