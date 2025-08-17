@@ -1,2 +1,1 @@
-New upper part system that fixed compat issues with the ears mod among other mods.  
-Some refactoring.
+Fixed [Emotecraft issue #636](https://github.com/KosmX/emotes/issues/636) where playing animations while wearning trimmed armor caused crashes.
