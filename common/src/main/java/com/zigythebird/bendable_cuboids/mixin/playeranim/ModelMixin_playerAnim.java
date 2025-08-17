@@ -21,16 +21,16 @@ public abstract class ModelMixin_playerAnim {
     @Shadow
     public abstract ModelPart root();
 
-    @Inject(method = "renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;II)V", at = @At("HEAD"))
-    public void bc$render(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, CallbackInfo ci, @Share("palActive") LocalBooleanRef palActive) {
+    @Inject(method = "renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;III)V", at = @At("HEAD"))
+    public void bc$render(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color, CallbackInfo ci, @Share("palActive") LocalBooleanRef palActive) {
         PlayerAnimManager manager = this instanceof IMutableModel mutable ? mutable.playerAnimLib$getAnimation() : null;
         palActive.set(manager != null && manager.isActive());
 
         if (palActive.get()) ((SodiumHelper) this.root()).bc$useSodiumRendering(false);
     }
 
-    @Inject(method = "renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;II)V", at = @At("TAIL"))
-    public void bc$renderTail(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, CallbackInfo ci, @Share("palActive") LocalBooleanRef palActive) {
+    @Inject(method = "renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;III)V", at = @At("TAIL"))
+    public void bc$renderTail(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color, CallbackInfo ci, @Share("palActive") LocalBooleanRef palActive) {
         if (palActive.get()) ((SodiumHelper) this.root()).bc$useSodiumRendering(true);
     }
 }
