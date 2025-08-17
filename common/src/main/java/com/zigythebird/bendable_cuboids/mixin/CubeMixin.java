@@ -92,6 +92,8 @@ public class CubeMixin implements BendableCube, SodiumHelper {
         this.bc$direction = Objects.requireNonNull(direction);
         this.bc$pivot = point;
 
+        direction = Direction.UP;
+
         Vector3f pivot = new Vector3f(0, 0, 0);
         if (point >= 0) {
             float size = direction.step().mul(bc$data.sizeX(), bc$data.sizeY(), bc$data.sizeZ()).length();
@@ -100,11 +102,8 @@ public class CubeMixin implements BendableCube, SodiumHelper {
                 bc$vertices[6] = bc$vertices[6].sub(pivot);
             }
         }
-        boolean bl = direction == Direction.UP || direction == Direction.SOUTH || direction == Direction.EAST;
-        Plane aPlane = new Plane(direction.step(), bc$vertices[6]);
-        Plane bPlane = new Plane(direction.step(), bc$vertices[0]);
-        this.bc$basePlane = bl ? aPlane : bPlane;
-        this.bc$otherPlane = bl ? bPlane : aPlane;
+        this.bc$basePlane = new Plane(direction.step(), bc$vertices[6]);
+        this.bc$otherPlane = new Plane(direction.step(), bc$vertices[0]);
 
         this.bc$fullSize = -direction.step().dot(bc$vertices[0]) + direction.step().dot(bc$vertices[6]);
         this.bc$fixX = (bc$data.sizeX() + minX + minX - pivot.x())/2;
