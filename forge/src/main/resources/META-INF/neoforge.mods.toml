@@ -23,3 +23,10 @@ type = "required"
 versionRange = "[1.21.7,)"
 ordering = "NONE"
 side = "CLIENT"
+
+[[dependencies.bendable_cuboids]]
+modId="player_animation_library"
+type="incompatible"
+versionRange="[1.0,1.0.7+mc1.21.7)"
+ordering="NONE"
+side="BOTH"
