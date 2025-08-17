@@ -10,10 +10,8 @@
     "playeranim.CapeLayerMixin_playerAnim",
     "playeranim.HumanoidModelMixin_playerAnim",
     "playeranim.ItemInHandLayerMixin_playerAnim",
-    "playeranim.LivingEntityMixin_playerAnim",
     "playeranim.ModelMixin_playerAnim",
     "playeranim.PlayerCapeModelMixin_playerAnim",
-    "playeranim.PlayerModelAccessor_playerAnim",
     "playeranim.PlayerModelMixin_playerAnim",
     "playeranim.PlayerRendererMixin_playerAnim"
   ],
