@@ -35,7 +35,7 @@ public class HumanoidModelMixin_playerAnim {
 
     @Inject(method = "<init>(Lnet/minecraft/client/model/geom/ModelPart;Ljava/util/function/Function;)V", at = @At("TAIL"))
     private void bc$initBends(ModelPart root, Function<ResourceLocation, RenderType> renderType, CallbackInfo ci) {
-        PlayerBendHelper.initBend(this.body, Direction.DOWN);
+        PlayerBendHelper.initBend(this.body, Direction.UP);
         PlayerBendHelper.initBend(this.rightArm, Direction.UP);
         PlayerBendHelper.initBend(this.leftArm, Direction.UP);
         PlayerBendHelper.initBend(this.rightLeg, Direction.UP);

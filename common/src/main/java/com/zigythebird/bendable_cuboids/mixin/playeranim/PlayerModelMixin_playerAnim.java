@@ -51,7 +51,7 @@ public abstract class PlayerModelMixin_playerAnim extends HumanoidModel<PlayerRe
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void bc$initBends(ModelPart modelPart, boolean bl, CallbackInfo ci) {
-        PlayerBendHelper.initBend(this.jacket, Direction.DOWN);
+        PlayerBendHelper.initBend(this.jacket, Direction.UP);
         PlayerBendHelper.initBend(this.rightSleeve, Direction.UP);
         PlayerBendHelper.initBend(this.leftSleeve, Direction.UP);
         PlayerBendHelper.initBend(this.rightPants, Direction.UP);

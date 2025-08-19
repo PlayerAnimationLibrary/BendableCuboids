@@ -47,7 +47,9 @@ public interface BendableCube extends Bendable {
     float bendHeight();
 
     default boolean isBendInverted() {
-        return getBendDirection() == Direction.UP || getBendDirection() == Direction.SOUTH || getBendDirection() == Direction.EAST;
+        Direction direction = getBendDirection();
+        if (direction == null) return false;
+        return direction.getAxisDirection() == Direction.AxisDirection.POSITIVE;
     }
 
     default void rebuild(@NotNull Direction direction) {
