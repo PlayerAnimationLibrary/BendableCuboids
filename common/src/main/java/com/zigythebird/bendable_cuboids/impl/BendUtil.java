@@ -17,7 +17,7 @@ public class BendUtil {
 
     public static BendApplier getBend(BendableCube cuboid, float bendValue) {
         return getBend(cuboid.getBendX(), cuboid.getBendY(), cuboid.getBendZ(),
-                cuboid.getBasePlane(), cuboid.getOtherPlane(), false, cuboid.bendHeight(), bendValue);
+                cuboid.getBasePlane(), cuboid.getOtherPlane(), cuboid.isBendInverted(), false, cuboid.bendHeight(), bendValue);
     }
 
     /**
@@ -25,7 +25,7 @@ public class BendUtil {
      * @param bendValue bend value
      */
     public static BendApplier getBend(float bendX, float bendY, float bendZ, Plane basePlane, Plane otherPlane,
-                                      boolean mirrorBend, float bendHeight, float bendValue) {
+                                      boolean isBendInverted, boolean mirrorBend, float bendHeight, float bendValue) {
         if (mirrorBend) bendValue *= -1;
         final float finalBend = bendValue;
         Matrix4f transformMatrix = applyBendToMatrix(new Matrix4f(), bendX, bendY, bendZ, bendValue);
@@ -36,12 +36,12 @@ public class BendUtil {
             float distFromBase = Math.abs(basePlane.distanceTo(pos));
             float distFromOther = Math.abs(otherPlane.distanceTo(pos));
             float s = (float) Math.tan(finalBend/2)*pos.z;
-            if (mirrorBend) {
+            if (mirrorBend || !isBendInverted) {
                 float temp = distFromBase;
                 distFromBase = distFromOther;
                 distFromOther = temp;
             }
-            float v = halfSize - (s < 0 ? Math.min(Math.abs(s)/2, 1) : Math.abs(s));
+            float v = halfSize - ((isBendInverted ? s < 0 : s >= 0) ? Math.min(Math.abs(s)/2, 1) : Math.abs(s));
             if (distFromBase < distFromOther) {
                 if (distFromBase + distFromOther <= bendHeight && distFromBase > v)
                     pos.y = bendY + s;
