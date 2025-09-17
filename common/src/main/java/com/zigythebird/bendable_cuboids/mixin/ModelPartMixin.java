@@ -51,8 +51,8 @@ public class ModelPartMixin implements BendableModelPart, SodiumHelper {
         BendableCuboidsMod.currentModelPart = (ModelPart) (Object) this;
     }
 
-    @Inject(method = "copyFrom", at = @At("RETURN"))
-    private void copyTransformExtended(ModelPart part, CallbackInfo ci) {
+    /*@Inject(method = "copyFrom", at = @At("RETURN"))
+    private void copyTransformExtended(ModelPart part, CallbackInfo ci) { TODO 1.21.9
         Iterator<ModelPart.Cube> otherIterator = part.cubes.iterator();
         Iterator<ModelPart.Cube> myIterator = this.cubes.iterator();
 
@@ -61,5 +61,5 @@ public class ModelPartMixin implements BendableModelPart, SodiumHelper {
             BendableCube otherCube = (BendableCube) otherIterator.next();
             myCube.bc$copyState(otherCube);
         }
-    }
+    }*/
 }
