@@ -14,11 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-import java.util.List;
-
 public class SkinLayersCompat implements MeshTransformerProvider, MeshTransformer {
-    private static final List<String> OVERLAY_NAMES = List.of("left_sleeve", "right_sleeve", "left_pants", "right_pants", "jacket", "hat");
-
     protected final MeshTransformerProvider parent;
     protected @Nullable BendableCube original;
     protected @Nullable MeshTransformer transformer;
@@ -31,13 +27,12 @@ public class SkinLayersCompat implements MeshTransformerProvider, MeshTransforme
         SkinLayersAPI.setupMeshTransformerProvider(new SkinLayersCompat(SkinLayersAPI.getMeshTransformerProvider()));
     }
 
-    /**
-     * m̶o̶d̶e̶l̶P̶a̶r̶t̶ ̶i̶s̶ ̶a̶l̶w̶a̶y̶s̶ ̶n̶u̶l̶l̶ ̶b̶e̶c̶a̶u̶s̶e̶ ̶3̶d̶s̶k̶i̶n̶l̶a̶y̶e̶r̶s̶ ̶i̶s̶ ̶s̶h̶i̶t̶ TR7 fixed it!
-     */
     @Override
     public MeshTransformer prepareTransformer(@Nullable ModelPart modelPart) {
-        if (modelPart == null) modelPart = getOverlayPart(BendableCuboidsMod.currentModelPart);
-        if (modelPart == null) return this.parent.prepareTransformer(null);
+        if (modelPart == null) {
+            BendableCuboidsMod.LOGGER.error("3dskinlayers passed a null part of the model, please report this to TR!", new Throwable());
+            return this.parent.prepareTransformer(null);
+        }
 
         this.original = ((BendableModelPart) modelPart).bc$getCuboid(0);
         this.transformer = this.parent.prepareTransformer(modelPart);
@@ -81,15 +76,5 @@ public class SkinLayersCompat implements MeshTransformerProvider, MeshTransforme
         vecA.cross(vecB);
         // Return the cross-product, if it's zero then return anything non-zero to not cause crash...
         return vecA.normalize().isFinite() ? vecA : Direction.NORTH.step();
-    }
-
-    public static ModelPart getOverlayPart(ModelPart modelPart) {
-        if (modelPart == null) return null;
-        for (String overlay : OVERLAY_NAMES) {
-            if (modelPart.hasChild(overlay)) {
-                return modelPart.getChild(overlay);
-            }
-        }
-        return modelPart;
     }
 }
