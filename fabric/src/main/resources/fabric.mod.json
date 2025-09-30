@@ -25,10 +25,10 @@
   ],
   "depends": {
     "fabricloader": ">=0.17.2",
-    "minecraft": ">=1.21.7"
+    "minecraft": ">=1.21.9"
   },
   "breaks": {
-    "player_animation_library": "<1.0.7+mc1.21.7"
+    "player_animation_library": "<1.0.12+mc1.21.7"
   },
   "custom": {
     "modmenu": {
