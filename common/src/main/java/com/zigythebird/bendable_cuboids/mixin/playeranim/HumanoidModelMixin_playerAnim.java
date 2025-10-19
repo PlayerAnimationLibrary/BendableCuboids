@@ -2,7 +2,7 @@ package com.zigythebird.bendable_cuboids.mixin.playeranim;
 
 import com.zigythebird.bendable_cuboids.api.IMutableModel;
 import com.zigythebird.bendable_cuboids.impl.compatibility.PlayerBendHelper;
-import com.zigythebird.playeranim.animation.PlayerAnimManager;
+import com.zigythebird.playeranim.animation.AvatarAnimManager;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.RenderType;
@@ -22,7 +22,7 @@ import java.util.function.Function;
 @Mixin(HumanoidModel.class)
 public class HumanoidModelMixin_playerAnim implements IMutableModel {
     @Unique
-    private PlayerAnimManager bc$animation = null;
+    private AvatarAnimManager bc$animation = null;
 
     @Shadow
     @Final
@@ -50,12 +50,12 @@ public class HumanoidModelMixin_playerAnim implements IMutableModel {
     }
 
     @Override
-    public void bc$setAnimation(@Nullable PlayerAnimManager emoteSupplier) {
+    public void bc$setAnimation(@Nullable AvatarAnimManager emoteSupplier) {
         this.bc$animation = emoteSupplier;
     }
 
     @Override
-    public @Nullable PlayerAnimManager bc$getAnimation() {
+    public @Nullable AvatarAnimManager bc$getAnimation() {
         return this.bc$animation;
     }
 }

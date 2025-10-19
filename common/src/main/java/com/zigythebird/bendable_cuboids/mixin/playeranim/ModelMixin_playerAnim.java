@@ -6,7 +6,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.zigythebird.bendable_cuboids.api.IMutableModel;
 import com.zigythebird.bendable_cuboids.api.SodiumHelper;
-import com.zigythebird.playeranim.animation.PlayerAnimManager;
+import com.zigythebird.playeranim.animation.AvatarAnimManager;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
 import org.spongepowered.asm.mixin.Mixin;
@@ -22,7 +22,7 @@ public abstract class ModelMixin_playerAnim {
 
     @Inject(method = "renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;III)V", at = @At("HEAD"))
     public void bc$render(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color, CallbackInfo ci, @Share("palActive") LocalBooleanRef palActive) {
-        PlayerAnimManager manager = this instanceof IMutableModel mutable ? mutable.bc$getAnimation() : null;
+        AvatarAnimManager manager = this instanceof IMutableModel mutable ? mutable.bc$getAnimation() : null;
         palActive.set(manager != null && manager.isActive());
 
         if (palActive.get()) ((SodiumHelper) this.root()).bc$useSodiumRendering(false);

@@ -2,8 +2,8 @@ package com.zigythebird.bendable_cuboids.mixin.playeranim;
 
 import com.zigythebird.bendable_cuboids.api.IMutableModel;
 import com.zigythebird.bendable_cuboids.impl.compatibility.PlayerBendHelper;
-import com.zigythebird.playeranim.accessors.IPlayerAnimationState;
-import com.zigythebird.playeranim.animation.PlayerAnimManager;
+import com.zigythebird.playeranim.accessors.IAvatarAnimationState;
+import com.zigythebird.playeranim.animation.AvatarAnimManager;
 import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
@@ -59,7 +59,7 @@ public abstract class PlayerModelMixin_playerAnim extends HumanoidModel<AvatarRe
 
     @Inject(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;)V", at = @At(value = "RETURN"))
     private void setupPlayerAnimation(AvatarRenderState playerRenderState, CallbackInfo ci) {
-        PlayerAnimManager manager = playerRenderState instanceof IPlayerAnimationState state ? state.playerAnimLib$getAnimManager() : null;
+        AvatarAnimManager manager = playerRenderState instanceof IAvatarAnimationState state ? state.playerAnimLib$getAnimManager() : null;
         if (manager != null && manager.isActive()) {
             ((IMutableModel) this).bc$setAnimation(manager);
 

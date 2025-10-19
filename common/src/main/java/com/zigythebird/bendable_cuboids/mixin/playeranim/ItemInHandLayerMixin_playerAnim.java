@@ -2,7 +2,7 @@ package com.zigythebird.bendable_cuboids.mixin.playeranim;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import com.zigythebird.playeranim.accessors.IPlayerAnimationState;
+import com.zigythebird.playeranim.accessors.IAvatarAnimationState;
 import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
@@ -24,7 +24,7 @@ public class ItemInHandLayerMixin_playerAnim<S extends ArmedEntityRenderState> {
 
     @Inject(method = "submitArmWithItem", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;mulPose(Lorg/joml/Quaternionfc;)V", ordinal = 0))
     private void renderMixin(S armedEntityRenderState, ItemStackRenderState itemStackRenderState, HumanoidArm humanoidArm, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int i, CallbackInfo ci){
-        if(armedEntityRenderState instanceof IPlayerAnimationState state){
+        if(armedEntityRenderState instanceof IAvatarAnimationState state){
             if(state.playerAnimLib$getAnimManager().isActive()){
                 PlayerAnimBone bone = humanoidArm == HumanoidArm.LEFT ? bendableCuboids$leftArm : bendableCuboids$rightArm;
                 bone.bend = 0;

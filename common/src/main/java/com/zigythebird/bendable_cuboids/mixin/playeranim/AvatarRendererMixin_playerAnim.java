@@ -3,7 +3,7 @@ package com.zigythebird.bendable_cuboids.mixin.playeranim;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.zigythebird.bendable_cuboids.api.IMutableModel;
 import com.zigythebird.bendable_cuboids.impl.compatibility.PlayerBendHelper;
-import com.zigythebird.playeranim.animation.PlayerAnimManager;
+import com.zigythebird.playeranim.animation.AvatarAnimManager;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -27,7 +27,7 @@ public abstract class AvatarRendererMixin_playerAnim extends LivingEntityRendere
     @Inject(method = "renderHand", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitModelPart(Lnet/minecraft/client/model/geom/ModelPart;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/RenderType;IILnet/minecraft/client/renderer/texture/TextureAtlasSprite;)V"))
     private void renderHand(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int i, ResourceLocation resourceLocation, ModelPart modelPart, boolean bl, CallbackInfo ci) {
         PlayerModel model = this.getModel();
-        PlayerAnimManager manager = ((IMutableModel) model).bc$getAnimation();
+        AvatarAnimManager manager = ((IMutableModel) model).bc$getAnimation();
 
         if (manager == null || !manager.getFirstPersonMode().isEnabled()) {
             PlayerBendHelper.resetBend(modelPart);
