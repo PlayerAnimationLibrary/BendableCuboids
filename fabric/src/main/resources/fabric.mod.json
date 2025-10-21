@@ -28,7 +28,7 @@
     "minecraft": ">=1.21.9"
   },
   "breaks": {
-    "player_animation_library": "<1.0.12+mc1.21.7"
+    "player_animation_library": "<1.1.0+alpha.1+mc.1.21.9"
   },
   "custom": {
     "modmenu": {
