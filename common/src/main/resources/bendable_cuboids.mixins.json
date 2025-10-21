@@ -7,7 +7,6 @@
   "client": [
     "CubeMixin",
     "ModelPartMixin",
-    "playeranim.CapeLayerMixin_playerAnim",
     "playeranim.HumanoidModelMixin_playerAnim",
     "playeranim.ItemInHandLayerMixin_playerAnim",
     "playeranim.ModelMixin_playerAnim",
