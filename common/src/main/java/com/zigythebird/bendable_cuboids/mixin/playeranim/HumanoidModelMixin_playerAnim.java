@@ -1,14 +1,18 @@
 package com.zigythebird.bendable_cuboids.mixin.playeranim;
 
+import com.zigythebird.bendable_cuboids.api.IMutableModel;
 import com.zigythebird.bendable_cuboids.impl.compatibility.PlayerBendHelper;
+import com.zigythebird.playeranim.animation.AvatarAnimManager;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -16,7 +20,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.function.Function;
 
 @Mixin(HumanoidModel.class)
-public class HumanoidModelMixin_playerAnim {
+public class HumanoidModelMixin_playerAnim implements IMutableModel {
+    @Unique
+    private AvatarAnimManager bc$animation = null;
+
     @Shadow
     @Final
     public ModelPart rightArm;
@@ -40,5 +47,15 @@ public class HumanoidModelMixin_playerAnim {
         PlayerBendHelper.initBend(this.leftArm, Direction.UP);
         PlayerBendHelper.initBend(this.rightLeg, Direction.UP);
         PlayerBendHelper.initBend(this.leftLeg, Direction.UP);
+    }
+
+    @Override
+    public void bc$setAnimation(@Nullable AvatarAnimManager emoteSupplier) {
+        this.bc$animation = emoteSupplier;
+    }
+
+    @Override
+    public @Nullable AvatarAnimManager bc$getAnimation() {
+        return this.bc$animation;
     }
 }

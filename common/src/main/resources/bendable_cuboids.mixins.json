@@ -7,13 +7,12 @@
   "client": [
     "CubeMixin",
     "ModelPartMixin",
-    "playeranim.CapeLayerMixin_playerAnim",
     "playeranim.HumanoidModelMixin_playerAnim",
     "playeranim.ItemInHandLayerMixin_playerAnim",
     "playeranim.ModelMixin_playerAnim",
     "playeranim.PlayerCapeModelMixin_playerAnim",
     "playeranim.PlayerModelMixin_playerAnim",
-    "playeranim.PlayerRendererMixin_playerAnim"
+    "playeranim.AvatarRendererMixin_playerAnim"
   ],
   "injectors": {
     "defaultRequire": 1

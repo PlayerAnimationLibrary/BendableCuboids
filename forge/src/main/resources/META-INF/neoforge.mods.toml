@@ -20,13 +20,13 @@ config = "bendable_cuboids.mixins.json"
 [[dependencies.bendable_cuboids]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.21.7,)"
+versionRange = "[1.21.9,)"
 ordering = "NONE"
 side = "CLIENT"
 
 [[dependencies.bendable_cuboids]]
 modId="player_animation_library"
 type="incompatible"
-versionRange="[1.0,1.0.7+mc1.21.7)"
+versionRange="[1.0,1.1.0+alpha.1+mc.1.21.9)"
 ordering="NONE"
 side="BOTH"

@@ -1,6 +1,5 @@
 package com.zigythebird.bendable_cuboids.impl;
 
-import net.minecraft.client.model.geom.ModelPart;
 import org.joml.Vector3f;
 
 /**
@@ -34,9 +33,4 @@ public interface IVertex {
      * @return The remapped IVertex
      */
     IVertex remap(float u, float v);
-
-    default ModelPart.Vertex toMojVertex(){
-        return new ModelPart.Vertex(this.getPos(), getU(), getV());
-    }
-
 }

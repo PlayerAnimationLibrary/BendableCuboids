@@ -1,14 +1,14 @@
 package com.zigythebird.bendable_cuboids.mixin.playeranim;
 
+import com.zigythebird.bendable_cuboids.api.IMutableModel;
 import com.zigythebird.bendable_cuboids.impl.compatibility.PlayerBendHelper;
-import com.zigythebird.playeranim.accessors.IMutableModel;
-import com.zigythebird.playeranim.accessors.IPlayerAnimationState;
-import com.zigythebird.playeranim.animation.PlayerAnimManager;
+import com.zigythebird.playeranim.accessors.IAvatarAnimationState;
+import com.zigythebird.playeranim.animation.AvatarAnimManager;
 import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.renderer.entity.state.PlayerRenderState;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.core.Direction;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,8 +18,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = PlayerModel.class, priority = 2002)
-@SuppressWarnings("UnstableApiUsage")
-public abstract class PlayerModelMixin_playerAnim extends HumanoidModel<PlayerRenderState> implements IMutableModel {
+public abstract class PlayerModelMixin_playerAnim extends HumanoidModel<AvatarRenderState> {
     @Shadow
     @Final
     public ModelPart jacket;
@@ -58,10 +57,12 @@ public abstract class PlayerModelMixin_playerAnim extends HumanoidModel<PlayerRe
         PlayerBendHelper.initBend(this.leftPants, Direction.UP);
     }
 
-    @Inject(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/PlayerRenderState;)V", at = @At(value = "RETURN"))
-    private void setupPlayerAnimation(PlayerRenderState playerRenderState, CallbackInfo ci) {
-        PlayerAnimManager manager = playerRenderState instanceof IPlayerAnimationState state ? state.playerAnimLib$getAnimManager() : null;
+    @Inject(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;)V", at = @At(value = "RETURN"))
+    private void setupPlayerAnimation(AvatarRenderState playerRenderState, CallbackInfo ci) {
+        AvatarAnimManager manager = playerRenderState instanceof IAvatarAnimationState state ? state.playerAnimLib$getAnimManager() : null;
         if (manager != null && manager.isActive()) {
+            ((IMutableModel) this).bc$setAnimation(manager);
+
             PlayerBendHelper.bend(this.body, pal$torso.getBend());
             PlayerBendHelper.bend(this.rightArm, pal$rightArm.getBend());
             PlayerBendHelper.bend(this.leftArm, pal$leftArm.getBend());
@@ -85,6 +86,8 @@ public abstract class PlayerModelMixin_playerAnim extends HumanoidModel<PlayerRe
             PlayerBendHelper.resetBend(this.rightSleeve);
             PlayerBendHelper.resetBend(this.leftPants);
             PlayerBendHelper.resetBend(this.rightPants);
+
+            ((IMutableModel) this).bc$setAnimation(null);
         }
     }
 }

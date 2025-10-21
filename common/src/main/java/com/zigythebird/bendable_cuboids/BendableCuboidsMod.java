@@ -1,10 +1,11 @@
 package com.zigythebird.bendable_cuboids;
 
 import com.zigythebird.bendable_cuboids.impl.compatibility.SkinLayersCompat;
-import net.minecraft.client.model.geom.ModelPart;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class BendableCuboidsMod {
-    public static ModelPart currentModelPart;
+    public static final Logger LOGGER = LoggerFactory.getLogger("BendableCuboids");
 
     public void setupSkinLayersTransformer() {
         try {
