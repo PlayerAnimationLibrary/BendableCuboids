@@ -27,7 +27,7 @@ public class PlayerCapeModelMixin_playerAnim implements ICapeLayer {
 
     @Override
     public void applyBend(AvatarAnimManager manager, float bend) {
-        if (bend < 0.0001f && bend > -0.0001f) { // An ugly hack for animations that don't animate the cape
+        if (Math.abs(bend) > 0.0001f) { // An ugly hack for animations that don't animate the cape
             float torsoBend = manager.get3DTransform(new PlayerAnimBone("torso")).getBend();
             if (torsoBend < 0) bend += torsoBend;
         }
