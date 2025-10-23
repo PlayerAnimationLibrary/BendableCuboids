@@ -1,7 +1,13 @@
 {
   "injected_interfaces": {
-    "net/minecraft/class_630$class_628": [
-      "com/zigythebird/bendable_cuboids/api/BendableCube"
+    "net/minecraft/class_5607": [
+      "com/zigythebird/bendable_cuboids/api/ILayerDefinition"
+    ],
+    "net/minecraft/class_5610": [
+      "com/zigythebird/bendable_cuboids/api/IPartDefinition"
+    ],
+    "net/minecraft/class_5604": [
+      "com/zigythebird/bendable_cuboids/api/ICubeDefinition"
     ],
     "net/minecraft/class_630": [
       "com/zigythebird/bendable_cuboids/api/BendableModelPart",

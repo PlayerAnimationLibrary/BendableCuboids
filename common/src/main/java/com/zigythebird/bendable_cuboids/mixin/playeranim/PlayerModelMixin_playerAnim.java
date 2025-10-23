@@ -8,17 +8,23 @@ import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.function.Function;
+
 @Mixin(value = PlayerModel.class, priority = 2002)
-public abstract class PlayerModelMixin_playerAnim extends HumanoidModel<AvatarRenderState> {
+public abstract class PlayerModelMixin_playerAnim extends HumanoidModel<AvatarRenderState> implements IMutableModel {
     @Shadow
     @Final
     public ModelPart jacket;
@@ -35,6 +41,9 @@ public abstract class PlayerModelMixin_playerAnim extends HumanoidModel<AvatarRe
     @Final
     public ModelPart leftPants;
 
+    @Unique
+    private AvatarAnimManager bc$animation = null;
+
     /**
      * Do not annotate with {@link @org.spongepowered.asm.mixin.Unique}: it breaks the bends.
      */
@@ -50,6 +59,12 @@ public abstract class PlayerModelMixin_playerAnim extends HumanoidModel<AvatarRe
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void bc$initBends(ModelPart modelPart, boolean bl, CallbackInfo ci) {
+        PlayerBendHelper.initBend(this.body, Direction.DOWN);
+        PlayerBendHelper.initBend(this.rightArm, Direction.UP);
+        PlayerBendHelper.initBend(this.leftArm, Direction.UP);
+        PlayerBendHelper.initBend(this.rightLeg, Direction.UP);
+        PlayerBendHelper.initBend(this.leftLeg, Direction.UP);
+
         PlayerBendHelper.initBend(this.jacket, Direction.DOWN);
         PlayerBendHelper.initBend(this.rightSleeve, Direction.UP);
         PlayerBendHelper.initBend(this.leftSleeve, Direction.UP);
@@ -61,7 +76,7 @@ public abstract class PlayerModelMixin_playerAnim extends HumanoidModel<AvatarRe
     private void setupPlayerAnimation(AvatarRenderState playerRenderState, CallbackInfo ci) {
         AvatarAnimManager manager = playerRenderState instanceof IAvatarAnimationState state ? state.playerAnimLib$getAnimManager() : null;
         if (manager != null && manager.isActive()) {
-            ((IMutableModel) this).bc$setAnimation(manager);
+            this.bc$animation = manager;
 
             PlayerBendHelper.bend(this.body, pal$torso.getBend());
             PlayerBendHelper.bend(this.rightArm, pal$rightArm.getBend());
@@ -87,7 +102,12 @@ public abstract class PlayerModelMixin_playerAnim extends HumanoidModel<AvatarRe
             PlayerBendHelper.resetBend(this.leftPants);
             PlayerBendHelper.resetBend(this.rightPants);
 
-            ((IMutableModel) this).bc$setAnimation(null);
+            this.bc$animation = null;
         }
+    }
+
+    @Override
+    public @Nullable AvatarAnimManager bc$getAnimation() {
+        return this.bc$animation;
     }
 }

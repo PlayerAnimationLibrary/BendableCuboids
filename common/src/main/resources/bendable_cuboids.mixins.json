@@ -5,14 +5,16 @@
   "plugin": "com.zigythebird.bendable_cuboids.ModMixinPlugin",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "CubeMixin",
+    "CubeDefinitionMixin",
+    "LayerDefinitionMixin",
     "ModelPartMixin",
-    "playeranim.HumanoidModelMixin_playerAnim",
+    "PartDefinitionMixin",
+    "playeranim.AvatarRendererMixin_playerAnim",
+    "playeranim.EntityModelSetMixin_playerAnim",
     "playeranim.ItemInHandLayerMixin_playerAnim",
     "playeranim.ModelMixin_playerAnim",
     "playeranim.PlayerCapeModelMixin_playerAnim",
-    "playeranim.PlayerModelMixin_playerAnim",
-    "playeranim.AvatarRendererMixin_playerAnim"
+    "playeranim.PlayerModelMixin_playerAnim"
   ],
   "injectors": {
     "defaultRequire": 1

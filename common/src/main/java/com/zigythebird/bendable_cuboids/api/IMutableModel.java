@@ -6,7 +6,6 @@ import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.Internal
 public interface IMutableModel {
-    void bc$setAnimation(@Nullable AvatarAnimManager emoteSupplier);
     @Nullable
     AvatarAnimManager bc$getAnimation();
 }
