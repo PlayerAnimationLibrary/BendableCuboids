@@ -11,7 +11,6 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.core.Direction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
@@ -178,20 +177,17 @@ public class CubeMixin implements BendableCube, SodiumHelper {
      * Apply bend on this cuboid
      * Values are in radians
      * @param bendValue bend value (Same as rotX)
-     * @return Transformation matrix for transforming children
      */
     @Override
-    public Matrix4f applyBend(float bendValue) {
+    public void applyBend(float bendValue) {
         // Don't enable bend until rotation is bigger than epsilon.
         // This should avoid unnecessary heavy calculations.
         if (Math.abs(bendValue) < 0.0001f) bendValue = 0;
+        if (this.bc$bend == bendValue) return;
 
         this.bc$bend = bendValue;
-        BendApplier bendApplier = BendUtil.getBend(this, bendValue);
-        bc$iteratePositions(bendApplier.consumer());
-        return bendApplier.matrix4f();
+        bc$iteratePositions(BendUtil.getBend(this, bendValue));
     }
-
 
     @Override
     public Direction getBendDirection() {

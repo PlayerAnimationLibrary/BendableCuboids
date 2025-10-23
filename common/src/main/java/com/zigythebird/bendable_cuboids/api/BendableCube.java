@@ -5,7 +5,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
 
 /**
  * Should be pretty self-explanatory...
@@ -19,12 +18,11 @@ public interface BendableCube extends Bendable {
      * Apply bend on this cuboid
      * Values are in radians
      * @param bendValue bend value (Same as rotX)
-     * @return Transformation matrix for transforming children
      */
-    Matrix4f applyBend(float bendValue);
+    void applyBend(float bendValue);
 
-    default Matrix4f applyBendDegrees(float bendValue) {
-        return applyBend(bendValue * Mth.DEG_TO_RAD);
+    default void applyBendDegrees(float bendValue) {
+        applyBend(bendValue * Mth.DEG_TO_RAD);
     }
 
     @Nullable

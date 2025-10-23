@@ -7,15 +7,16 @@ import net.minecraft.core.Direction;
 import org.joml.*;
 
 import java.lang.Math;
+import java.util.function.Function;
 
 public class BendUtil {
     private static final Vector3f Z_AXIS = new Vector3f(0, 0, 1);
 
-    public static BendApplier getBend(BendableCube cuboid) {
+    public static Function<Vector3f, Vector3f> getBend(BendableCube cuboid) {
         return getBend(cuboid, cuboid.getBend());
     }
 
-    public static BendApplier getBend(BendableCube cuboid, float bendValue) {
+    public static Function<Vector3f, Vector3f> getBend(BendableCube cuboid, float bendValue) {
         return getBend(cuboid.getBendX(), cuboid.getBendY(), cuboid.getBendZ(),
                 cuboid.getBasePlane(), cuboid.getOtherPlane(), cuboid.isBendInverted(), false, cuboid.bendHeight(), bendValue);
     }
@@ -24,7 +25,7 @@ public class BendUtil {
      * Applies the transformation to every position in posSupplier
      * @param bendValue bend value
      */
-    public static BendApplier getBend(float bendX, float bendY, float bendZ, Plane basePlane, Plane otherPlane,
+    public static Function<Vector3f, Vector3f> getBend(float bendX, float bendY, float bendZ, Plane basePlane, Plane otherPlane,
                                       boolean isBendInverted, boolean mirrorBend, float bendHeight, float bendValue) {
         if (mirrorBend) bendValue *= -1;
         final float finalBend = bendValue;
@@ -32,7 +33,7 @@ public class BendUtil {
 
         float halfSize = bendHeight/2;
 
-        return new BendApplier(transformMatrix, pos -> {
+        return (pos -> {
             float distFromBase = Math.abs(basePlane.distanceTo(pos));
             float distFromOther = Math.abs(otherPlane.distanceTo(pos));
             float s = (float) Math.tan(finalBend/2)*pos.z;
@@ -56,7 +57,7 @@ public class BendUtil {
         });
     }
 
-    public static BendApplier getBendLegacy(BendableCube cuboid, float bendValue) {
+    public static Function<Vector3f, Vector3f> getBendLegacy(BendableCube cuboid, float bendValue) {
         return getBendLegacy(cuboid.getBendDirection(), cuboid.getBendX(), cuboid.getBendY(), cuboid.getBendZ(),
                 cuboid.getBasePlane(), cuboid.getOtherPlane(), cuboid.isBendInverted(), false, cuboid.bendHeight(), bendValue);
     }
@@ -65,7 +66,7 @@ public class BendUtil {
      * Bends in the old pre-1.21.6 way which is more stretchy, but works in more situations, like for GeckoLib armor.
      * @param bendValue bend value
      */
-    public static BendApplier getBendLegacy(Direction bendDirection, float bendX, float bendY, float bendZ, Plane basePlane, Plane otherPlane,
+    public static Function<Vector3f, Vector3f> getBendLegacy(Direction bendDirection, float bendX, float bendY, float bendZ, Plane basePlane, Plane otherPlane,
                                       boolean isBendInverted, boolean mirrorBend, float bendHeight, float bendValue) {
         if (mirrorBend) bendValue *= -1;
         final float finalBend = bendValue;
@@ -79,7 +80,7 @@ public class BendUtil {
         Plane bendPlane = new Plane(directionUnit, new Vector3f(bendX, bendY, bendZ));
         float halfSize = bendHeight/2;
 
-        return new BendApplier(transformMatrix, pos -> {
+        return (pos -> {
             float distFromBend = isBendInverted ? -bendPlane.distanceTo(pos) : bendPlane.distanceTo(pos);
             float distFromBase = basePlane.distanceTo(pos);
             float distFromOther = otherPlane.distanceTo(pos);

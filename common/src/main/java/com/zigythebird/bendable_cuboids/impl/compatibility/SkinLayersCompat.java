@@ -45,7 +45,7 @@ public class SkinLayersCompat implements MeshTransformerProvider, MeshTransforme
         for (Vector4f vector4f : vector4fs) {
             vector4f.mul(16);
             RememberingPos pos = new RememberingPos(new Vector3f(vector4f.x, vector4f.y, vector4f.z));
-            BendUtil.getBend(this.original).applyTo(pos);
+            pos.setPos(BendUtil.getBend(this.original).apply(pos.getOriginalPos()));
             vector4f.set(pos.getPos(), vector4f.w);
             vector4f.div(16);
         }
