@@ -4,3 +4,8 @@ accessible class net/minecraft/client/model/geom/ModelPart$Polygon
 accessible class net/minecraft/client/model/geom/ModelPart$Vertex
 accessible field net/minecraft/client/model/geom/ModelPart children Ljava/util/Map;
 accessible field net/minecraft/client/model/geom/ModelPart cubes Ljava/util/List;
+accessible field net/minecraft/client/model/geom/builders/CubeDeformation growX F
+accessible field net/minecraft/client/model/geom/builders/CubeDeformation growY F
+accessible field net/minecraft/client/model/geom/builders/CubeDeformation growZ F
+accessible field net/minecraft/client/model/geom/builders/MaterialDefinition xTexSize I
+accessible field net/minecraft/client/model/geom/builders/MaterialDefinition yTexSize I
