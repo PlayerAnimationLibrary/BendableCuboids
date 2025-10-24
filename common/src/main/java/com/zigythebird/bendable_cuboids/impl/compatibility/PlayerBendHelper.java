@@ -18,16 +18,6 @@ public class PlayerBendHelper {
         cube.applyBend(rotation);
     }
 
-    public static void initBend(ModelPart modelPart, Direction direction) {
-        BendableCube cube = ((BendableModelPart) modelPart).bc$getCuboid(0);
-        if (cube != null) cube.rebuild(direction);
-    }
-
-    public static void initBend(ModelPart modelPart, Direction direction, int pivot) {
-        BendableCube cube = ((BendableModelPart) modelPart).bc$getCuboid(0);
-        if (cube != null) cube.rebuild(direction, pivot);
-    }
-
     public static void applyTorsoBendToMatrix(PoseStack poseStack, float bend) {
         BendUtil.applyBendToMatrix(poseStack, 0, 0.375F, 0, bend);
     }

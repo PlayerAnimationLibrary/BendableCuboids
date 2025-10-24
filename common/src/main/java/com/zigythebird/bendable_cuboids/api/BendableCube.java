@@ -50,15 +50,7 @@ public interface BendableCube extends Bendable {
         return direction.getAxisDirection() == Direction.AxisDirection.POSITIVE;
     }
 
-    default void rebuild(@NotNull Direction direction) {
-        rebuild(direction, -1);
-    }
-
-    void rebuild(Direction direction, int pivot);
-
     default void bc$copyState(BendableCube other) {
-        Direction direction = other.getBendDirection();
-        if (direction != null) rebuild(direction, other.getBendPivot());
         if (getBendDirection() != null) applyBend(other.getBend());
     }
 }
