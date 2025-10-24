@@ -27,6 +27,7 @@ public class BendUtil {
      */
     public static Function<Vector3f, Vector3f> getBend(float bendX, float bendY, float bendZ, Plane basePlane, Plane otherPlane,
                                       boolean isBendInverted, boolean mirrorBend, float bendHeight, float bendValue) {
+        if (bendValue == 0) return Function.identity();
         if (mirrorBend) bendValue *= -1;
         final float finalBend = bendValue;
         Matrix4f transformMatrix = applyBendToMatrix(new Matrix4f(), bendX, bendY, bendZ, bendValue);
