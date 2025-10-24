@@ -180,10 +180,14 @@ public class CubeMixin implements BendableCube, SodiumHelper {
      */
     @Override
     public void applyBend(float bendValue) {
+        if (this.bc$bend == bendValue) return;
         // Don't enable bend until rotation is bigger than epsilon.
         // This should avoid unnecessary heavy calculations.
-        if (Math.abs(bendValue) < 0.0001f) bendValue = 0;
-        if (this.bc$bend == bendValue) return;
+        if (Math.abs(bendValue) < 0.0001f) {
+            this.bc$bend = 0;
+            this.bc$resetBend();
+            return;
+        }
 
         this.bc$bend = bendValue;
         bc$iteratePositions(BendUtil.getBend(this, bendValue));
@@ -234,6 +238,14 @@ public class CubeMixin implements BendableCube, SodiumHelper {
         if (this.positions == null) return;
         for (RememberingPos pos : this.positions) {
             pos.setPos(function.apply(pos.getOriginalPos()));
+        }
+    }
+
+    @Unique
+    private void bc$resetBend() {
+        if (this.positions == null) return;
+        for (RememberingPos pos : this.positions) {
+            pos.setPos(pos.getOriginalPos());
         }
     }
 
