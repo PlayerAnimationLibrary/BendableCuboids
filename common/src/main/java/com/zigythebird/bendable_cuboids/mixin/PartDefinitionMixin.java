@@ -3,11 +3,13 @@ package com.zigythebird.bendable_cuboids.mixin;
 import com.google.common.collect.ImmutableList;
 import com.zigythebird.bendable_cuboids.api.ICubeDefinition;
 import com.zigythebird.bendable_cuboids.api.IPartDefinition;
+import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.core.Direction;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -25,9 +27,10 @@ public class PartDefinitionMixin implements IPartDefinition {
     @Shadow @Final private PartPose partPose;
 
     @Override
-    public ModelPart bakeBendablePart(int texWidth, int texHeight) {
-        Object2ObjectArrayMap<String, ModelPart> object2objectarraymap = this.children.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, (partDefinitionMap) -> ((IPartDefinition)partDefinitionMap.getValue()).bakeBendablePart(texWidth, texHeight), (modelPart, modelPart1) -> modelPart, Object2ObjectArrayMap::new));
-        List<ModelPart.Cube> list = this.cubes.stream().map((definition) -> ((ICubeDefinition)definition).bakeBendableCuboid(texWidth, texHeight)).collect(ImmutableList.toImmutableList());
+    public ModelPart bakeBendablePart(int texWidth, int texHeight, Map<String, Pair<Direction, Integer>> cuboidDataMap, String name) {
+        Pair<Direction, Integer> cuboidData = cuboidDataMap.getOrDefault(name, Pair.of(Direction.UP, -1));
+        Object2ObjectArrayMap<String, ModelPart> object2objectarraymap = this.children.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, (partDefinitionMap) -> ((IPartDefinition)partDefinitionMap.getValue()).bakeBendablePart(texWidth, texHeight, cuboidDataMap, partDefinitionMap.getKey()), (modelPart, modelPart1) -> modelPart, Object2ObjectArrayMap::new));
+        List<ModelPart.Cube> list = this.cubes.stream().map((definition) -> ((ICubeDefinition)definition).bakeBendableCuboid(texWidth, texHeight, cuboidData.left(), cuboidData.right())).collect(ImmutableList.toImmutableList());
         ModelPart modelpart = new ModelPart(list, object2objectarraymap);
         modelpart.setInitialPose(this.partPose);
         modelpart.loadPose(this.partPose);

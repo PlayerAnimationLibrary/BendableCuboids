@@ -8,10 +8,7 @@ import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
-import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,8 +17,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.function.Function;
 
 @Mixin(value = PlayerModel.class, priority = 2002)
 public abstract class PlayerModelMixin_playerAnim extends HumanoidModel<AvatarRenderState> implements IMutableModel {
@@ -55,21 +50,6 @@ public abstract class PlayerModelMixin_playerAnim extends HumanoidModel<AvatarRe
 
     public PlayerModelMixin_playerAnim(ModelPart root) {
         super(root);
-    }
-
-    @Inject(method = "<init>", at = @At("TAIL"))
-    private void bc$initBends(ModelPart modelPart, boolean bl, CallbackInfo ci) {
-        PlayerBendHelper.initBend(this.body, Direction.DOWN);
-        PlayerBendHelper.initBend(this.rightArm, Direction.UP);
-        PlayerBendHelper.initBend(this.leftArm, Direction.UP);
-        PlayerBendHelper.initBend(this.rightLeg, Direction.UP);
-        PlayerBendHelper.initBend(this.leftLeg, Direction.UP);
-
-        PlayerBendHelper.initBend(this.jacket, Direction.DOWN);
-        PlayerBendHelper.initBend(this.rightSleeve, Direction.UP);
-        PlayerBendHelper.initBend(this.leftSleeve, Direction.UP);
-        PlayerBendHelper.initBend(this.rightPants, Direction.UP);
-        PlayerBendHelper.initBend(this.leftPants, Direction.UP);
     }
 
     @Inject(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;)V", at = @At(value = "RETURN"))
