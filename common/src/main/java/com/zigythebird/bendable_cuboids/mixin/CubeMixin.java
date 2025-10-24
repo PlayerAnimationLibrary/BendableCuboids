@@ -185,7 +185,7 @@ public class CubeMixin implements BendableCube, SodiumHelper {
         // This should avoid unnecessary heavy calculations.
         if (Math.abs(bendValue) < 0.0001f) {
             this.bc$bend = 0;
-            this.bc$resetBend();
+            bc$iteratePositions(Function.identity());
             return;
         }
 
@@ -238,14 +238,6 @@ public class CubeMixin implements BendableCube, SodiumHelper {
         if (this.positions == null) return;
         for (RememberingPos pos : this.positions) {
             pos.setPos(function.apply(pos.getOriginalPos()));
-        }
-    }
-
-    @Unique
-    private void bc$resetBend() {
-        if (this.positions == null) return;
-        for (RememberingPos pos : this.positions) {
-            pos.setPos(pos.getOriginalPos());
         }
     }
 
