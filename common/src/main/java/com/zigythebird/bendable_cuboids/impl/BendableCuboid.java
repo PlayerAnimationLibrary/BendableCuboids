@@ -139,14 +139,10 @@ public class BendableCuboid extends ModelPart.Cube implements BendableCube, Sodi
      */
     @Override
     public void applyBend(float bendValue) {
-        if (this.bend == bendValue) return;
         // Don't enable bend until rotation is bigger than epsilon.
         // This should avoid unnecessary heavy calculations.
-        if (Math.abs(bendValue) < 0.0001f) {
-            this.bend = 0;
-            this.resetBend();
-            return;
-        }
+        if (Math.abs(bendValue) < 0.0001f) bendValue = 0;
+        if (this.bend == bendValue) return;
 
         this.bend = bendValue;
         iteratePositions(BendUtil.getBend(this, bendValue));
