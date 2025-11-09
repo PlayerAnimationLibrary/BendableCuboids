@@ -44,14 +44,15 @@ public class BendUtil {
                 distFromOther = temp;
             }
             float v = halfSize - ((isBendInverted ? s < 0 : s >= 0) ? Math.min(Math.abs(s)/2, 1) : Math.abs(s));
+            boolean isAboveNinetyDegrees = Math.abs(clampToRadian(finalBend)) > 1.5707;
             if (distFromBase < distFromOther) {
-                if (distFromBase + distFromOther <= bendHeight && distFromBase > v)
+                if (!isAboveNinetyDegrees && distFromBase + distFromOther <= bendHeight && distFromBase > v)
                     pos.y = bendY + s;
                 Vector4f reposVector = new Vector4f(pos, 1f);
                 reposVector.mul(transformMatrix);
                 pos = new Vector3f(reposVector.x, reposVector.y, reposVector.z);
             }
-            else if (distFromBase + distFromOther <= bendHeight && distFromOther > v) {
+            else if (!isAboveNinetyDegrees && distFromBase + distFromOther <= bendHeight && distFromOther > v) {
                     pos.y = bendY - s;
             }
             return pos;
@@ -126,4 +127,14 @@ public class BendUtil {
 
         return transformMatrix;
     }
+
+    public static float clampToRadian(float f) {
+        final double a = Math.PI*2;
+        double b = (f + Math.PI)%a;
+        if (b < 0) {
+            b += a;
+        }
+        return ((float) (b - Math.PI));
+    }
+
 }

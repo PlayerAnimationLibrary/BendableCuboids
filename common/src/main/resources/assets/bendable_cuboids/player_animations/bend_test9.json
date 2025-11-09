@@ -1,0 +1,14 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "bend_test9": {
+      "loop": true,
+      "bones": {
+        "left_arm": {
+          "bend": "math.mod(q.anim_time, 360)"
+        }
+      }
+    }
+  },
+  "geckolib_format_version": 2
+}
