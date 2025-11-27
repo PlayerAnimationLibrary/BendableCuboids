@@ -14,9 +14,11 @@
     "playeranim.ItemInHandLayerMixin_playerAnim",
     "playeranim.ModelMixin_playerAnim",
     "playeranim.PlayerCapeModelMixin_playerAnim",
-    "playeranim.PlayerModelMixin_playerAnim"
+    "playeranim.PlayerModelMixin_playerAnim",
+    "playeranim.CustomizableCubeListBuilderMixin_skinLayers"
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "mixins": []
 }
