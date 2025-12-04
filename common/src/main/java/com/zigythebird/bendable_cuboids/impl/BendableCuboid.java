@@ -15,108 +15,91 @@ import java.util.function.Function;
 import static com.zigythebird.bendable_cuboids.impl.Quad.createAndAddQuads;
 
 public class BendableCuboid extends ModelPart.Cube implements BendableCube, SodiumHelper {
-    private final BendableCuboidData data;
-
-    private final Vector3f[] vertices = new Vector3f[8];
+    @Nullable
+    private final Quad[] sides;
 
     @Nullable
-    private Quad[] sides;
+    private final RememberingPos[] positions;
 
-    @Nullable
-    private RememberingPos[] positions;
+    protected final float fixX;
+    protected final float fixY;
+    protected final float fixZ;
+    protected final Plane basePlane;
+    protected final Plane otherPlane;
+    protected final float fullSize;
 
-    protected float fixX;
-    protected float fixY;
-    protected float fixZ;
-    protected Plane basePlane;
-    protected Plane otherPlane;
-    protected float fullSize;
-
-    protected Direction direction;
-    protected int pivot;
+    protected final Direction direction;
+    protected final int pivot;
     protected float bend;
 
     private boolean useSodiumRendering = true;
     
-    public BendableCuboid(int texCoordU, int texCoordV, float originX, float originY, float originZ, float dimensionX, float dimensionY, float dimensionZ, float growX, float growY, float growZ, boolean mirror, float texScaleU, float texScaleV, Set<Direction> visibleFaces) {
+    public BendableCuboid(int texCoordU, int texCoordV, float originX, float originY, float originZ, float dimensionX, float dimensionY, float dimensionZ, float growX, float growY, float growZ, boolean mirror, float texScaleU, float texScaleV, Set<Direction> visibleFaces, Direction direction, int pivot) {
         super(texCoordU, texCoordV, originX, originY, originZ, dimensionX, dimensionY, dimensionZ, growX, growY, growZ, mirror, texScaleU, texScaleV, visibleFaces);
-        this.data = new BendableCuboidData(texCoordU, texCoordV, dimensionX, dimensionY, dimensionZ, growX, growY, growZ, mirror, texScaleU, texScaleV, visibleFaces);
-    }
 
-    @Override
-    public void rebuild(@NotNull Direction direction, int point) {
-        if (this.sides == null || this.positions == null) build();
+        List<Quad> planes = new ArrayList<>();
+        Map<Vector3f, RememberingPos> positions = new HashMap<>();
+        float pminX = minX - growX, pminY = minY - growY, pminZ = minZ - growZ, pmaxX = maxX + growX, pmaxY = maxY + growY, pmaxZ = maxZ + growZ;
+        if (mirror) {
+            float tmp = pminX;
+            pminX = pmaxX;
+            pmaxX = tmp;
+        }
 
-        if (this.direction == direction && this.pivot == point) return;
+        Vector3f[] vertices = new Vector3f[8];
+        //this is copy from MC's cuboid constructor
+        vertices[0] = new Vector3f(pminX, pminY, pminZ); //west south down
+        vertices[1] = new Vector3f(pmaxX, pminY, pminZ); //east south down
+        vertices[2] = new Vector3f(pmaxX, pmaxY, pminZ); //east south up
+        vertices[3] = new Vector3f(pminX, pmaxY, pminZ); //west south up
+        vertices[4] = new Vector3f(pminX, pminY, pmaxZ); //west north down
+        vertices[5] = new Vector3f(pmaxX, pminY, pmaxZ); //east north down
+        vertices[6] = new Vector3f(pmaxX, pmaxY, pmaxZ); //east north up
+        vertices[7] = new Vector3f(pminX, pmaxY, pmaxZ); //west north up
+
+        float j = texCoordU;
+        float k = texCoordU + dimensionZ;
+        float l = texCoordU + dimensionZ + dimensionX;
+        float m = texCoordU + dimensionZ + dimensionX + dimensionX;
+        float n = texCoordU + dimensionZ + dimensionX + dimensionZ;
+        float o = texCoordU + dimensionZ + dimensionX + dimensionZ + dimensionX;
+        float p = texCoordV;
+        float q = texCoordV + dimensionZ;
+        float r = texCoordV + dimensionZ + dimensionY;
+        if (visibleFaces.contains(Direction.DOWN)) createAndAddQuads(planes, positions, new Vector3f[]{vertices[5], vertices[4], vertices[1]}, k, p, l, q, texScaleU, texScaleV, mirror); //down
+        if (visibleFaces.contains(Direction.UP)) createAndAddQuads(planes, positions, new Vector3f[]{vertices[2], vertices[3], vertices[6]}, l, q, m, p, texScaleU, texScaleV, mirror); //up
+        if (visibleFaces.contains(Direction.WEST)) createAndAddQuads(planes, positions, new Vector3f[]{vertices[0], vertices[4], vertices[3]}, j, q, k, r, texScaleU, texScaleV, mirror); //west
+        if (visibleFaces.contains(Direction.NORTH)) createAndAddQuads(planes, positions, new Vector3f[]{vertices[1], vertices[0], vertices[2]}, k, q, l, r, texScaleU, texScaleV, mirror); //north
+        if (visibleFaces.contains(Direction.EAST)) createAndAddQuads(planes, positions, new Vector3f[]{vertices[5], vertices[1], vertices[6]}, l, q, n, r, texScaleU, texScaleV, mirror); //east
+        if (visibleFaces.contains(Direction.SOUTH)) createAndAddQuads(planes, positions, new Vector3f[]{vertices[4], vertices[5], vertices[7]}, n, q, o, r, texScaleU, texScaleV, mirror); //south
+
+        this.sides = planes.toArray(new Quad[0]);
+        this.positions = positions.values().toArray(new RememberingPos[0]);
+        iteratePositions(Function.identity());
+
         this.direction = Objects.requireNonNull(direction);
-        this.pivot = point;
-
+        this.pivot = pivot;
         direction = Direction.UP;
 
-        Vector3f pivot = new Vector3f(0, 0, 0);
-        if (point >= 0) {
-            float size = direction.step().mul(data.sizeX(), data.sizeY(), data.sizeZ()).length();
-            if (point <= size) {
-                pivot = direction.step().mul(size - (point * 2));
-                vertices[6] = vertices[6].sub(pivot);
+        Vector3f pivotVec = new Vector3f();
+        if (pivot >= 0) {
+            float size = direction.step().mul(dimensionX, dimensionY, dimensionZ).length();
+            if (pivot <= size) {
+                pivotVec = direction.step().mul(size - (pivot * 2));
+                vertices[6] = vertices[6].sub(pivotVec);
             }
         }
         this.basePlane = new Plane(direction.step(), vertices[6]);
         this.otherPlane = new Plane(direction.step(), vertices[0]);
 
         this.fullSize = -direction.step().dot(vertices[0]) + direction.step().dot(vertices[6]);
-        this.fixX = (data.sizeX() + minX + minX - pivot.x())/2;
-        this.fixY = (data.sizeY() + minY + minY - pivot.y())/2;
-        this.fixZ = (data.sizeZ() + minZ + minZ - pivot.z())/2;
-    }
-
-    private void build() {
-        List<Quad> planes = new ArrayList<>();
-        Map<Vector3f, RememberingPos> positions = new HashMap<>();
-        float pminX = minX - data.extraX(), pminY = minY - data.extraY(), pminZ = minZ - data.extraZ(), pmaxX = maxX + data.extraX(), pmaxY = maxY + data.extraY(), pmaxZ = maxZ + data.extraZ();
-        if (data.mirror()) {
-            float tmp = pminX;
-            pminX = pmaxX;
-            pmaxX = tmp;
-        }
-
-        //this is copy from MC's cuboid constructor
-        this.vertices[0] = new Vector3f(pminX, pminY, pminZ); //west south down
-        this.vertices[1] = new Vector3f(pmaxX, pminY, pminZ); //east south down
-        this.vertices[2] = new Vector3f(pmaxX, pmaxY, pminZ); //east south up
-        this.vertices[3] = new Vector3f(pminX, pmaxY, pminZ); //west south up
-        this.vertices[4] = new Vector3f(pminX, pminY, pmaxZ); //west north down
-        this.vertices[5] = new Vector3f(pmaxX, pminY, pmaxZ); //east north down
-        this.vertices[6] = new Vector3f(pmaxX, pmaxY, pmaxZ); //east north up
-        this.vertices[7] = new Vector3f(pminX, pmaxY, pmaxZ); //west north up
-
-        float j = data.u();
-        float k = data.u() + data.sizeZ();
-        float l = data.u() + data.sizeZ() + data.sizeX();
-        float m = data.u() + data.sizeZ() + data.sizeX() + data.sizeX();
-        float n = data.u() + data.sizeZ() + data.sizeX() + data.sizeZ();
-        float o = data.u() + data.sizeZ() + data.sizeX() + data.sizeZ() + data.sizeX();
-        float p = data.v();
-        float q = data.v() + data.sizeZ();
-        float r = data.v() + data.sizeZ() + data.sizeY();
-        float textureWidth = data.textureWidth();
-        float textureHeight = data.textureHeight();
-        boolean mirror = data.mirror();
-        if (data.visibleFaces().contains(Direction.DOWN)) createAndAddQuads(planes, positions, new Vector3f[]{vertices[5], vertices[4], vertices[1]}, k, p, l, q, textureWidth, textureHeight, mirror); //down
-        if (data.visibleFaces().contains(Direction.UP)) createAndAddQuads(planes, positions, new Vector3f[]{vertices[2], vertices[3], vertices[6]}, l, q, m, p, textureWidth, textureHeight, mirror); //up
-        if (data.visibleFaces().contains(Direction.WEST)) createAndAddQuads(planes, positions, new Vector3f[]{vertices[0], vertices[4], vertices[3]}, j, q, k, r, textureWidth, textureHeight, mirror); //west
-        if (data.visibleFaces().contains(Direction.NORTH)) createAndAddQuads(planes, positions, new Vector3f[]{vertices[1], vertices[0], vertices[2]}, k, q, l, r, textureWidth, textureHeight, mirror); //north
-        if (data.visibleFaces().contains(Direction.EAST)) createAndAddQuads(planes, positions, new Vector3f[]{vertices[5], vertices[1], vertices[6]}, l, q, n, r, textureWidth, textureHeight, mirror); //east
-        if (data.visibleFaces().contains(Direction.SOUTH)) createAndAddQuads(planes, positions, new Vector3f[]{vertices[4], vertices[5], vertices[7]}, n, q, o, r, textureWidth, textureHeight, mirror); //south
-
-        this.sides = planes.toArray(new Quad[0]);
-        this.positions = positions.values().toArray(new RememberingPos[0]);
-        iteratePositions(Function.identity());
+        this.fixX = (dimensionX + minX + minX - pivotVec.x())/2;
+        this.fixY = (dimensionY + minY + minY - pivotVec.y())/2;
+        this.fixZ = (dimensionZ + minZ + minZ - pivotVec.z())/2;
     }
 
     @Override
     public void bc$useSodiumRendering(boolean use) {
-        if (!use && this.sides == null) build();
         this.useSodiumRendering = use;
     }
 
