@@ -29,6 +29,11 @@ public class VanillaBendableCuboid extends ModelPart.Cube implements BendableCub
     }
 
     @Override
+    public void bc$useSodiumRendering(boolean use) {
+        bendableCuboid.bc$useSodiumRendering(use);
+    }
+
+    @Override
     public void applyBend(float bendValue) {
         bendableCuboid.applyBend(bendValue);
     }
