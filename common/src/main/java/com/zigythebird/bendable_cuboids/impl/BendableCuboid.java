@@ -4,9 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.zigythebird.bendable_cuboids.api.BendableCube;
 import com.zigythebird.bendable_cuboids.api.SodiumHelper;
-import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.core.Direction;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 import java.util.*;
@@ -14,12 +12,12 @@ import java.util.function.Function;
 
 import static com.zigythebird.bendable_cuboids.impl.Quad.createAndAddQuads;
 
-public class BendableCuboid extends ModelPart.Cube implements BendableCube, SodiumHelper {
+public class BendableCuboid implements BendableCube, SodiumHelper {
     @Nullable
-    private final Quad[] sides;
+    protected final Quad[] sides;
 
     @Nullable
-    private final RememberingPos[] positions;
+    protected final RememberingPos[] positions;
 
     protected final float fixX;
     protected final float fixY;
@@ -32,11 +30,9 @@ public class BendableCuboid extends ModelPart.Cube implements BendableCube, Sodi
     protected final int pivot;
     protected float bend;
 
-    private boolean useSodiumRendering = true;
+    protected boolean useSodiumRendering = true;
     
-    public BendableCuboid(int texCoordU, int texCoordV, float originX, float originY, float originZ, float dimensionX, float dimensionY, float dimensionZ, float growX, float growY, float growZ, boolean mirror, float texScaleU, float texScaleV, Set<Direction> visibleFaces, Direction direction, int pivot) {
-        super(texCoordU, texCoordV, originX, originY, originZ, dimensionX, dimensionY, dimensionZ, growX, growY, growZ, mirror, texScaleU, texScaleV, visibleFaces);
-
+    public BendableCuboid(int texCoordU, int texCoordV, float dimensionX, float dimensionY, float dimensionZ, float growX, float growY, float growZ, boolean mirror, float texScaleU, float texScaleV, Set<Direction> visibleFaces, Direction direction, int pivot, float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
         List<Quad> planes = new ArrayList<>();
         Map<Vector3f, RememberingPos> positions = new HashMap<>();
         float pminX = minX - growX, pminY = minY - growY, pminZ = minZ - growZ, pmaxX = maxX + growX, pmaxY = maxY + growY, pmaxZ = maxZ + growZ;
@@ -98,21 +94,15 @@ public class BendableCuboid extends ModelPart.Cube implements BendableCube, Sodi
         this.fixZ = (dimensionZ + minZ + minZ - pivotVec.z())/2;
     }
 
-    @Override
-    public void bc$useSodiumRendering(boolean use) {
-        this.useSodiumRendering = use;
-    }
-
-    @Override
     public void compile(PoseStack.Pose pose, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
-        if ((this.useSodiumRendering && this.bend == 0) || this.sides == null) {
-            super.compile(pose, buffer, packedLight, packedOverlay, color);
-            return;
-        }
-
         for (Quad quad : this.sides) {
             quad.render(pose, buffer, packedLight, packedOverlay, color);
         }
+    }
+
+    @Override
+    public void bc$useSodiumRendering(boolean use) {
+        this.useSodiumRendering = use;
     }
 
     /**
