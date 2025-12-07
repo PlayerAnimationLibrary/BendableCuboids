@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 @Mixin(EntityModelSet.class)
@@ -25,7 +26,7 @@ public class EntityModelSetMixin_playerAnim {
             cuboidDataMap.put("cape", Pair.of(Direction.UP, 6));
             cuboidDataMap.put("body", Pair.of(Direction.DOWN, -1));
             cuboidDataMap.put("jacket", Pair.of(Direction.DOWN, -1));
-            return ((ILayerDefinition)layerDefinition).bakeRootWithBends(cuboidDataMap);
+            return ((ILayerDefinition)layerDefinition).bakeRootWithBends(cuboidDataMap, new HashSet<>(){{add("head");}});
         }
         return original.call(instance);
     }

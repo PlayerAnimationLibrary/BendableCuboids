@@ -5,7 +5,8 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.core.Direction;
 
 import java.util.Map;
+import java.util.Set;
 
 public interface ILayerDefinition {
-    ModelPart bakeRootWithBends(Map<String, Pair<Direction, Integer>> cuboidDataMap);
+    ModelPart bakeRootWithBends(Map<String, Pair<Direction, Integer>> cuboidDataMap, Set<String> noBends);
 }

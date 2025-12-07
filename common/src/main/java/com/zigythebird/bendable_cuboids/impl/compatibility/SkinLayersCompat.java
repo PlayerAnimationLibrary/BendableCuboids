@@ -54,14 +54,16 @@ public class SkinLayersCompat implements MeshTransformerProvider, MeshTransforme
 
     @Override
     public void transform(ModelPart.Cube cube) {
-        if (this.original == null || this.original.getBend() == 0) {
-            ((BendableCube) cube).applyBend(0);
-            if (this.transformer != null) {
-                this.transformer.transform(cube);
+        if (cube instanceof BendableCube bendableCube) {
+            if (this.original == null || this.original.getBend() == 0) {
+                bendableCube.applyBend(0);
+                if (this.transformer != null) {
+                    this.transformer.transform(cube);
+                }
+                return;
             }
-            return;
+            bendableCube.bc$copyState(this.original);
         }
-        ((BendableCube) cube).bc$copyState(this.original);
     }
 
     public static Vector3f calculateNormal(Vector4f[] vertices) {
