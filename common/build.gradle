@@ -13,7 +13,7 @@ dependencies {
     compileOnly "com.zigythebird.playeranim:PlayerAnimationLibCore:${rootProject.player_anim_version}"
 
     // Third-party
-    modCompileOnly "maven.modrinth:3dskinlayers:m69E0MYU"
+    modCompileOnly "maven.modrinth:3dskinlayers:MQXq1li8"
 }
 
 publishing {

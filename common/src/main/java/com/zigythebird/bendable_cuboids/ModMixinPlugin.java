@@ -12,14 +12,7 @@ import java.util.Set;
 public class ModMixinPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        boolean doesNotHavePlayerAnim = !hasClass("com.zigythebird.playeranim.PlayerAnimLibMod");
-        if (mixinClassName.endsWith("_playerAnim") && doesNotHavePlayerAnim) {
-            return false;
-        }
-        if (mixinClassName.endsWith("_skinLayers") && (!hasClass("dev.tr7zw.skinlayers.versionless.ModBase") || doesNotHavePlayerAnim)) {
-            return false;
-        }
-        return true;
+        return !mixinClassName.endsWith("_playerAnim") || hasClass("com.zigythebird.playeranim.PlayerAnimLibMod");
     }
 
     private static boolean hasClass(String name) {
