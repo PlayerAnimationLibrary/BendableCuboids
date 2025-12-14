@@ -1,0 +1,43 @@
+package com.zigythebird.bendable_cuboids.mixin;
+
+import com.google.common.collect.ImmutableList;
+import com.zigythebird.bendable_cuboids.api.ICubeDefinition;
+import com.zigythebird.bendable_cuboids.api.IPartDefinition;
+import it.unimi.dsi.fastutil.Pair;
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.core.Direction;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@Mixin(PartDefinition.class)
+public abstract class PartDefinitionMixin implements IPartDefinition {
+    @Shadow @Final private Map<String, PartDefinition> children;
+
+    @Shadow @Final private List<CubeDefinition> cubes;
+
+    @Shadow @Final private PartPose partPose;
+
+    @Shadow public abstract ModelPart bake(int texWidth, int texHeight);
+
+    @Override
+    public ModelPart bakeBendablePart(int texWidth, int texHeight, Map<String, Pair<Direction, Integer>> cuboidDataMap, Set<String> noBends, String name) {
+        if (noBends.contains(name)) return this.bake(texWidth, texHeight);
+        Pair<Direction, Integer> cuboidData = cuboidDataMap.getOrDefault(name, Pair.of(Direction.UP, -1));
+        Object2ObjectArrayMap<String, ModelPart> object2objectarraymap = this.children.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, (partDefinitionMap) -> ((IPartDefinition)partDefinitionMap.getValue()).bakeBendablePart(texWidth, texHeight, cuboidDataMap, noBends, partDefinitionMap.getKey()), (modelPart, modelPart1) -> modelPart, Object2ObjectArrayMap::new));
+        List<ModelPart.Cube> list = this.cubes.stream().map((definition) -> ((ICubeDefinition)definition).bakeBendableCuboid(texWidth, texHeight, cuboidData.left(), cuboidData.right())).collect(ImmutableList.toImmutableList());
+        ModelPart modelpart = new ModelPart(list, object2objectarraymap);
+        modelpart.setInitialPose(this.partPose);
+        modelpart.loadPose(this.partPose);
+        return modelpart;
+    }
+}

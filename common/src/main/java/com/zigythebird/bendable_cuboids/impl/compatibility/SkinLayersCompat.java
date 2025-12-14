@@ -4,7 +4,9 @@ import com.zigythebird.bendable_cuboids.BendableCuboidsMod;
 import com.zigythebird.bendable_cuboids.api.BendableCube;
 import com.zigythebird.bendable_cuboids.api.BendableModelPart;
 import com.zigythebird.bendable_cuboids.impl.BendUtil;
+import com.zigythebird.bendable_cuboids.impl.BendableCuboid;
 import com.zigythebird.bendable_cuboids.impl.RememberingPos;
+import dev.tr7zw.skinlayers.api.BoxBuilder;
 import dev.tr7zw.skinlayers.api.MeshTransformer;
 import dev.tr7zw.skinlayers.api.MeshTransformerProvider;
 import dev.tr7zw.skinlayers.api.SkinLayersAPI;
@@ -14,7 +16,12 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 public class SkinLayersCompat implements MeshTransformerProvider, MeshTransformer {
+    private static final Set<Direction> ALL_VISIBLE = EnumSet.allOf(Direction.class);
+
     protected final MeshTransformerProvider parent;
     protected @Nullable BendableCube original;
     protected @Nullable MeshTransformer transformer;
@@ -25,6 +32,10 @@ public class SkinLayersCompat implements MeshTransformerProvider, MeshTransforme
 
     public static void setupTransformer() {
         SkinLayersAPI.setupMeshTransformerProvider(new SkinLayersCompat(SkinLayersAPI.getMeshTransformerProvider()));
+        SkinLayersAPI.setupBoxBuilder(boxDefinition -> {
+            if (boxDefinition.height() != 12) return BoxBuilder.DEFAULT.build(boxDefinition);
+            return new BendableCuboid(boxDefinition.u(), boxDefinition.v(), boxDefinition.x(), boxDefinition.y(), boxDefinition.z(), boxDefinition.width(), boxDefinition.height(), boxDefinition.depth(), 0, 0, 0, boxDefinition.mirror(), boxDefinition.textureWidth(), boxDefinition.textureHeight(), ALL_VISIBLE, boxDefinition.width() == 8 ? Direction.DOWN : Direction.UP, -1);
+        });
     }
 
     @Override
@@ -54,14 +65,16 @@ public class SkinLayersCompat implements MeshTransformerProvider, MeshTransforme
 
     @Override
     public void transform(ModelPart.Cube cube) {
-        if (this.original == null || this.original.getBend() == 0) {
-            ((BendableCube) cube).applyBend(0);
-            if (this.transformer != null) {
-                this.transformer.transform(cube);
+        if (cube instanceof BendableCube bendableCube) {
+            if (this.original == null || this.original.getBend() == 0) {
+                bendableCube.applyBend(0);
+                if (this.transformer != null) {
+                    this.transformer.transform(cube);
+                }
+                return;
             }
-            return;
+            bendableCube.bc$copyState(this.original);
         }
-        ((BendableCube) cube).bc$copyState(this.original);
     }
 
     public static Vector3f calculateNormal(Vector4f[] vertices) {
