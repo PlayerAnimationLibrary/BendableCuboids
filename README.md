@@ -1,30 +1,9 @@
-Setup with Gradle:
+Adds model cubes that can be bent, for example like arms in MC Story Mode!
 
-```groovy
-    repositories {
-        maven {
-            name "zigythebirdMods"
-            url "https://maven.zigythebird.com/mods"
-        }
-    }
-    
-    dependencies {
-        modImplementation "com.zigythebird.bendable_cuboids:bendable_cuboids-${project.bendylib_version}"
-        include "com.zigythebird.bendable_cuboids:bendable_cuboids-${project.bendylib_version}"
-        //you can find the latest version in GitHub packages
-    }
-```
+![588801bf62de10e556c769fd351800bb8f676c66_0](https://github.com/user-attachments/assets/84fd2fee-0026-4f49-8f9d-537d632f5edd)
 
-Designed to be able to swap and bend cuboids.
+If you want to use this for outside of what PAL uses it for like mob model bends then contact me on discord so I can give you a hand. :)  
+You can find the right version for you to add to your dev environment [here.](https://repo.redlance.org/#/public/com/zigythebird/bendable_cuboids)  
+You're free to JiJ or include it, but please don't because the CurseForge revenue helps me out, and when it's not included users can automatically get vital patches via whatever launcher they're using for mods.
 
-The api provides a way to swap a cuboid with priorities, to be multi-mod compatible
-(bend like in Mo'bends)
-
-to swap, you have to create a class from MutableModelPart, and implement the methods.
-
-You don't have to use existing bendableCuboid objects, you can create your own, BUT it's highly recommend (it's a lot's of work to code a bendable stuff)
-
-and an example image:D  
-![example](https://raw.githubusercontent.com/KosmX/bendy-lib/dev/example.png)  
-  
-The release branch contains the source of the latest release.
+This mod is a library for other mods, and does not do anything on it's own.
