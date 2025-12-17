@@ -153,7 +153,6 @@ jobs:
           loaders: neoforge
           game-versions: |
             ${{ steps.gradle_properties.outputs.minecraft_version }}
-            1.21.10
 
           changelog-file: CHANGELOG.md
 
