@@ -33,6 +33,8 @@ public interface BendableCube extends Bendable {
     float getBendY();
     float getBendZ();
 
+    float getExtentZ();
+
     Plane getBasePlane();
     Plane getOtherPlane();
 

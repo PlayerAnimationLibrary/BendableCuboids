@@ -6,7 +6,6 @@ import com.zigythebird.bendable_cuboids.api.BendableCube;
 import com.zigythebird.bendable_cuboids.api.SodiumHelper;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.core.Direction;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 import java.util.*;
@@ -27,6 +26,7 @@ public class BendableCuboid extends ModelPart.Cube implements BendableCube, Sodi
     protected final Plane basePlane;
     protected final Plane otherPlane;
     protected final float fullSize;
+    protected final float extentZ;
 
     protected final Direction direction;
     protected final int pivot;
@@ -45,6 +45,8 @@ public class BendableCuboid extends ModelPart.Cube implements BendableCube, Sodi
             pminX = pmaxX;
             pmaxX = tmp;
         }
+
+        this.extentZ = (Math.abs(pminZ) + Math.abs(pmaxZ))/2;
 
         Vector3f[] vertices = new Vector3f[8];
         //this is copy from MC's cuboid constructor
@@ -154,6 +156,11 @@ public class BendableCuboid extends ModelPart.Cube implements BendableCube, Sodi
     @Override
     public float getBendZ() {
         return this.fixZ;
+    }
+
+    @Override
+    public float getExtentZ() {
+        return this.extentZ;
     }
 
     @Override

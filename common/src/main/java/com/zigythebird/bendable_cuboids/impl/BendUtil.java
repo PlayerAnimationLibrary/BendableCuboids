@@ -18,7 +18,8 @@ public class BendUtil {
 
     public static Function<Vector3f, Vector3f> getBend(BendableCube cuboid, float bendValue) {
         return getBend(cuboid.getBendX(), cuboid.getBendY(), cuboid.getBendZ(),
-                cuboid.getBasePlane(), cuboid.getOtherPlane(), cuboid.isBendInverted(), false, cuboid.bendHeight(), bendValue);
+                cuboid.getBasePlane(), cuboid.getOtherPlane(), cuboid.isBendInverted(), false, cuboid.bendHeight(),
+                cuboid.getExtentZ(), bendValue);
     }
 
     /**
@@ -26,7 +27,8 @@ public class BendUtil {
      * @param bendValue bend value
      */
     public static Function<Vector3f, Vector3f> getBend(float bendX, float bendY, float bendZ, Plane basePlane, Plane otherPlane,
-                                      boolean isBendInverted, boolean mirrorBend, float bendHeight, float bendValue) {
+                                      boolean isBendInverted, boolean mirrorBend, float bendHeight,
+                                                       float extentZ, float bendValue) {
         if (bendValue == 0) return Function.identity();
         if (mirrorBend) bendValue *= -1;
         final float finalBend = bendValue;
@@ -35,16 +37,18 @@ public class BendUtil {
         float halfSize = bendHeight/2;
 
         return (pos -> {
+            // Plane that goes through the bottom vertices of the cube.
             float distFromBase = Math.abs(basePlane.distanceTo(pos));
+            // Same as above, but for the top.
             float distFromOther = Math.abs(otherPlane.distanceTo(pos));
-            float s = (float) Math.tan(finalBend/2)*pos.z;
+            float s = (float) Math.tan(finalBend/2)*(pos.z*2/extentZ);
             if (mirrorBend || !isBendInverted) {
                 float temp = distFromBase;
                 distFromBase = distFromOther;
                 distFromOther = temp;
             }
             float v = halfSize - ((isBendInverted ? s < 0 : s >= 0) ? Math.min(Math.abs(s)/2, 1) : Math.abs(s));
-            boolean isAboveNinetyDegrees = Math.abs(clampToRadian(finalBend)) > 1.5707;
+            boolean isAboveNinetyDegrees = Math.abs(clampToRadian(finalBend)) > 1.5708;
             if (distFromBase < distFromOther) {
                 if (!isAboveNinetyDegrees && distFromBase + distFromOther <= bendHeight && distFromBase > v)
                     pos.y = bendY + s;
