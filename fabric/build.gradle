@@ -13,7 +13,6 @@ architectury {
 
 configurations {
     common
-    shadowCommon
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
     developmentFabric.extendsFrom common
@@ -21,11 +20,9 @@ configurations {
 
 dependencies {
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+    modImplementation "com.zigythebird.playeranim:PlayerAnimationLibFabric:${rootProject.player_anim_version}"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive = false }
-    shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive = false }
-
-    modImplementation "com.zigythebird.playeranim:PlayerAnimationLibFabric:${rootProject.player_anim_version}"
 }
 
 processResources {
@@ -37,7 +34,7 @@ processResources {
 }
 
 shadowJar {
-    configurations = [project.configurations.shadowCommon]
+    configurations = [project.configurations.common]
     archiveClassifier.set "dev-shadow"
 }
 

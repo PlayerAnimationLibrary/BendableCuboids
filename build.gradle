@@ -1,6 +1,8 @@
+import org.redlance.dima_dencep.gradle.publish2discord.tasks.PublishDiscordTask
 import org.apache.commons.lang3.StringUtils
 
 plugins {
+    id "org.redlance.dima_dencep.gradle.PublishToDiscord" version "1.0.4"
     id "com.gradleup.shadow" version "9.2.2" apply false
     id "architectury-plugin" version "3.4-SNAPSHOT"
     id "dev.architectury.loom" version "1.13-SNAPSHOT" apply false
@@ -21,7 +23,7 @@ subprojects {
         minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
         mappings loom.layered() {
             officialMojangMappings()
-            parchment("org.parchmentmc.data:parchment-1.21.10:${rootProject.parchment_version}@zip")
+            parchment("org.parchmentmc.data:parchment-${rootProject.minecraft_version}:${rootProject.parchment_version}@zip")
         }
     }
 }
@@ -87,4 +89,24 @@ allprojects {
             }
         }
     }
+}
+
+tasks.register("publishToDiscord", PublishDiscordTask) {
+    url.set(providers.environmentVariable("DISCORD_WEBHOOK"))
+    username.set("BendableCuboids Updates")
+    avatar.set("https://raw.githubusercontent.com/PlayerAnimationLibrary/BendableCuboids/refs/heads/main/common/src/main/resources/assets/bendable_cuboids/icon.png")
+
+    container {
+        it.title = "## ✨ ${rootProject.archives_base_name}\n### v${version} is out!"
+        it.description = "### Changes:\n${rootProject.file("CHANGELOG.md").getText("UTF-8")}"
+
+        it.thumbnail("https://raw.githubusercontent.com/PlayerAnimationLibrary/BendableCuboids/refs/heads/main/common/src/main/resources/assets/bendable_cuboids/icon.png")
+        it.timestamp(System.currentTimeMillis())
+    }
+
+    links {
+        it.fromEnvHack()
+    }
+
+    footer = "||<@&1411332102942752798>||"
 }
