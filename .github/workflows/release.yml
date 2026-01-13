@@ -68,6 +68,12 @@ jobs:
             // use env branch replace / with _
             return process.env.branch.replace(/\//g, '_')
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'adopt'
+          java-version: 21
+
       - name: Download Artifacts
         uses: actions/download-artifact@v4
         with:
