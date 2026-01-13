@@ -2,7 +2,7 @@ package com.zigythebird.bendable_cuboids.mixin.playeranim;
 
 import com.zigythebird.bendable_cuboids.api.IMutableModel;
 import com.zigythebird.bendable_cuboids.impl.compatibility.PlayerBendHelper;
-import com.zigythebird.playeranim.accessors.IAvatarAnimationState;
+import com.zigythebird.playeranim.accessors.IBoneUpdater;
 import com.zigythebird.playeranim.animation.AvatarAnimManager;
 import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
 import net.minecraft.client.model.HumanoidModel;
@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = PlayerModel.class, priority = 2002)
-public abstract class PlayerModelMixin_playerAnim extends HumanoidModel<AvatarRenderState> implements IMutableModel {
+public abstract class PlayerModelMixin_playerAnim extends HumanoidModel<AvatarRenderState> implements IBoneUpdater, IMutableModel {
     @Shadow
     @Final
     public ModelPart jacket;
@@ -39,51 +39,58 @@ public abstract class PlayerModelMixin_playerAnim extends HumanoidModel<AvatarRe
     @Unique
     private AvatarAnimManager bc$animation = null;
 
-    /**
-     * Do not annotate with {@link @org.spongepowered.asm.mixin.Unique}: it breaks the bends.
-     */
-    private final PlayerAnimBone pal$torso = new PlayerAnimBone("torso");
-    private final PlayerAnimBone pal$rightArm = new PlayerAnimBone("right_arm");
-    private final PlayerAnimBone pal$leftArm = new PlayerAnimBone("left_arm");
-    private final PlayerAnimBone pal$rightLeg = new PlayerAnimBone("right_leg");
-    private final PlayerAnimBone pal$leftLeg = new PlayerAnimBone("left_leg");
-
     public PlayerModelMixin_playerAnim(ModelPart root) {
         super(root);
     }
 
-    @Inject(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;)V", at = @At(value = "RETURN"))
-    private void setupPlayerAnimation(AvatarRenderState playerRenderState, CallbackInfo ci) {
-        AvatarAnimManager manager = playerRenderState instanceof IAvatarAnimationState state ? state.playerAnimLib$getAnimManager() : null;
-        if (manager != null && manager.isActive()) {
-            this.bc$animation = manager;
+    @Inject(
+            method = "pal$updatePart(Lcom/zigythebird/playeranim/animation/AvatarAnimManager;Lnet/minecraft/client/model/geom/ModelPart;Lcom/zigythebird/playeranimcore/bones/PlayerAnimBone;)V",
+            at = @At(
+                    value = "RETURN"
+            )
+    )
+    @SuppressWarnings({"MixinAnnotationTarget", "UnresolvedMixinReference"})
+    public void bc$updatePart(AvatarAnimManager emote, ModelPart part, PlayerAnimBone bone, CallbackInfo ci) {
+        this.bc$animation = emote;
 
-            PlayerBendHelper.bend(this.body, pal$torso.getBend());
-            PlayerBendHelper.bend(this.rightArm, pal$rightArm.getBend());
-            PlayerBendHelper.bend(this.leftArm, pal$leftArm.getBend());
-            PlayerBendHelper.bend(this.rightLeg, pal$rightLeg.getBend());
-            PlayerBendHelper.bend(this.leftLeg, pal$leftLeg.getBend());
+        if (this.head == part) return;
+        PlayerBendHelper.bend(part, bone.getBend());
 
-            PlayerBendHelper.bend(this.jacket, pal$torso.getBend());
-            PlayerBendHelper.bend(this.rightSleeve, pal$rightArm.getBend());
-            PlayerBendHelper.bend(this.leftSleeve, pal$leftArm.getBend());
-            PlayerBendHelper.bend(this.rightPants, pal$rightLeg.getBend());
-            PlayerBendHelper.bend(this.leftPants, pal$leftLeg.getBend());
-        } else {
-            PlayerBendHelper.resetBend(this.body);
-            PlayerBendHelper.resetBend(this.leftArm);
-            PlayerBendHelper.resetBend(this.rightArm);
-            PlayerBendHelper.resetBend(this.leftLeg);
-            PlayerBendHelper.resetBend(this.rightLeg);
-
-            PlayerBendHelper.resetBend(this.jacket);
-            PlayerBendHelper.resetBend(this.leftSleeve);
-            PlayerBendHelper.resetBend(this.rightSleeve);
-            PlayerBendHelper.resetBend(this.leftPants);
-            PlayerBendHelper.resetBend(this.rightPants);
-
-            this.bc$animation = null;
+        // Overlay shit
+        if (this.body == part) {
+            PlayerBendHelper.bend(this.jacket, bone.getBend());
+        } else if (this.rightArm == part) {
+            PlayerBendHelper.bend(this.rightSleeve, bone.getBend());
+        } else if (this.leftArm == part) {
+            PlayerBendHelper.bend(this.leftSleeve, bone.getBend());
+        } else if (this.rightLeg == part) {
+            PlayerBendHelper.bend(this.rightPants, bone.getBend());
+        } else if (this.leftLeg == part) {
+            PlayerBendHelper.bend(this.leftPants, bone.getBend());
         }
+    }
+
+    @Inject(
+            method = "pal$resetAll(Lcom/zigythebird/playeranim/animation/AvatarAnimManager;)V",
+            at = @At(
+                    value = "RETURN"
+            )
+    )
+    @SuppressWarnings({"MixinAnnotationTarget", "UnresolvedMixinReference"})
+    public void bc$resetAll(@Nullable AvatarAnimManager emote, CallbackInfo ci) {
+        PlayerBendHelper.resetBend(this.body);
+        PlayerBendHelper.resetBend(this.leftArm);
+        PlayerBendHelper.resetBend(this.rightArm);
+        PlayerBendHelper.resetBend(this.leftLeg);
+        PlayerBendHelper.resetBend(this.rightLeg);
+
+        PlayerBendHelper.resetBend(this.jacket);
+        PlayerBendHelper.resetBend(this.leftSleeve);
+        PlayerBendHelper.resetBend(this.rightSleeve);
+        PlayerBendHelper.resetBend(this.leftPants);
+        PlayerBendHelper.resetBend(this.rightPants);
+
+        this.bc$animation = null;
     }
 
     @Override
