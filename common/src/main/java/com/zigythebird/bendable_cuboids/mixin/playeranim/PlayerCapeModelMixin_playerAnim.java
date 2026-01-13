@@ -21,7 +21,10 @@ public class PlayerCapeModelMixin_playerAnim implements IBoneUpdater {
     private ModelPart cape;
 
     @Inject(
-            method = "pal$updatePart(Lcom/zigythebird/playeranim/animation/AvatarAnimManager;Lnet/minecraft/client/model/geom/ModelPart;Lcom/zigythebird/playeranimcore/bones/PlayerAnimBone;)V",
+            method = {
+                    "pal$updatePart(Lcom/zigythebird/playeranim/animation/AvatarAnimManager;Lnet/minecraft/client/model/geom/ModelPart;Lcom/zigythebird/playeranimcore/bones/PlayerAnimBone;)V",
+                    "pal$updatePart(Lcom/zigythebird/playeranim/animation/AvatarAnimManager;Lnet/minecraft/class_630;Lcom/zigythebird/playeranimcore/bones/PlayerAnimBone;)V"
+            },
             at = @At(
                     value = "RETURN"
             )
