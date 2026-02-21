@@ -1,33 +1,25 @@
 package com.zigythebird.bendable_cuboids.mixin.playeranim;
 
+import com.zigythebird.bendable_cuboids.api.BendableCube;
+import com.zigythebird.bendable_cuboids.api.BendableModelPart;
 import com.zigythebird.bendable_cuboids.impl.compatibility.PlayerBendHelper;
 import com.zigythebird.playeranim.accessors.ICapeLayer;
-import com.zigythebird.playeranim.animation.AvatarAnimManager;
-import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.model.player.PlayerCapeModel;
-import org.spongepowered.asm.mixin.Final;
+import net.minecraft.client.renderer.entity.layers.CapeLayer;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(PlayerCapeModel.class)
+@Mixin(CapeLayer.class)
 public class PlayerCapeModelMixin_playerAnim implements ICapeLayer {
-    @Shadow
-    @Final
-    private ModelPart cape;
-
     @Override
-    public void applyBend(AvatarAnimManager manager, float bend) {
-        if (Math.abs(bend) > 0.0001f) { // An ugly hack for animations that don't animate the cape
-            float torsoBend = manager.get3DTransform(new PlayerAnimBone("torso")).getBend();
-            if (torsoBend < 0) bend += torsoBend;
-        }
+    public void applyBend(ModelPart cape, ModelPart torso, float bend) {
+        BendableCube cube = ((BendableModelPart) torso).bc$getCuboid(0);
+        if (cube == null) return;
+        if (cube.getBend() < 0.001f) bend += cube.getBend();
 
-        PlayerBendHelper.bend(this.cape, bend);
+        PlayerBendHelper.bend(cape, bend);
     }
 
-    @Override
-    public void resetBend() {
-        PlayerBendHelper.resetBend(this.cape);
+    public void resetBend(ModelPart cape) {
+        PlayerBendHelper.resetBend(cape);
     }
 }

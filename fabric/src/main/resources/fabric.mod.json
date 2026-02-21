@@ -6,8 +6,9 @@
   "description": "Adds model cubes that can be bent, for example like arms in MC Story Mode!",
   "icon": "/assets/bendable_cuboids/icon.png",
   "authors": [
-    "KosmX",
-    "Zigy"
+    "Zigy",
+    "dima_dencep",
+    "KosmX"
   ],
   "contributors": [],
   "contact": {
@@ -25,11 +26,8 @@
     "bendable_cuboids.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.18.4",
-    "minecraft": ">=1.21.11"
-  },
-  "breaks": {
-    "player_animation_library": "<1.1.4+mc.1.21.11"
+    "fabricloader": ">=0.16.9",
+    "minecraft": ">=1.21.1"
   },
   "custom": {
     "modmenu": {

@@ -22,8 +22,8 @@ import java.util.Map;
 public class EntityModelSetMixin_playerAnim {
     @WrapOperation(method = "bakeLayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/geom/builders/LayerDefinition;bakeRoot()Lnet/minecraft/client/model/geom/ModelPart;"))
     private ModelPart bakeLayerWithBendsForPlayer(LayerDefinition instance, Operation<ModelPart> original, @Local LayerDefinition layerDefinition, @Local(argsOnly = true) ModelLayerLocation modelLayerLocation) {
-        if ("minecraft".equals(modelLayerLocation.model().getNamespace())
-                && ("player".equals(modelLayerLocation.model().getPath()) || "player_slim".equals(modelLayerLocation.model().getPath()))) {
+        if ("minecraft".equals(modelLayerLocation.getModel().getNamespace())
+                && ("player".equals(modelLayerLocation.getModel().getPath()) || "player_slim".equals(modelLayerLocation.getModel().getPath()))) {
             Map<String, Pair< Direction, Integer>> cuboidDataMap = new HashMap<>();
             cuboidDataMap.put("cape", Pair.of(Direction.UP, 6));
             cuboidDataMap.put("body", Pair.of(Direction.DOWN, -1));
