@@ -33,9 +33,9 @@ public class PlayerCapeModelMixin_playerAnim implements IBoneUpdater {
     public void bc$updatePart(AvatarAnimManager manager, ModelPart part, PlayerAnimBone bone, CallbackInfo ci) {
         if (this.cape != part) return;
 
-        float bend = bone.getBend();
+        float bend = bone.bend;
         if (Math.abs(bend) > 0.0001f) { // An ugly hack for animations that don't animate the cape
-            float torsoBend = manager.get3DTransform(new PlayerAnimBone("torso")).getBend();
+            float torsoBend = manager.get3DTransform("torso").bend;
             if (torsoBend < 0) bend += torsoBend;
         }
 
