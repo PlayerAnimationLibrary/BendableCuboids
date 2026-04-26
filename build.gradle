@@ -1,106 +1,151 @@
 import org.redlance.dima_dencep.gradle.publish2discord.tasks.PublishDiscordTask
-import org.apache.commons.lang3.StringUtils
 
 plugins {
-    id "org.redlance.dima_dencep.gradle.PublishToDiscord" version "1.0.6"
-    id "com.gradleup.shadow" version "9.2.2" apply false
-    id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "1.13-SNAPSHOT" apply false
+    id "org.redlance.dima_dencep.gradle.PublishToDiscord" version "1.0.8"
+    id "com.gradleup.shadow" version "9.4.1"
+    id "xyz.wagyourtail.unimined" version "1.4.2-SNAPSHOT"
+    id "maven-publish"
 }
 
-architectury {
-    minecraft = rootProject.minecraft_version
+base.archivesName = rootProject.archives_base_name
+version = "${rootProject.mod_version}+mc.${rootProject.minecraft_version}"
+group = rootProject.maven_group
+
+sourceSets {
+    fabric
+    neoforge
 }
 
-subprojects {
-    apply plugin: "dev.architectury.loom"
-
-    loom {
-        silentMojangMappingsLicense()
+repositories {
+    mavenLocal()
+    // Fix issue with lwjgl-freetype not being found on macOS
+    maven {
+        url = "https://libraries.minecraft.net"
+        content {
+            includeModule("org.lwjgl", "lwjgl-freetype")
+        }
     }
-
-    dependencies {
-        minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
-        mappings loom.layered() {
-            officialMojangMappings()
-            parchment("org.parchmentmc.data:parchment-${rootProject.minecraft_version}:${rootProject.parchment_version}@zip")
+    maven {
+        name = "NeoForged"
+        url = "https://maven.neoforged.net/releases"
+    }
+    maven {
+        name = "RedlanceMinecraft"
+        url = "https://repo.redlance.org/public"
+    }
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+        content {
+            includeGroup "maven.modrinth"
         }
     }
 }
 
-allprojects {
-    apply plugin: "java"
-    apply plugin: "architectury-plugin"
-    apply plugin: "maven-publish"
+configurations {
+    shadow
+}
 
-    base.archivesName = "${rootProject.archives_base_name}${StringUtils.capitalize(project.name)}"
-    version = "${rootProject.mod_version}+mc.${rootProject.minecraft_version}"
-    group = rootProject.maven_group
+unimined.minecraft(sourceSets.main) {
+    version minecraft_version
 
-    repositories {
-        mavenLocal()
-        // Fix issue with lwjgl-freetype not being found on macOS
-        maven {
-            url = "https://libraries.minecraft.net"
-            content {
-                includeModule("org.lwjgl", "lwjgl-freetype")
+    fabric {
+        loader fabric_loader_version
+        accessWidener file("src/main/resources/bendable_cuboids.classtweaker")
+    }
+
+    defaultRemapJar = false
+}
+
+unimined.minecraft(sourceSets.fabric) {
+    combineWith(sourceSets.main)
+
+    fabric {
+        loader fabric_loader_version
+        accessWidener file("src/main/resources/bendable_cuboids.classtweaker")
+    }
+    defaultRemapJar = true
+}
+
+unimined.minecraft(sourceSets.neoforge) {
+    combineWith(sourceSets.main)
+
+    neoForge {
+        loader("net.neoforged:neoforge:$neoforge_version:universal")
+        mixinConfig("bendable_cuboids.mixins.json")
+
+        accessTransformer(provider {
+            def transformed = file("src/main/resources/bendable_cuboids.classtweaker").text
+                    .replaceFirst(/classTweaker\s+v\d+\s+(\S+)/, 'accessWidener v2 $1')
+                    .readLines()
+                    .findAll { line ->
+                        !line.trim().startsWith("transitive-inject-interface") && !line.trim().startsWith("inject-interface")
+                    }
+                    .join("\n")
+
+            def out = layout.buildDirectory.file("generated/bendable_cuboids.classtweaker").get().asFile
+            try {
+                out.parentFile.mkdirs()
+                out.write(transformed)
+                return aw2at(out)
+            } finally {
+                out.delete()
             }
-        }
-        maven {
-            name = "NeoForged"
-            url = "https://maven.neoforged.net/releases"
-        }
-        maven {
-            name = "RedlanceMinecraft"
-            url = "https://repo.redlance.org/public"
-        }
-        maven {
-            name = "Modrinth"
-            url = "https://api.modrinth.com/maven"
-            content {
-                includeGroup "maven.modrinth"
-            }
-        }
+        }.get())
     }
+    defaultRemapJar = true
+}
 
-    tasks.withType(JavaCompile).configureEach {
-        options.encoding = "UTF-8"
-        options.release.set 21
+dependencies {
+
+}
+
+shadowJar {
+    configurations = [project.configurations.shadow]
+
+    from(tasks.named("remapFabricJar").map { zipTree(it.archiveFile) })
+    from(tasks.named("remapNeoforgeJar").map { zipTree(it.archiveFile) })
+
+    archiveClassifier.set null
+
+    // Services
+    filesMatching('META-INF/services/**') {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
     }
+    mergeServiceFiles()
 
-    jar {
-        if (!rootProject.version.toString().contains("dev") && !project.gradle.startParameter.taskNames.contains("runClient"))
-            processResources.exclude('assets/bendable_cuboids/player_animations/*')
+    // Fix fabric jij
+    filesMatching("META-INF/jarjar/*.jar") {
+        path = path.replace("META-INF/jarjar/", "META-INF/jars/")
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
-
-    java {
-        withSourcesJar()
+    filesMatching('META-INF/jarjar/metadata.json') {
+        filter { it.replace('META-INF/jarjar/', 'META-INF/jars/') }
     }
+}
 
-    publishing {
-        repositories {
-            maven {
-                name = "RedlanceMinecraft"
-                url = "https://repo.redlance.org/public"
-                credentials {
-                    username = "dima_dencep"
-                    password = System.getenv("MAVEN_PASSWORD")
-                }
-            }
-        }
+[tasks.processResources, tasks.processFabricResources, tasks.processNeoforgeResources].each {
+    def buildProps = rootProject.properties.clone()
+    buildProps.put("version", version)
+
+    // Another workaround
+    buildProps.put("fabric_minecraft_version", minecraft_version.replace('-snapshot-', '-alpha.'))
+
+    it.filesMatching(["META-INF/neoforge.mods.toml", "fabric.mod.json"]) {
+        expand buildProps
     }
 }
 
 tasks.register("publishToDiscord", PublishDiscordTask) {
     url.set(providers.environmentVariable("DISCORD_WEBHOOK"))
     username.set("BendableCuboids Updates")
-    avatar.set("https://raw.githubusercontent.com/PlayerAnimationLibrary/BendableCuboids/refs/heads/main/common/src/main/resources/assets/bendable_cuboids/icon.png")
+    avatar.set("https://raw.githubusercontent.com/PlayerAnimationLibrary/BendableCuboids/refs/heads/main/src/main/resources/assets/bendable_cuboids/icon.png")
 
     container {
         it.title = "## ✨ ${rootProject.archives_base_name}\n### v${version} is out!"
         it.description = "### Changes:\n${rootProject.file("CHANGELOG.md").getText("UTF-8")}"
 
-        it.thumbnail("https://raw.githubusercontent.com/PlayerAnimationLibrary/BendableCuboids/refs/heads/main/common/src/main/resources/assets/bendable_cuboids/icon.png")
+        it.thumbnail("https://raw.githubusercontent.com/PlayerAnimationLibrary/BendableCuboids/refs/heads/main/src/main/resources/assets/bendable_cuboids/icon.png")
         it.timestamp(System.currentTimeMillis())
     }
 
@@ -109,4 +154,20 @@ tasks.register("publishToDiscord", PublishDiscordTask) {
     }
 
     footer = "||<@&1411332102942752798>||"
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+    options.release.set 25
+}
+
+jar {
+    if (!rootProject.version.toString().contains("dev") && !project.gradle.startParameter.taskNames.contains("runClient")) {
+        processResources.exclude('assets/bendable_cuboids/player_animations/*')
+    }
+    archiveClassifier.set "dev"
+}
+
+shadow {
+    addShadowVariantIntoJavaComponent = false
 }

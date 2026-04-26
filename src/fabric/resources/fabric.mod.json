@@ -6,8 +6,9 @@
   "description": "Adds model cubes that can be bent, for example like arms in MC Story Mode!",
   "icon": "/assets/bendable_cuboids/icon.png",
   "authors": [
-    "KosmX",
-    "Zigy"
+    "Zigy",
+    "dima_dencep",
+    "KosmX"
   ],
   "contributors": [],
   "contact": {

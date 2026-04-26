@@ -8,7 +8,7 @@ modId = "bendable_cuboids"
 version = "${version}"
 displayURL = "https://github.com/ZigyTheBird/BendableCuboids"
 displayName = "Bendable Cuboids Library"
-authors = "KosmX, Zigy"
+authors = "Zigy, dima_dencep, KosmX"
 description = '''
 Adds model cubes that can be bent, for example like arms in MC Story Mode!
 '''
