@@ -57,19 +57,19 @@ public abstract class PlayerModelMixin_playerAnim extends HumanoidModel<AvatarRe
         this.bc$animation = emote;
 
         if (this.head == part) return;
-        PlayerBendHelper.bend(part, bone.getBend());
+        PlayerBendHelper.bend(part, bone.bend);
 
         // Overlay shit
         if (this.body == part) {
-            PlayerBendHelper.bend(this.jacket, bone.getBend());
+            PlayerBendHelper.bend(this.jacket, bone.bend);
         } else if (this.rightArm == part) {
-            PlayerBendHelper.bend(this.rightSleeve, bone.getBend());
+            PlayerBendHelper.bend(this.rightSleeve, bone.bend);
         } else if (this.leftArm == part) {
-            PlayerBendHelper.bend(this.leftSleeve, bone.getBend());
+            PlayerBendHelper.bend(this.leftSleeve, bone.bend);
         } else if (this.rightLeg == part) {
-            PlayerBendHelper.bend(this.rightPants, bone.getBend());
+            PlayerBendHelper.bend(this.rightPants, bone.bend);
         } else if (this.leftLeg == part) {
-            PlayerBendHelper.bend(this.leftPants, bone.getBend());
+            PlayerBendHelper.bend(this.leftPants, bone.bend);
         }
     }
 

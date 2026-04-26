@@ -3,7 +3,6 @@ package com.zigythebird.bendable_cuboids.api;
 import com.zigythebird.bendable_cuboids.impl.Plane;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**

@@ -97,7 +97,16 @@ unimined.minecraft(sourceSets.neoforge) {
 }
 
 dependencies {
+    // Common
+    compileOnly("com.zigythebird.playeranim:PlayerAnimationLibCommon:${rootProject.player_anim_version}")
+    compileOnly("com.zigythebird.playeranim:PlayerAnimationLibCore:${rootProject.player_anim_version}")
+    compileOnly("maven.modrinth:3dskinlayers:8kxiY3G1")
 
+    // Fabric
+    fabricImplementation("com.zigythebird.playeranim:PlayerAnimationLibFabric:${rootProject.player_anim_version}")
+
+    // NeoForge
+    neoforgeImplementation("com.zigythebird.playeranim:PlayerAnimationLibNeo:${rootProject.player_anim_version}")
 }
 
 shadowJar {
@@ -106,6 +115,7 @@ shadowJar {
     from(tasks.named("remapFabricJar").map { zipTree(it.archiveFile) })
     from(tasks.named("remapNeoforgeJar").map { zipTree(it.archiveFile) })
 
+    archiveBaseName.set("${rootProject.archives_base_name}Merged")
     archiveClassifier.set null
 
     // Services
@@ -170,4 +180,34 @@ jar {
 
 shadow {
     addShadowVariantIntoJavaComponent = false
+}
+
+tasks.register("mergedSourcesJar", Jar) {
+    from sourceSets.main.allSource
+    from sourceSets.fabric.allSource
+    from sourceSets.neoforge.allSource
+
+    archiveBaseName.set("${rootProject.archives_base_name}Merged")
+    archiveClassifier.set("sources")
+}
+
+publishing {
+    publications {
+        mavenMain(MavenPublication) {
+            artifactId = "BendableCuboidsMerged"
+
+            artifact shadowJar
+            artifact mergedSourcesJar
+        }
+    }
+    repositories {
+        maven {
+            name = "RedlanceMinecraft"
+            url = "https://repo.redlance.org/public"
+            credentials {
+                username = "dima_dencep"
+                password = System.getenv("MAVEN_PASSWORD")
+            }
+        }
+    }
 }
