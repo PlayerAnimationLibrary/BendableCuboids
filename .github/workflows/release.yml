@@ -3,12 +3,6 @@ name: Publish on Modrinth & CurseForge
 on:
   workflow_dispatch:
 
-secrets:
-  CURSEFORGE_TOKEN:
-    required: true
-  MODRINTH_TOKEN:
-    required: true
-
 permissions:
   contents: write
 
