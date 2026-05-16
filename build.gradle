@@ -196,6 +196,38 @@ publishing {
         mavenMain(MavenPublication) {
             artifactId = "BendableCuboidsMerged"
 
+            pom {
+                name = artifactId
+                description = "Adds model cubes that can be bent, for example like arms in MC Story Mode!"
+                url = "https://github.com/PlayerAnimationLibrary/BendableCuboids"
+
+                developers {
+                    developer {
+                        id = "dima_dencep"
+                        name = "dima_dencep"
+                        email = "dima_dencep@redlance.org"
+                    }
+                    developer {
+                        id = "zigythebird"
+                        name = "ZigyTheBird"
+                        email = "imanyarandi222@gmail.com"
+                    }
+                }
+
+                licenses {
+                    license {
+                        name = "MIT"
+                        url = "https://github.com/PlayerAnimationLibrary/BendableCuboids/blob/HEAD/LICENSE"
+                    }
+                }
+
+                scm {
+                    connection = "scm:git:github.com/PlayerAnimationLibrary/BendableCuboids.git"
+                    developerConnection = "scm:git:github.com/PlayerAnimationLibrary/BendableCuboids.git"
+                    url = "https://github.com/PlayerAnimationLibrary/BendableCuboids.git"
+                }
+            }
+
             artifact shadowJar
             artifact mergedSourcesJar
         }

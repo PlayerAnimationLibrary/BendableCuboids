@@ -1,12 +1,12 @@
 modLoader = "javafml"
 loaderVersion = "*"
-issueTrackerURL = "https://github.com/ZigyTheBird/BendableCuboids/issues"
+issueTrackerURL = "https://github.com/PlayerAnimationLibrary/BendableCuboids/issues"
 license = "MIT License"
 
 [[mods]]
 modId = "bendable_cuboids"
 version = "${version}"
-displayURL = "https://github.com/ZigyTheBird/BendableCuboids"
+displayURL = "https://github.com/PlayerAnimationLibrary/BendableCuboids"
 displayName = "Bendable Cuboids Library"
 authors = "Zigy, dima_dencep, KosmX"
 description = '''
