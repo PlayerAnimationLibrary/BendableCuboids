@@ -2,7 +2,7 @@ import org.redlance.dima_dencep.gradle.publish2discord.tasks.PublishDiscordTask
 
 plugins {
     id "org.redlance.dima_dencep.gradle.PublishToDiscord" version "1.0.8"
-    id "com.gradleup.shadow" version "9.4.1"
+    id "com.gradleup.shadow" version "9.6.1"
     id "xyz.wagyourtail.unimined" version "1.4.2-SNAPSHOT"
     id "maven-publish"
 }
