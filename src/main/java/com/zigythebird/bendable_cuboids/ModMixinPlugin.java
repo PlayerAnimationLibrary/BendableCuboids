@@ -1,5 +1,6 @@
 package com.zigythebird.bendable_cuboids;
 
+import com.google.j2objc.annotations.J2ObjCIncompatible;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
+@J2ObjCIncompatible
 public class ModMixinPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {

@@ -1,5 +1,6 @@
 package com.zigythebird.bendable_cuboids.impl.compatibility;
 
+import com.google.j2objc.annotations.J2ObjCIncompatible;
 import com.zigythebird.bendable_cuboids.BendableCuboidsMod;
 import com.zigythebird.bendable_cuboids.api.BendableCube;
 import com.zigythebird.bendable_cuboids.api.BendableModelPart;
@@ -19,6 +20,7 @@ import org.joml.Vector4f;
 import java.util.EnumSet;
 import java.util.Set;
 
+@J2ObjCIncompatible
 public class SkinLayersCompat implements MeshTransformerProvider, MeshTransformer {
     private static final Set<Direction> ALL_VISIBLE = EnumSet.allOf(Direction.class);
 

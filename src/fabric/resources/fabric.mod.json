@@ -12,8 +12,8 @@
   ],
   "contributors": [],
   "contact": {
-    "sources": "https://github.com/ZigyTheBird/BendableCuboids",
-    "issues": "https://github.com/ZigyTheBird/BendableCuboids/issues"
+    "sources": "https://github.com/PlayerAnimationLibrary/BendableCuboids",
+    "issues": "https://github.com/PlayerAnimationLibrary/BendableCuboids/issues"
   },
   "license": "MIT License",
   "environment": "client",

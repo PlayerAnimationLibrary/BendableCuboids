@@ -1,10 +1,12 @@
 package com.zigythebird.bendable_cuboids.neoforge;
 
+import com.google.j2objc.annotations.J2ObjCIncompatible;
 import com.zigythebird.bendable_cuboids.BendableCuboidsMod;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLLoader;
 
+@J2ObjCIncompatible
 @Mod(value = "bendable_cuboids", dist = Dist.CLIENT)
 public class BendableCuboidsModNeo extends BendableCuboidsMod {
     public BendableCuboidsModNeo() {
