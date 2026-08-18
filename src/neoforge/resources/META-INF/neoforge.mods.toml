@@ -12,7 +12,7 @@ authors = "Zigy, dima_dencep, KosmX"
 description = '''
 Adds model cubes that can be bent, for example like arms in MC Story Mode!
 '''
-logoFile = "/assets/bendable_cuboids/icon.png"
+iconFile = "/assets/bendable_cuboids/icon.png"
 
 [[mixins]]
 config = "bendable_cuboids.mixins.json"
