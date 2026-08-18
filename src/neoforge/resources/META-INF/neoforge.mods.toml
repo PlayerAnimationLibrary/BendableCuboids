@@ -18,9 +18,16 @@ logoFile = "/assets/bendable_cuboids/icon.png"
 config = "bendable_cuboids.mixins.json"
 
 [[dependencies.bendable_cuboids]]
+modId = "neoforge"
+type = "required"
+versionRange = "[26.2.0.57,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.bendable_cuboids]]
 modId = "minecraft"
 type = "required"
-versionRange = "[26.1,)"
+versionRange = "[26.2,)"
 ordering = "NONE"
 side = "CLIENT"
 
