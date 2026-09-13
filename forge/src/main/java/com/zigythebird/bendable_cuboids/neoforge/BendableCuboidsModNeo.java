@@ -8,6 +8,6 @@ import net.neoforged.fml.loading.FMLLoader;
 @Mod(value = "bendable_cuboids", dist = Dist.CLIENT)
 public class BendableCuboidsModNeo extends BendableCuboidsMod {
     public BendableCuboidsModNeo() {
-        if (FMLLoader.getCurrent().getLoadingModList().getModFileById("skinlayers3d") != null) setupSkinLayersTransformer();
+        if (FMLLoader.getLoadingModList().getModFileById("skinlayers3d") != null) setupSkinLayersTransformer();
     }
 }

@@ -25,7 +25,7 @@ public abstract class ModelMixin_playerAnim {
             PlayerAnimManager manager = this instanceof IMutableModel mutable ? mutable.bc$getAnimation() : null;
             palActive.set(manager != null && manager.isActive());
 
-            if (palActive.get()) model.parts.forEach(modelPart -> ((SodiumHelper)modelPart).bc$useSodiumRendering(true));
+            if (palActive.get()) model.parts.forEach(modelPart -> ((SodiumHelper)modelPart).bc$useSodiumRendering(false));
         }
     }
 
