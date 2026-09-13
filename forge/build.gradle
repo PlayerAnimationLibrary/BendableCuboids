@@ -21,6 +21,7 @@ configurations {
 dependencies {
     neoForge "net.neoforged:neoforge:${rootProject.neoforge_version}"
     modImplementation "com.zigythebird.playeranim:PlayerAnimationLibNeo:${rootProject.player_anim_version}"
+    forgeRuntimeLibrary "org.javassist:javassist:3.30.2-GA"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive = false }
 }
