@@ -12,8 +12,8 @@
   ],
   "contributors": [],
   "contact": {
-    "sources": "https://github.com/ZigyTheBird/BendableCuboids",
-    "issues": "https://github.com/ZigyTheBird/BendableCuboids/issues"
+    "sources": "https://github.com/PlayerAnimationLibrary/BendableCuboids",
+    "issues": "https://github.com/PlayerAnimationLibrary/BendableCuboids/issues"
   },
   "license": "MIT License",
   "environment": "client",
@@ -27,7 +27,7 @@
   ],
   "depends": {
     "fabricloader": ">=${fabric_loader_version}",
-    "minecraft": ">=26.2"
+    "minecraft": ">=26.3"
   },
   "breaks": {
     "player_animation_library": "<${player_anim_version}"
