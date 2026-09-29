@@ -16,8 +16,8 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v6
         with:
-          distribution: 'adopt'
-          java-version: 25
+          distribution: 'microsoft'
+          java-version: '25'
 
       - name: Grant Execute Permission
         run: chmod +x gradlew
