@@ -23,7 +23,7 @@ public class ItemInHandLayerMixin_playerAnim<S extends ArmedEntityRenderState> {
     @Unique
     private final PlayerAnimBone bendableCuboids$leftArm = new PlayerAnimBone("left_arm");
 
-    @Inject(method = "submitArmWithItem", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;mulPose(Lorg/joml/Quaternionfc;)V", ordinal = 0))
+    @Inject(method = "submitArmWithItem", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;rotateDegrees(Lcom/mojang/math/Axis;F)V", ordinal = 0))
     private void renderMixin(S armedEntityRenderState, ItemStackRenderState itemStackRenderState, ItemStack itemStack, HumanoidArm humanoidArm, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int i, CallbackInfo ci){
         if(armedEntityRenderState instanceof IAvatarAnimationState state){
             if(state.playerAnimLib$getAnimManager().isActive()){
@@ -32,7 +32,7 @@ public class ItemInHandLayerMixin_playerAnim<S extends ArmedEntityRenderState> {
                 state.playerAnimLib$getAnimManager().get3DTransform(bone);
                 float offset = 0.25f;
                 poseStack.translate(0, offset, 0);
-                poseStack.mulPose(Axis.XP.rotation(bone.bend));
+                poseStack.rotate(Axis.XP, bone.bend);
                 poseStack.translate(0, -offset, 0);
             }
         }

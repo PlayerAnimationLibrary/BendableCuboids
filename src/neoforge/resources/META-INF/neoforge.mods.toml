@@ -20,14 +20,14 @@ config = "bendable_cuboids.mixins.json"
 [[dependencies.bendable_cuboids]]
 modId = "neoforge"
 type = "required"
-versionRange = "[26.2.0.57,)"
+versionRange = "[26.3.0.33-beta,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.bendable_cuboids]]
 modId = "minecraft"
 type = "required"
-versionRange = "[26.2,)"
+versionRange = "[26.3,)"
 ordering = "NONE"
 side = "CLIENT"
 

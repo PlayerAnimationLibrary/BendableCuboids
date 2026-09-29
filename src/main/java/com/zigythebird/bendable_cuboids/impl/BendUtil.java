@@ -126,7 +126,7 @@ public class BendUtil {
 
     public static PoseStack applyBendToMatrix(PoseStack transformMatrix, float bendX, float bendY, float bendZ, float bendValue) {
         transformMatrix.translate(bendX, bendY, bendZ);
-        transformMatrix.mulPose(Axis.XP.rotation(bendValue));
+        transformMatrix.rotate(Axis.XP, bendValue);
         transformMatrix.translate(-bendX, -bendY, -bendZ);
 
         return transformMatrix;
