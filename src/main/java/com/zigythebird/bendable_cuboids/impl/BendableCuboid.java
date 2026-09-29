@@ -1,5 +1,6 @@
 package com.zigythebird.bendable_cuboids.impl;
 
+import com.google.j2objc.annotations.AutoreleasePool;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.zigythebird.bendable_cuboids.api.BendableCube;
@@ -106,6 +107,7 @@ public class BendableCuboid extends ModelPart.Cube implements BendableCube, Sodi
     }
 
     @Override
+    @AutoreleasePool
     public void compile(PoseStack.Pose pose, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
         if ((this.useSodiumRendering && this.bend == 0) || this.sides == null) {
             super.compile(pose, buffer, packedLight, packedOverlay, color);
@@ -123,6 +125,7 @@ public class BendableCuboid extends ModelPart.Cube implements BendableCube, Sodi
      * @param bendValue bend value (Same as rotX)
      */
     @Override
+    @AutoreleasePool
     public void applyBend(float bendValue) {
         // Don't enable bend until rotation is bigger than epsilon.
         // This should avoid unnecessary heavy calculations.
@@ -183,6 +186,7 @@ public class BendableCuboid extends ModelPart.Cube implements BendableCube, Sodi
         return this.bend;
     }
 
+    @AutoreleasePool
     public void iteratePositions(Function<Vector3f, Vector3f> function) {
         if (this.positions == null) return;
         for (RememberingPos pos : this.positions) {
