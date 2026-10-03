@@ -5,7 +5,7 @@
       "loop": true,
       "bones": {
         "left_arm": {
-          "bend": "math.mod(q.anim_time, 360)"
+          "bend": "-math.mod(q.anim_time * 60, 360)"
         }
       }
     }
