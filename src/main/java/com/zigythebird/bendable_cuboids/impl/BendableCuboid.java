@@ -33,6 +33,9 @@ public class BendableCuboid extends ModelPart.Cube implements BendableCube, Sodi
     protected final Direction direction;
     protected final int pivot;
     protected float bend;
+    /** Where the fixed half lies under the current bend; the turned half is not drawn inside it. */
+    @Nullable
+    private FixedHalf fixedHalf;
 
     private boolean useSodiumRendering = true;
     
@@ -119,7 +122,7 @@ public class BendableCuboid extends ModelPart.Cube implements BendableCube, Sodi
         }
 
         for (Quad quad : this.sides) {
-            quad.render(pose, buffer, packedLight, packedOverlay, color);
+            quad.render(pose, buffer, packedLight, packedOverlay, color, this.fixedHalf);
         }
     }
 
@@ -138,6 +141,7 @@ public class BendableCuboid extends ModelPart.Cube implements BendableCube, Sodi
 
         this.bend = bendValue;
         iteratePositions(BendUtil.getBend(this, bendValue, true));
+        this.fixedHalf = BendUtil.getFixedHalf(this, bendValue);
     }
 
     @Override

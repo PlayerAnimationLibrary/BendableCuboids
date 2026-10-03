@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.zigythebird.bendable_cuboids.api.BendableCube;
 import net.minecraft.core.Direction;
+import org.jetbrains.annotations.Nullable;
 import org.joml.*;
 
 import java.lang.Math;
@@ -54,10 +55,7 @@ public class BendUtil {
         float tan = (float) Math.tan(angle/2);
         float sin = (float) Math.sin(angle), cos = (float) Math.cos(angle);
         boolean square = angle > Math.PI/2;
-        // The halves meet on the line halving the bend. Up to 90 degrees it leaves the joint through the outer corner, a
-        // miter. Past that the corner stays square and moves in along the fixed half until the joint ends flat at 180
-        // degrees, and the line leaves through that square end. A layer keeps its grow ahead of the corner it covers.
-        float corner = square ? (halfDepth - grow)*sin + grow : tan*halfDepth;
+        float corner = outerCorner(angle, tan, halfDepth, grow);
         // Depth outside the bend at which the line meets the square end. Up to 90 degrees the outline has no such turn,
         // and the depth moves from the middle of the side to the outer face so that it reaches the turn continuously.
         float cornerOut = square ? corner/tan : halfDepth*(float) (0.5 + angle/Math.PI);
@@ -118,7 +116,9 @@ public class BendUtil {
                         // Up to 90 degrees the copy lies on the miter with the fixed half's row; past it, it slides
                         // onto the square end.
                         float end = square ? Math.max(outMiter, (corner - out*sin)/cos) : outMiter;
-                        moved.y = bendY + alongSign*(outMiter + slide*(end - outMiter));
+                        // Weighted rather than stepped from the miter, which near 180 degrees runs off so far that the
+                        // step loses the end to float precision.
+                        moved.y = bendY + alongSign*(slide*end + (1 - slide)*outMiter);
                     }
                 }
             }
@@ -129,6 +129,50 @@ public class BendUtil {
             }
             return moved;
         });
+    }
+
+    /**
+     * The halves meet on the line halving the bend. Up to 90 degrees it leaves the joint through the outer corner, a
+     * miter. Past that the corner stays square and moves in along the fixed half until the joint ends flat at 180
+     * degrees, and the line leaves through that square end. A layer keeps its grow ahead of the corner it covers.
+     * @return how far past the middle of the cube the fixed half reaches outside the bend
+     */
+    private static float outerCorner(double angle, float tan, float halfDepth, float grow) {
+        return angle > Math.PI/2 ? (halfDepth - grow)*(float) Math.sin(angle) + grow : tan*halfDepth;
+    }
+
+    /**
+     * Where the fixed half of the cube lies under the bend: from its end to the joint the whole cube, then the joint up
+     * to the line halving the bend inside it and to the miter or the square end outside it.
+     * @return null while the cube is straight
+     */
+    public static @Nullable FixedHalf getFixedHalf(BendableCube cuboid, float bendValue) {
+        if (bendValue == 0) return null;
+        float halfLength = cuboid.bendHeight()/2, joint = cuboid.bendHeight()/6, halfDepth = cuboid.bendDepth()/2;
+        float bend = clampToRadian(bendValue);
+        double angle = Math.min(Math.abs(bend), Math.PI);
+        float tan = (float) Math.tan(angle/2);
+        float corner = outerCorner(angle, tan, halfDepth, cuboid.bendGrow());
+        float alongSign = cuboid.isBendInverted() ? 1 : -1;
+        float depthSign = (bend < 0 ? -1 : 1)*alongSign;
+        // Half-planes along*a + depth*d <= c, a along the cube towards the turned half and d into the bend.
+        float[] rigid = {-1, 0, halfLength, 1, 0, -joint, 0, -1, halfDepth, 0, 1, halfDepth};
+        float[] jointPart = {-1, 0, joint, 1, tan, 0, 1, 0, corner, 0, -1, halfDepth, 0, 1, halfDepth};
+        return new FixedHalf(cuboid.getBendY(), alongSign,
+                toCube(rigid, cuboid.getBendY(), cuboid.getBendZ(), alongSign, depthSign),
+                toCube(jointPart, cuboid.getBendY(), cuboid.getBendZ(), alongSign, depthSign));
+    }
+
+    /** Turns half-planes along*a + depth*d <= c into the cube's ny*y + nz*z <= c of unit length, in place. */
+    private static float[] toCube(float[] halfPlanes, float bendY, float bendZ, float alongSign, float depthSign) {
+        for (int i = 0; i < halfPlanes.length; i += 3) {
+            float ny = halfPlanes[i]*alongSign, nz = halfPlanes[i + 1]*depthSign;
+            float length = (float) Math.sqrt(ny*ny + nz*nz);
+            halfPlanes[i + 2] = (halfPlanes[i + 2] + ny*bendY + nz*bendZ)/length;
+            halfPlanes[i] = ny/length;
+            halfPlanes[i + 1] = nz/length;
+        }
+        return halfPlanes;
     }
 
     public static Function<Vector3f, Vector3f> getBendLegacy(BendableCube cuboid, float bendValue) {

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 import org.joml.Vector4f;
@@ -45,8 +46,27 @@ public class Quad {
     }
 
     public void render(PoseStack.Pose matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
+        render(matrices, vertexConsumer, light, overlay, color, null);
+    }
+
+    /**
+     * @param fixedHalf where the fixed half of the bent cube lies: a quad of the turned half is drawn only outside it, a
+     *                  quad entirely inside not at all; null draws the quad whole
+     */
+    public void render(PoseStack.Pose matrices, VertexConsumer vertexConsumer, int light, int overlay, int color, @Nullable FixedHalf fixedHalf) {
         Vector3f normal = this.getDirection();
         normal.mul(matrices.normal());
+
+        if (fixedHalf != null && turns(fixedHalf)) {
+            Vector3f a = this.vertices[0].getPos(), b = this.vertices[1].getPos(), c = this.vertices[2].getPos(), d = this.vertices[3].getPos();
+            if (fixedHalf.covers(a, b, c, d)) return;
+            if (!fixedHalf.misses(a, b, c, d)) {
+                // The two triangles the quad is drawn as, each cut to what lies outside the fixed half.
+                for (float[] piece : fixedHalf.outside(corners(0, 1, 2))) emit(piece, matrices, vertexConsumer, light, overlay, color, normal);
+                for (float[] piece : fixedHalf.outside(corners(0, 2, 3))) emit(piece, matrices, vertexConsumer, light, overlay, color, normal);
+                return;
+            }
+        }
 
         for (int i = 0; i != 4; ++i){
             IVertex vertex = this.vertices[i];
@@ -55,6 +75,46 @@ public class Quad {
             pos.mul(matrices.pose());
             vertexConsumer.addVertex(pos.x, pos.y, pos.z, color, vertex.getU(), vertex.getV(), overlay, light, normal.x, normal.y, normal.z);
         }
+    }
+
+    private boolean turns(FixedHalf fixedHalf) {
+        for (RepositionableVertex vertex : this.vertices) {
+            if (!fixedHalf.turns(vertex.pos.originPos)) return false;
+        }
+        return true;
+    }
+
+    /** The triangle through three of the quad's vertices, five floats each: position and texture coordinates. */
+    private float[] corners(int first, int second, int third) {
+        float[] polygon = new float[15];
+        int[] picked = {first, second, third};
+        for (int k = 0; k < 3; k++) {
+            RepositionableVertex vertex = this.vertices[picked[k]];
+            Vector3f pos = vertex.getPos();
+            polygon[k*5] = pos.x;
+            polygon[k*5 + 1] = pos.y;
+            polygon[k*5 + 2] = pos.z;
+            polygon[k*5 + 3] = vertex.getU();
+            polygon[k*5 + 4] = vertex.getV();
+        }
+        return polygon;
+    }
+
+    /** Draws a convex polygon as a fan of quads from its first vertex, the last one closing on a repeated vertex. */
+    private static void emit(float[] polygon, PoseStack.Pose matrices, VertexConsumer vertexConsumer, int light, int overlay, int color, Vector3f normal) {
+        int count = polygon.length/5;
+        for (int i = 1; i < count - 1; i += 2) {
+            emitVertex(polygon, 0, matrices, vertexConsumer, light, overlay, color, normal);
+            emitVertex(polygon, i, matrices, vertexConsumer, light, overlay, color, normal);
+            emitVertex(polygon, i + 1, matrices, vertexConsumer, light, overlay, color, normal);
+            emitVertex(polygon, Math.min(i + 2, count - 1), matrices, vertexConsumer, light, overlay, color, normal);
+        }
+    }
+
+    private static void emitVertex(float[] polygon, int index, PoseStack.Pose matrices, VertexConsumer vertexConsumer, int light, int overlay, int color, Vector3f normal) {
+        Vector4f pos = new Vector4f(polygon[index*5]/16f, polygon[index*5 + 1]/16f, polygon[index*5 + 2]/16f, 1);
+        pos.mul(matrices.pose());
+        vertexConsumer.addVertex(pos.x, pos.y, pos.z, color, polygon[index*5 + 3], polygon[index*5 + 4], overlay, light, normal.x, normal.y, normal.z);
     }
 
     /**
