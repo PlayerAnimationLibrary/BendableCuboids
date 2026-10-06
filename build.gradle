@@ -163,7 +163,8 @@ tasks.register("publishToDiscord", PublishDiscordTask) {
         it.fromEnvHack()
     }
 
-    footer = "||<@&1411332102942752798>||"
+    def ping = providers.environmentVariable("DISCORD_PING").map { it.toBoolean() }.getOrElse(true)
+    footer = ping ? "||<@&1411332102942752798>||" : ""
 }
 
 tasks.withType(JavaCompile).configureEach {

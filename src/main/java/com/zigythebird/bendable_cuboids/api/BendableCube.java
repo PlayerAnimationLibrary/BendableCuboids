@@ -32,8 +32,6 @@ public interface BendableCube extends Bendable {
     float getBendY();
     float getBendZ();
 
-    float getExtentZ();
-
     Plane getBasePlane();
     Plane getOtherPlane();
 
@@ -44,6 +42,18 @@ public interface BendableCube extends Bendable {
      * @return the size of the cube
      */
     float bendHeight();
+
+    /**
+     * Size of the cuboid across the bend, along the axis the bend turns its halves toward.
+     * @return the depth of the cube
+     */
+    float bendDepth();
+
+    /**
+     * How far the cuboid stands out of the cube it is a layer over, like a sleeve over an arm, so the bend keeps it there.
+     * @return the grow of the cube across the bend
+     */
+    float bendGrow();
 
     default boolean isBendInverted() {
         Direction direction = getBendDirection();

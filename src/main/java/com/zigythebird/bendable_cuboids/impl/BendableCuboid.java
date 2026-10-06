@@ -27,16 +27,36 @@ public class BendableCuboid extends ModelPart.Cube implements BendableCube, Sodi
     protected final Plane basePlane;
     protected final Plane otherPlane;
     protected final float fullSize;
-    protected final float extentZ;
+    protected final float fullDepth;
+    protected final float grow;
 
     protected final Direction direction;
     protected final int pivot;
     protected float bend;
+    /** Where the fixed half lies under the current bend; the turned half is not drawn inside it. */
+    @Nullable
+    private FixedHalf fixedHalf;
 
     private boolean useSodiumRendering = true;
     
     public BendableCuboid(int texCoordU, int texCoordV, float originX, float originY, float originZ, float dimensionX, float dimensionY, float dimensionZ, float growX, float growY, float growZ, boolean mirror, float texScaleU, float texScaleV, Set<Direction> visibleFaces, Direction direction, int pivot) {
         super(texCoordU, texCoordV, originX, originY, originZ, dimensionX, dimensionY, dimensionZ, growX, growY, growZ, mirror, texScaleU, texScaleV, visibleFaces);
+
+        this.direction = Objects.requireNonNull(direction);
+        this.pivot = pivot;
+
+        Vector3f pivotVec = new Vector3f();
+        if (pivot >= 0) {
+            float size = Direction.UP.step().mul(dimensionX, dimensionY, dimensionZ).length();
+            if (pivot <= size) {
+                pivotVec = Direction.UP.step().mul(size - (pivot * 2));
+            }
+        }
+        this.fixX = (dimensionX + minX + minX - pivotVec.x())/2;
+        this.fixY = (dimensionY + minY + minY - pivotVec.y())/2;
+        this.fixZ = (dimensionZ + minZ + minZ - pivotVec.z())/2;
+        // The bend turns the half on the base plane's side about the row through its centre.
+        float turnedSide = isBendInverted() ? 1 : -1;
 
         List<Quad> planes = new ArrayList<>();
         Map<Vector3f, RememberingPos> positions = new HashMap<>();
@@ -46,8 +66,6 @@ public class BendableCuboid extends ModelPart.Cube implements BendableCube, Sodi
             pminX = pmaxX;
             pmaxX = tmp;
         }
-
-        this.extentZ = (Math.abs(pminZ) + Math.abs(pmaxZ))/2;
 
         Vector3f[] vertices = new Vector3f[8];
         //this is copy from MC's cuboid constructor
@@ -60,6 +78,15 @@ public class BendableCuboid extends ModelPart.Cube implements BendableCube, Sodi
         vertices[6] = new Vector3f(pmaxX, pmaxY, pmaxZ); //east north up
         vertices[7] = new Vector3f(pminX, pmaxY, pmaxZ); //west north up
 
+        Vector3f base = new Vector3f(vertices[6]).sub(pivotVec);
+        this.basePlane = new Plane(Direction.UP.step(), base);
+        this.otherPlane = new Plane(Direction.UP.step(), vertices[0]);
+
+        this.fullSize = -Direction.UP.step().dot(vertices[0]) + Direction.UP.step().dot(base);
+        this.fullDepth = pmaxZ - pminZ;
+        this.grow = growZ;
+        float joint = this.fullSize/6;
+
         float j = texCoordU;
         float k = texCoordU + dimensionZ;
         float l = texCoordU + dimensionZ + dimensionX;
@@ -69,36 +96,16 @@ public class BendableCuboid extends ModelPart.Cube implements BendableCube, Sodi
         float p = texCoordV;
         float q = texCoordV + dimensionZ;
         float r = texCoordV + dimensionZ + dimensionY;
-        if (visibleFaces.contains(Direction.DOWN)) createAndAddQuads(planes, positions, new Vector3f[]{vertices[5], vertices[4], vertices[1]}, k, p, l, q, texScaleU, texScaleV, mirror); //down
-        if (visibleFaces.contains(Direction.UP)) createAndAddQuads(planes, positions, new Vector3f[]{vertices[2], vertices[3], vertices[6]}, l, q, m, p, texScaleU, texScaleV, mirror); //up
-        if (visibleFaces.contains(Direction.WEST)) createAndAddQuads(planes, positions, new Vector3f[]{vertices[0], vertices[4], vertices[3]}, j, q, k, r, texScaleU, texScaleV, mirror); //west
-        if (visibleFaces.contains(Direction.NORTH)) createAndAddQuads(planes, positions, new Vector3f[]{vertices[1], vertices[0], vertices[2]}, k, q, l, r, texScaleU, texScaleV, mirror); //north
-        if (visibleFaces.contains(Direction.EAST)) createAndAddQuads(planes, positions, new Vector3f[]{vertices[5], vertices[1], vertices[6]}, l, q, n, r, texScaleU, texScaleV, mirror); //east
-        if (visibleFaces.contains(Direction.SOUTH)) createAndAddQuads(planes, positions, new Vector3f[]{vertices[4], vertices[5], vertices[7]}, n, q, o, r, texScaleU, texScaleV, mirror); //south
+        if (visibleFaces.contains(Direction.DOWN)) createAndAddQuads(planes, positions, new Vector3f[]{vertices[5], vertices[4], vertices[1]}, k, p, l, q, texScaleU, texScaleV, mirror, this.fixY, turnedSide, joint); //down
+        if (visibleFaces.contains(Direction.UP)) createAndAddQuads(planes, positions, new Vector3f[]{vertices[2], vertices[3], vertices[6]}, l, q, m, p, texScaleU, texScaleV, mirror, this.fixY, turnedSide, joint); //up
+        if (visibleFaces.contains(Direction.WEST)) createAndAddQuads(planes, positions, new Vector3f[]{vertices[0], vertices[4], vertices[3]}, j, q, k, r, texScaleU, texScaleV, mirror, this.fixY, turnedSide, joint); //west
+        if (visibleFaces.contains(Direction.NORTH)) createAndAddQuads(planes, positions, new Vector3f[]{vertices[1], vertices[0], vertices[2]}, k, q, l, r, texScaleU, texScaleV, mirror, this.fixY, turnedSide, joint); //north
+        if (visibleFaces.contains(Direction.EAST)) createAndAddQuads(planes, positions, new Vector3f[]{vertices[5], vertices[1], vertices[6]}, l, q, n, r, texScaleU, texScaleV, mirror, this.fixY, turnedSide, joint); //east
+        if (visibleFaces.contains(Direction.SOUTH)) createAndAddQuads(planes, positions, new Vector3f[]{vertices[4], vertices[5], vertices[7]}, n, q, o, r, texScaleU, texScaleV, mirror, this.fixY, turnedSide, joint); //south
 
         this.sides = planes.toArray(new Quad[0]);
         this.positions = positions.values().toArray(new RememberingPos[0]);
         iteratePositions(Function.identity());
-
-        this.direction = Objects.requireNonNull(direction);
-        this.pivot = pivot;
-        direction = Direction.UP;
-
-        Vector3f pivotVec = new Vector3f();
-        if (pivot >= 0) {
-            float size = direction.step().mul(dimensionX, dimensionY, dimensionZ).length();
-            if (pivot <= size) {
-                pivotVec = direction.step().mul(size - (pivot * 2));
-                vertices[6] = vertices[6].sub(pivotVec);
-            }
-        }
-        this.basePlane = new Plane(direction.step(), vertices[6]);
-        this.otherPlane = new Plane(direction.step(), vertices[0]);
-
-        this.fullSize = -direction.step().dot(vertices[0]) + direction.step().dot(vertices[6]);
-        this.fixX = (dimensionX + minX + minX - pivotVec.x())/2;
-        this.fixY = (dimensionY + minY + minY - pivotVec.y())/2;
-        this.fixZ = (dimensionZ + minZ + minZ - pivotVec.z())/2;
     }
 
     @Override
@@ -115,7 +122,7 @@ public class BendableCuboid extends ModelPart.Cube implements BendableCube, Sodi
         }
 
         for (Quad quad : this.sides) {
-            quad.render(pose, buffer, packedLight, packedOverlay, color);
+            quad.render(pose, buffer, packedLight, packedOverlay, color, this.fixedHalf);
         }
     }
 
@@ -133,7 +140,8 @@ public class BendableCuboid extends ModelPart.Cube implements BendableCube, Sodi
         if (this.bend == bendValue) return;
 
         this.bend = bendValue;
-        iteratePositions(BendUtil.getBend(this, bendValue));
+        iteratePositions(BendUtil.getBend(this, bendValue, true));
+        this.fixedHalf = BendUtil.getFixedHalf(this, bendValue);
     }
 
     @Override
@@ -162,11 +170,6 @@ public class BendableCuboid extends ModelPart.Cube implements BendableCube, Sodi
     }
 
     @Override
-    public float getExtentZ() {
-        return this.extentZ;
-    }
-
-    @Override
     public Plane getBasePlane() {
         return this.basePlane;
     }
@@ -182,6 +185,16 @@ public class BendableCuboid extends ModelPart.Cube implements BendableCube, Sodi
     }
 
     @Override
+    public float bendDepth() {
+        return this.fullDepth;
+    }
+
+    @Override
+    public float bendGrow() {
+        return this.grow;
+    }
+
+    @Override
     public float getBend() {
         return this.bend;
     }
@@ -190,7 +203,9 @@ public class BendableCuboid extends ModelPart.Cube implements BendableCube, Sodi
     public void iteratePositions(Function<Vector3f, Vector3f> function) {
         if (this.positions == null) return;
         for (RememberingPos pos : this.positions) {
-            pos.setPos(function.apply(pos.getOriginalPos()));
+            Vector3f material = pos.getOriginalPos();
+            pos.setPos(function.apply(material));
+            pos.setMaterialPos(material);
         }
     }
 
