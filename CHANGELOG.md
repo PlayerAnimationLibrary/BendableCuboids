@@ -1,1 +1,1 @@
-- Port to 26.3
+- Rework the bend joint and stop the halves from z-fighting
